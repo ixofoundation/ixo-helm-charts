@@ -8,6 +8,13 @@ image:
   repository: ghcr.io/ixofoundation/ixo-cellnode
   pullPolicy: IfNotPresent
 
+cosmos:
+  exporter:
+    image:
+      repository: ghcr.io/nysa-network/cosmos-exporter
+      tag: latest
+      pullPolicy: IfNotPresent
+
 imagePullSecrets: []
 env: []
 nameOverride: ""
