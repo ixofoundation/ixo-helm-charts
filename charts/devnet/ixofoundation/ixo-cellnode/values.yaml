@@ -10,6 +10,7 @@ image:
 
 cosmos:
   exporter:
+    enabled: false
     name: cosmos-exporter
     image:
       repository: ghcr.io/nysa-network/cosmos-exporter
