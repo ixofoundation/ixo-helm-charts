@@ -28,9 +28,11 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        {{- if .Values.cosmos.exporter.enabled }}
         - name: {{ .Values.cosmos.exporter.name }}
           image: "{{ .Values.cosmos.exporter.image.repository }}:{{ .Values.cosmos.exporter.image.tag }}"
           imagePullPolicy: {{ .Values.cosmos.exporter.image.pullPolicy }}
+        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
