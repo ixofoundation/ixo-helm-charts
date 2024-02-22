@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "ixo-cellnode.labels" . | nindent 4 }}
   annoations:
-    {{- incude "ixo-cellnode.annotations" . | nindent 4 }}
+    {{- include "ixo-cellnode.annotations" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
