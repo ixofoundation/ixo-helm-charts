@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "ixo-cellnode.labels" . | nindent 4 }}
   annoations:
-    {{- include "ixo-cellnode.annotations" . | nindent 4 }}
+    {{- toYaml .Values.service.annotations | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
