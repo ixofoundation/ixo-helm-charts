@@ -76,6 +76,10 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+envSecrets:
+  WEB3_PROOF: ""
+  WEB3_KEY: ""
+
 autoscaling:
   enabled: false
   minReplicas: 1
