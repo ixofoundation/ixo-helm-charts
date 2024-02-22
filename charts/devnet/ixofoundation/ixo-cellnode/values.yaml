@@ -77,8 +77,8 @@ resources: {}
   #   memory: 128Mi
 
 envSecrets:
-  WEB3_PROOF: ""
-  WEB3_KEY: ""
+  WEB3_PROOF: "empty"
+  WEB3_KEY: "empty"
 
 autoscaling:
   enabled: false
