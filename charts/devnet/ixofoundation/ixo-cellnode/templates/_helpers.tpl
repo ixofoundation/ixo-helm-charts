@@ -49,6 +49,7 @@ Selector labels
 {{- define "ixo-cellnode.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "ixo-cellnode.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/part-of: ixo
 {{- end }}
 
 {{/*
