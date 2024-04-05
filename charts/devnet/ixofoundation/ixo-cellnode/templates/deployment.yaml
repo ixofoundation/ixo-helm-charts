@@ -28,14 +28,24 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        {{- if .Values.cosmos.exporter.enabled }}
+        - name: {{ .Values.cosmos.exporter.name }}
+          image: "{{ .Values.cosmos.exporter.image.repository }}:{{ .Values.cosmos.exporter.image.tag }}"
+          imagePullPolicy: {{ .Values.cosmos.exporter.image.pullPolicy }}
+        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.service.port }}
+              {{- if .Values.hostPort }}
+              hostPort: {{ .Values.hostPort }}
+              {{- end }}
               protocol: TCP
           livenessProbe:
             httpGet:
