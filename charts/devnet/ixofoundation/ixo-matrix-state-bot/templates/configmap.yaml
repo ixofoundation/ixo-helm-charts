@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "ixo-matrix-state-bot.labels" . | nindent 4 }}
 data:
-  default.yaml: |-
+  production.yaml: |-
     # Where the homeserver's Client-Server API is located. Typically this
     # is where clients would be connecting to in order to send messages.
     homeserverUrl: "http://matrix-synapse.matrix-synapse.svc.cluster.local:8008"
