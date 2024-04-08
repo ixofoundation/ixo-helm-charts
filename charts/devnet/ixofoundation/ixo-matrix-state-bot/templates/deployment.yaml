@@ -49,7 +49,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: config
-              mountPath: /bot/config/config
+              mountPath: /bot/config
               readOnly: true
       volumes:
         - name: config
