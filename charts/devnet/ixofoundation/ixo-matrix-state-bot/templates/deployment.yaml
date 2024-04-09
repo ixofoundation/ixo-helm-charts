@@ -51,10 +51,15 @@ spec:
             - name: config
               mountPath: /bot/config
               readOnly: true
+            - name: storage
+              mountPath: /storage
       volumes:
         - name: config
           configMap:
             name: {{ include "ixo-matrix-state-bot.fullname" . }}-config
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{ include "ixo-matrix-state-bot.fullname" . }}-data
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
