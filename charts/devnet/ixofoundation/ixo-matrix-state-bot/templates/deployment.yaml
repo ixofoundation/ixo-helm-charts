@@ -52,7 +52,7 @@ spec:
               mountPath: /bot/config
               readOnly: true
             - name: storage
-              mountPath: /storage
+              mountPath: /bot/storage
       volumes:
         - name: config
           configMap:
