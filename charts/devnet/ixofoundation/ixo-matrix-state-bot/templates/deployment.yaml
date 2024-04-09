@@ -59,7 +59,7 @@ spec:
             name: {{ include "ixo-matrix-state-bot.fullname" . }}-config
         - name: storage
           persistentVolumeClaim:
-            claimName: {{ include "ixo-matrix-state-bot.fullname" . }}-data
+            claimName: ixo-common-storage
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
