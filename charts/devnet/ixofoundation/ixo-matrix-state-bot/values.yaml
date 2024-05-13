@@ -24,13 +24,13 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext:
-  runAsUser: 1000
-  runAsGroup: 3000
-  fsGroup: 2000
+#  runAsUser: 0
+#  runAsGroup: 0
+  fsGroup: 0
 
-securityContext:
-  runAsUser: 1000
-  allowPrivilegeEscalation: true
+securityContext: {}
+#  runAsUser: 1000
+#  allowPrivilegeEscalation: true
   # capabilities:
   #   drop:
   #   - ALL
