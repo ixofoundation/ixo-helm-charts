@@ -47,7 +47,7 @@ app.kubernetes.io/part-of: ixo
 Selector labels
 */}}
 {{- define "emerging-claims-credentials.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "emerging-claims-credentials.name" . }}
+app.kubernetes.io/name: {{ default (include "emerging-claims-credentials.name" .) .Values.name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/part-of: ixo
 {{- end }}
