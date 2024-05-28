@@ -3,7 +3,7 @@ name: ixo-faucet
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.2
-appVersion: v1.0.0-develop.2
+appVersion: v1.0.0-develop.3
 annotations:
   artifacthub.io/changes: |
     - kind: changed
