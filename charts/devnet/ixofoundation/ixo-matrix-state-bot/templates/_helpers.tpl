@@ -40,6 +40,7 @@ helm.sh/chart: {{ include "ixo-matrix-state-bot.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/part-of: ixo
 {{- end }}
 
 {{/*
@@ -48,6 +49,7 @@ Selector labels
 {{- define "ixo-matrix-state-bot.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "ixo-matrix-state-bot.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/part-of: ixo
 {{- end }}
 
 {{/*
