@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ixo-matrix-appservice-rooms.fullname" . }}-config
+  labels:
+    {{- include "ixo-matrix-appservice-rooms.labels" . | nindent 4 }}
+data:
+  production.yaml: |-
+    # Where the homeserver's Client-Server API is located. Typically this
+    # is where clients would be connecting to in order to send messages.
+    homeserverUrl: "http://matrix-synapse.matrix-synapse.svc.cluster.local:8008"
+    homeserverName: "matrix"
+
+    # Whether or not to autojoin rooms when invited.
+    autoJoin: true
+
+    # Location on disk for where to store various bot information.
+    dataPath: "./ixo-rooms-bot-storage"
+
+    # REST API config
+    restApi:
+      # Set to true to enable the REST API
+      enabled: true
+      # Port to listen on for the REST API, default is 8080
+      port: 8081
+      # express trust proxy config for if you are using a reverse proxy
+      trustProxy: 1
+      # An access token for access to server rest endpoints.
+      accessToken: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_ACCESS_TOKEN>"
