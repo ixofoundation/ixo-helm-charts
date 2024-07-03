@@ -1,6 +1,6 @@
 # ixo-kyc-server
 
-![Version: 0.0.8](https://img.shields.io/badge/Version-0.0.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.10](https://img.shields.io/badge/AppVersion-v1.0.0--develop.10-informational?style=flat-square)
+![Version: 0.0.10](https://img.shields.io/badge/Version-0.0.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.12](https://img.shields.io/badge/AppVersion-v1.0.0--develop.12-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
