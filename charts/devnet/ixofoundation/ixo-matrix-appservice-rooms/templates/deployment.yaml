@@ -37,6 +37,9 @@ spec:
             - name: http
               containerPort: 9000
               protocol: TCP
+            - name: rest
+              containerPort: 8081
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /
