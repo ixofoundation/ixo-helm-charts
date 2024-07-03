@@ -54,8 +54,6 @@ spec:
             - name: registration
               mountPath: /bot/registration
               readOnly: true
-            - name: storage
-              mountPath: /bot/storage
       volumes:
         - name: config
           configMap:
@@ -63,9 +61,6 @@ spec:
         - name: registration
           configMap:
             name: {{ include "ixo-matrix-appservice-rooms.fullname" . }}-registration
-        - name: storage
-          persistentVolumeClaim:
-            claimName: ixofoundation-common-storage
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
