@@ -10,7 +10,7 @@ spec:
     - port: {{ .Values.service.port }}
       targetPort: rest
       protocol: TCP
-      name: http
+      name: rest
     - port: 9000
       targetPort: http
       protocol: TCP
