@@ -31,6 +31,9 @@ spec:
         - name: gcp-backups
           image: google/cloud-sdk:latest
           imagePullPolicy: IfNotPresent
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /bot/gcp-key/key.json
           command:
             - "/bin/sh"
             - "-c"
@@ -43,6 +46,8 @@ spec:
                 sleep 86400 # 24 hours
               done
           volumeMounts:
+            - name: gcp-service-account-key
+              mountPath: /bot/gcp-key
             - name: bot-storage
               mountPath: {{ .Values.backup.path }}
           resources:
@@ -79,6 +84,9 @@ spec:
               mountPath: /bot/registration
               readOnly: true
       volumes:
+        - name: gcp-service-account-key
+          secret:
+            secretName: gcp-key-secret
         - name: bot-storage
           emptyDir: {}
         - name: config
