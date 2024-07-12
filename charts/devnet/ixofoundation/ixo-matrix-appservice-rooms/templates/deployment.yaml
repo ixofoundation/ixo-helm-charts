@@ -35,6 +35,7 @@ spec:
             - "/bin/sh"
             - "-c"
             - |
+              apt-get update && apt-get install -y zip
               while true; do
                 cd {{ .Values.backup.path }} && zip -r data.zip .
                 gsutil cp -r {{ .Values.backup.path }}/data.zip {{ .Values.backup.gcs.bucket }}/$(date +'%Y-%m-%d_%H-%M-%S')/
