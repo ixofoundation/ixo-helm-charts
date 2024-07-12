@@ -42,8 +42,8 @@ spec:
                 sleep 86400 # 24 hours
               done
           volumeMounts:
-            - name: bot-data
-              mountPath: /bot
+            - name: bot-storage
+              mountPath: {{ .Values.backup.path }}
           resources:
             {{- toYaml .Values.backup.resources | nindent 12 }}
         - name: {{ .Chart.Name }}
@@ -69,8 +69,8 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: bot-data
-              mountPath: /bot
+            - name: bot-storage
+              mountPath: {{ .Values.backup.path }}
             - name: config
               mountPath: /bot/config
               readOnly: true
@@ -78,7 +78,7 @@ spec:
               mountPath: /bot/registration
               readOnly: true
       volumes:
-        - name: bot-data
+        - name: bot-storage
           emptyDir: {}
         - name: config
           configMap:
