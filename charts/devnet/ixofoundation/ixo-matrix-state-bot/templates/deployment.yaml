@@ -49,7 +49,7 @@ spec:
           volumeMounts:
             - name: gcp-service-account-key
               mountPath: /bot/gcp-key
-            - name: bot-storage
+            - name: storage
               mountPath: {{ .Values.backup.path }}
           resources:
             {{- toYaml .Values.backup.resources | nindent 12 }}
@@ -82,8 +82,6 @@ spec:
         - name: gcp-service-account-key
           secret:
             secretName: gcp-key-secret
-        - name: bot-storage
-          emptyDir: {}
         - name: config
           configMap:
             name: {{ include "ixo-matrix-state-bot.fullname" . }}-config
