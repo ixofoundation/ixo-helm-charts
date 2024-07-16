@@ -90,7 +90,7 @@ spec:
             secretName: gcp-key-secret
         - name: storage
           persistentVolumeClaim:
-            claimName: ixofoundation-common-storage
+            claimName: {{ .Release.Name }}-storage
         - name: config
           configMap:
             name: {{ include "ixo-matrix-appservice-rooms.fullname" . }}-config
