@@ -28,6 +28,31 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        - name: gcp-backups
+          image: google/cloud-sdk:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /bot/gcp-key/key.json
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              apt-get update && apt-get install -y zip
+              gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS
+              while true; do
+                cd {{ .Values.backup.path }} && zip -r data.zip .
+                gsutil cp -r {{ .Values.backup.path }}/data.zip {{ .Values.backup.gcs.bucket }}/$(date +'%Y-%m-%d_%H-%M-%S')/
+                rm -f {{ .Values.backup.path }}/data.zip
+                sleep 86400 # 24 hours
+              done
+          volumeMounts:
+            - name: gcp-service-account-key
+              mountPath: /bot/gcp-key
+            - name: storage
+              mountPath: {{ .Values.backup.path }}
+          resources:
+            {{- toYaml .Values.backup.resources | nindent 12 }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -51,6 +76,8 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+            - name: storage
+              mountPath: {{ .Values.backup.path }}
             - name: config
               mountPath: /bot/config
               readOnly: true
@@ -58,6 +85,12 @@ spec:
               mountPath: /bot/registration
               readOnly: true
       volumes:
+        - name: gcp-service-account-key
+          secret:
+            secretName: gcp-key-secret
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-storage
         - name: config
           configMap:
             name: {{ include "ixo-matrix-appservice-rooms.fullname" . }}-config
