@@ -1,6 +1,6 @@
 # ixo-blocksync
 
-![Version: 2.1.7](https://img.shields.io/badge/Version-2.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.1.0-develop.15](https://img.shields.io/badge/AppVersion-v2.1.0--develop.15-informational?style=flat-square)
+![Version: 2.1.8](https://img.shields.io/badge/Version-2.1.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.1.0-develop.16](https://img.shields.io/badge/AppVersion-v2.1.0--develop.16-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
