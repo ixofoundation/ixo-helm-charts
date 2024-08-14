@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/ixofoundation/ixo-faq-assistant
+  repository: ghcr.io/ixofoundation/faq-assistant
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
