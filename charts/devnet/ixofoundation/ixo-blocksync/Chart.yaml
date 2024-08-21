@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-blocksync
 description: A Helm chart for Kubernetes
 type: application
-version: 2.1.22
-appVersion: v2.1.6-develop.1
+version: 2.1.23
+appVersion: v2.1.6-develop.2
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixofoundation/ixo-blocksync app version from v2.1.5 to v2.1.6-develop.1
+      description: Update ixofoundation/ixo-blocksync app version from v2.1.6-develop.1 to v2.1.6-develop.2
