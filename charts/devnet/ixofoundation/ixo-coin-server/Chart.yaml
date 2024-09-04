@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-coin-server
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.1
-appVersion: v0.0.1
+version: 0.0.2
+appVersion: v1.1.1-develop.1
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update
+      description: Update ixofoundation/ixo-coin-server app version from v0.0.1 to v1.1.1-develop.1
