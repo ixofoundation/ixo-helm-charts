@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ixo-faq-assistant.fullname" . }}
+  name: {{ include "ixo-whizz.fullname" . }}
   labels:
-    {{- include "ixo-faq-assistant.labels" . | nindent 4 }}
+    {{- include "ixo-whizz.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "ixo-faq-assistant.selectorLabels" . | nindent 6 }}
+      {{- include "ixo-whizz.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "ixo-faq-assistant.selectorLabels" . | nindent 8 }}
+        {{- include "ixo-whizz.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "ixo-faq-assistant.serviceAccountName" . }}
+      serviceAccountName: {{ include "ixo-whizz.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

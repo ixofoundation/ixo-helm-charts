@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "ixo-faq-assistant.fullname" . }}
+  name: {{ include "ixo-whizz.fullname" . }}
   labels:
-    {{- include "ixo-faq-assistant.labels" . | nindent 4 }}
+    {{- include "ixo-whizz.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "ixo-faq-assistant.fullname" . }}
+    name: {{ include "ixo-whizz.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
