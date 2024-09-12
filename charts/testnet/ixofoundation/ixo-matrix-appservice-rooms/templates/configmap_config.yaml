@@ -17,6 +17,9 @@ data:
     # Location on disk for where to store various bot information.
     dataPath: "./ixo-rooms-bot-storage"
 
+    # The blockchain API endpoint to query for DID documents
+    blockchainRpcUri: "https://testnet.ixo.earth/rpc/"
+
     # REST API config
     restApi:
       # Set to true to enable the REST API
