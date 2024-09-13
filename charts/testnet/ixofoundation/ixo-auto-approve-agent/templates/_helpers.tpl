@@ -47,7 +47,7 @@ app.kubernetes.io/part-of: ixo
 Selector labels
 */}}
 {{- define "ixo-auto-approve-agent.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "ixo-auto-approve-agent.name" . }}
+app.kubernetes.io/name: {{ default (include "ixo-auto-approve-agent.name" .) .Values.name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/part-of: ixo
 {{- end }}
