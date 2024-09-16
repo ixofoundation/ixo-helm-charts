@@ -20,6 +20,9 @@ data:
     # The blockchain API endpoint to query for DID documents
     blockchainRpcUri: "https://devnet.ixo.earth/rpc/"
 
+    # The blocksync API endpoint to query for users DID documents using graphql
+    blocksyncUri: "https://devnet-blocksync-graphql.ixo.earth/"
+
     # REST API config
     restApi:
       # Set to true to enable the REST API
