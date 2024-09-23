@@ -42,8 +42,10 @@ spec:
             timeoutSeconds: 25
             failureThreshold: 5
       volumes:
-        {{- range .Values.emqx.volumes }}
-        - name: {{ .name }}
+        - name: emqx-data
           persistentVolumeClaim:
-            claimName: {{ .persistentVolumeClaim.claimName }}
-        {{- end }}
+            claimName: emqx-data-pvc
+        - name: emqx-log
+          emptyDir: {}
+        - name: emqx-etc
+          emptyDir: {}

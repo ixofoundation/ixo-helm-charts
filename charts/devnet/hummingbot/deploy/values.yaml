@@ -80,12 +80,12 @@ emqx:
     - name: emqx-data
       persistentVolumeClaim:
         claimName: emqx-data-pvc
-    - name: emqx-log
-      persistentVolumeClaim:
-        claimName: emqx-log-pvc
-    - name: emqx-etc
-      persistentVolumeClaim:
-        claimName: emqx-etc-pvc
+#    - name: emqx-log
+#      persistentVolumeClaim:
+#        claimName: emqx-log-pvc
+#    - name: emqx-etc
+#      persistentVolumeClaim:
+#        claimName: emqx-etc-pvc
   healthcheck:
     enabled: true
     initialDelaySeconds: 30

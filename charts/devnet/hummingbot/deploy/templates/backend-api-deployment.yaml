@@ -17,6 +17,17 @@ spec:
         app: {{ include "hummingbot-chart.name" . }}
         component: backend-api
     spec:
+      initContainers:
+        - name: init-bots
+          image: alpine/git
+          command: [ 'sh', '-c' ]
+          args:
+            - |
+              git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/bots &&
+              cp -r /tmp/bots/bots/* /backend-api/bots/
+          volumeMounts:
+            - name: bots
+              mountPath: /backend-api/bots
       containers:
         - name: backend-api
           image: {{ .Values.backendApi.image }}
