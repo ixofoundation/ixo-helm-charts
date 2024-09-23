@@ -27,11 +27,8 @@ spec:
               cp -r /tmp/pages/pages/* /home/dashboard/frontend/pages/
               cp /tmp/pages/credentials.yml /home/dashboard/credentials.yml
           volumeMounts:
-            - name: pages
-              mountPath: /home/dashboard/frontend/pages
-            - name: credentials
-              mountPath: /home/dashboard/credentials.yml
-              subPath: credentials.yml
+            - name: dashboard
+              mountPath: /home/dashboard
       containers:
         - name: dashboard
           image: {{ .Values.dashboard.image }}
@@ -45,17 +42,8 @@ spec:
                 value: "{{ $value }}"
             {{- end }}
           volumeMounts:
-            {{- if .Values.dashboard.useCredentials }}
-            - name: credentials
-              mountPath: /home/dashboard/credentials.yml
-              subPath: credentials.yml
-            {{- end }}
-            - name: pages
-              mountPath: /home/dashboard/frontend/pages
+            - name: dashboard
+              mountPath: /home/dashboard
       volumes:
-        {{- if .Values.dashboard.useCredentials }}
-        - name: credentials
-          emptyDir: {}
-        {{- end }}
-        - name: pages
+        - name: dashboard
           emptyDir: {}
