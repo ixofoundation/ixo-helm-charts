@@ -15,7 +15,7 @@ dashboard:
     BACKEND_API_PORT: "8000"
   ports:
     - containerPort: 8501
-  useCredentials: false
+  useCredentials: true
 
 backendApi:
   image: hummingbot/backend-api:latest
