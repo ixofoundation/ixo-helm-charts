@@ -17,6 +17,17 @@ spec:
         app: {{ include "hummingbot-chart.name" . }}
         component: dashboard
     spec:
+      initContainers:
+        - name: init-pages
+          image: alpine/git
+          command: [ 'sh', '-c' ]
+          args:
+            - |
+              git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/pages &&
+              cp -r /tmp/pages/pages/* /home/dashboard/frontend/pages/
+          volumeMounts:
+            - name: pages
+              mountPath: /home/dashboard/frontend/pages
       containers:
         - name: dashboard
           image: {{ .Values.dashboard.image }}
