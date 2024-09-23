@@ -34,13 +34,6 @@ backendApi:
       mountPath: /backend-api/bots
     - name: docker-sock
       mountPath: /var/run/docker.sock
-  volumes:
-    - name: bots
-      hostPath:
-        path: ./bots
-    - name: docker-sock
-      hostPath:
-        path: /var/run/docker.sock
 
 emqx:
   image: emqx:5

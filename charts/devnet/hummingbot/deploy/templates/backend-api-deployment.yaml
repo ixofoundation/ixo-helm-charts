@@ -38,10 +38,7 @@ spec:
               {{- end }}
             {{- end }}
       volumes:
-        {{- range .Values.backendApi.volumes }}
-        - name: {{ .name }}
-          {{- if .hostPath }}
-          hostPath:
-            path: {{ .hostPath.path }}
-          {{- end }}
-        {{- end }}
+      - name: bots
+        emptyDir: {}
+      - name: docker-sock
+        emptyDir: {}
