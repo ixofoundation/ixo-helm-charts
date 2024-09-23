@@ -43,8 +43,7 @@ spec:
             failureThreshold: 5
       volumes:
         - name: emqx-data
-          persistentVolumeClaim:
-            claimName: emqx-data-pvc
+          emptyDir: {}
         - name: emqx-log
           emptyDir: {}
         - name: emqx-etc

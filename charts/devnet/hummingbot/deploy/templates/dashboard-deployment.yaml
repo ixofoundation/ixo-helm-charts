@@ -18,16 +18,20 @@ spec:
         component: dashboard
     spec:
       initContainers:
-        - name: init-pages
+        - name: initialize-dirs
           image: alpine/git
           command: [ 'sh', '-c' ]
           args:
             - |
               git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/pages &&
               cp -r /tmp/pages/pages/* /home/dashboard/frontend/pages/
+              curl -L -o /home/dashboard/credentials.yml https://raw.githubusercontent.com/hummingbot/deploy/main/credentials.yml
           volumeMounts:
             - name: pages
               mountPath: /home/dashboard/frontend/pages
+            - name: credentials
+              mountPath: /home/dashboard/credentials.yml
+              subPath: credentials.yml
       containers:
         - name: dashboard
           image: {{ .Values.dashboard.image }}
