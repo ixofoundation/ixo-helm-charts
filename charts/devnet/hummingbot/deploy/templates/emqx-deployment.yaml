@@ -22,7 +22,7 @@ spec:
           image: {{ .Values.emqx.image }}
           ports:
             {{- range .Values.emqx.ports }}
-            - containerPort: {{ . }}
+            - containerPort: {{ .containerPort }}
             {{- end }}
           env:
             {{- range $key, $value := .Values.emqx.env }}
