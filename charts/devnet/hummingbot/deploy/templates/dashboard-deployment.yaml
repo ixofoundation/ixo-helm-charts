@@ -23,7 +23,9 @@ spec:
           command: [ 'sh', '-c' ]
           args:
             - |
-              git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/pages &&
+              git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/pages
+              mkdir -p /home/dashboard/frontend/pages
+              mkdir -p /home/dashboard
               cp -r /tmp/pages/pages/* /home/dashboard/frontend/pages/
               cp /tmp/pages/credentials.yml /home/dashboard/credentials.yml
           volumeMounts:
