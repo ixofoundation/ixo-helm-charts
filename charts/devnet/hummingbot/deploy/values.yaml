@@ -74,8 +74,6 @@ emqx:
       mountPath: /opt/emqx/data
     - name: emqx-log
       mountPath: /opt/emqx/log
-    - name: emqx-etc
-      mountPath: /opt/emqx/etc
   volumes:
     - name: emqx-data
       persistentVolumeClaim:
