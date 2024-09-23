@@ -23,14 +23,18 @@ spec:
           command: [ 'sh', '-c' ]
           args:
             - |
-              git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/pages
-              mkdir -p /home/dashboard/frontend/pages
-              mkdir -p /home/dashboard
+              git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/pages &&
               cp -r /tmp/pages/pages/* /home/dashboard/frontend/pages/
+              mkdir -p /home/dashboard
               cp /tmp/pages/credentials.yml /home/dashboard/credentials.yml
           volumeMounts:
-            - name: dashboard
-              mountPath: /home/dashboard
+            - name: pages
+              mountPath: /home/dashboard/frontend/pages
+            {{- if .Values.dashboard.useCredentials }}
+            - name: credentials
+              mountPath: /home/dashboard/credentials.yml
+              subPath: credentials.yml
+            {{- end }}
       containers:
         - name: dashboard
           image: {{ .Values.dashboard.image }}
@@ -44,8 +48,17 @@ spec:
                 value: "{{ $value }}"
             {{- end }}
           volumeMounts:
-            - name: dashboard
-              mountPath: /home/dashboard
+            {{- if .Values.dashboard.useCredentials }}
+            - name: credentials
+              mountPath: /home/dashboard/credentials.yml
+              subPath: credentials.yml
+            {{- end }}
+            - name: pages
+              mountPath: /home/dashboard/frontend/pages
       volumes:
-        - name: dashboard
+        {{- if .Values.dashboard.useCredentials }}
+        - name: credentials
+          emptyDir: {}
+        {{- end }}
+        - name: pages
           emptyDir: {}
