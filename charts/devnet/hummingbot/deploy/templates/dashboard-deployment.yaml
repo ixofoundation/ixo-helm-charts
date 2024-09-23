@@ -25,7 +25,7 @@ spec:
             - |
               git clone --depth 1 --single-branch --branch main https://github.com/hummingbot/deploy.git /tmp/pages &&
               cp -r /tmp/pages/pages/* /home/dashboard/frontend/pages/
-              curl -L -o /home/dashboard/credentials.yml https://raw.githubusercontent.com/hummingbot/deploy/main/credentials.yml
+              cp /tmp/pages/credentials.yml /home/dashboard/credentials.yml
           volumeMounts:
             - name: pages
               mountPath: /home/dashboard/frontend/pages
