@@ -30,18 +30,19 @@ spec:
                 value: "{{ $value }}"
             {{- end }}
           volumeMounts:
-            {{- range .Values.dashboard.volumeMounts }}
-            - name: {{ .name }}
-              mountPath: {{ .mountPath }}
-              {{- if .subPath }}
-              subPath: {{ .subPath }}
-              {{- end }}
+            {{- if .Values.dashboard.useCredentials }}
+            - name: credentials
+              mountPath: /home/dashboard/credentials.yml
+              subPath: credentials.yml
             {{- end }}
+            - name: pages
+              mountPath: /home/dashboard/frontend/pages
       volumes:
-        {{- range .Values.dashboard.volumes }}
-        - name: {{ .name }}
-          {{- if .hostPath }}
+        {{- if .Values.dashboard.useCredentials }}
+        - name: credentials
           hostPath:
-            path: {{ .hostPath.path }}
-          {{- end }}
+            path: ./credentials.yml
         {{- end }}
+        - name: pages
+          hostPath:
+            path: ./pages

@@ -15,19 +15,7 @@ dashboard:
     BACKEND_API_PORT: "8000"
   ports:
     - containerPort: 8501
-  volumeMounts:
-    - name: credentials
-      mountPath: /home/dashboard/credentials.yml
-      subPath: credentials.yml
-    - name: pages
-      mountPath: /home/dashboard/frontend/pages
-  volumes:
-    - name: credentials
-      hostPath:
-        path: ./credentials.yml
-    - name: pages
-      hostPath:
-        path: ./pages
+  useCredentials: false
 
 backendApi:
   image: hummingbot/backend-api:latest
