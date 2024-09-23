@@ -40,9 +40,7 @@ spec:
       volumes:
         {{- if .Values.dashboard.useCredentials }}
         - name: credentials
-          hostPath:
-            path: ./credentials.yml
+          emptyDir: {}
         {{- end }}
         - name: pages
-          hostPath:
-            path: ./pages
+          emptyDir: {}
