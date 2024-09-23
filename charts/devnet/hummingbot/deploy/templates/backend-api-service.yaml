@@ -8,10 +8,12 @@ metadata:
 spec:
   type: {{ .Values.backendApi.service.type }}
   ports:
-    - port: {{ .Values.backendApi.service.port }}
-      targetPort: {{ .Values.backendApi.ports[0].containerPort }}
+    {{- range .Values.backendApi.ports }}
+    - port: {{ .containerPort }}
+      targetPort: {{ .containerPort }}
       protocol: TCP
       name: http
+    {{- end }}
   selector:
     app: {{ include "hummingbot-chart.name" . }}
     component: backend-api

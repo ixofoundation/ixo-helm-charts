@@ -21,11 +21,13 @@ spec:
         - name: dashboard
           image: {{ .Values.dashboard.image }}
           ports:
-            - containerPort: {{ .Values.dashboard.ports[0].containerPort }}
+            {{- range .Values.dashboard.ports }}
+            - containerPort: {{ .containerPort }}
+            {{- end }}
           env:
             {{- range $key, $value := .Values.dashboard.env }}
               - name: {{ $key }}
-              value: "{{ $value }}"
+                value: "{{ $value }}"
             {{- end }}
           volumeMounts:
             {{- range .Values.dashboard.volumeMounts }}

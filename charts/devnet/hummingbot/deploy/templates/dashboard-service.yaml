@@ -8,10 +8,12 @@ metadata:
 spec:
   type: {{ .Values.dashboard.service.type }}
   ports:
-    - port: {{ .Values.dashboard.service.port }}
-      targetPort: {{ .Values.dashboard.ports[0].containerPort }}
+    {{- range .Values.dashboard.ports }}
+    - port: {{ .containerPort }}
+      targetPort: {{ .containerPort }}
       protocol: TCP
       name: http
+    {{- end }}
   selector:
     app: {{ include "hummingbot-chart.name" . }}
     component: dashboard

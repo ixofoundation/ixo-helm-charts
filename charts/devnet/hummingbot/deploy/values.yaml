@@ -1,3 +1,8 @@
+global:
+  nameOverride: ""  # Override the chart name
+  labels: {}        # Global labels for all resources
+  annotations: {}   # Global annotations for all resources
+
 dashboard:
   image: hummingbot/dashboard:latest
   replicaCount: 1
