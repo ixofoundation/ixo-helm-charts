@@ -1,0 +1,108 @@
+dashboard:
+  image: hummingbot/dashboard:latest
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 8501
+  env:
+    AUTH_SYSTEM_ENABLED: "False"
+    BACKEND_API_HOST: "backend-api"
+    BACKEND_API_PORT: "8000"
+  ports:
+    - containerPort: 8501
+  volumeMounts:
+    - name: credentials
+      mountPath: /home/dashboard/credentials.yml
+      subPath: credentials.yml
+    - name: pages
+      mountPath: /home/dashboard/frontend/pages
+  volumes:
+    - name: credentials
+      hostPath:
+        path: ./credentials.yml
+    - name: pages
+      hostPath:
+        path: ./pages
+
+backendApi:
+  image: hummingbot/backend-api:latest
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    BROKER_HOST: "emqx"
+    BROKER_PORT: "1883"
+  envFile: .env
+  ports:
+    - containerPort: 8000
+  volumeMounts:
+    - name: bots
+      mountPath: /backend-api/bots
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
+  volumes:
+    - name: bots
+      hostPath:
+        path: ./bots
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+
+emqx:
+  image: emqx:5
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    ports:
+      - name: mqtt-tcp
+        port: 1883
+      - name: mqtt-ssl
+        port: 8883
+      - name: mqtt-ws
+        port: 8083
+      - name: mqtt-ws-ssl
+        port: 8084
+      - name: http-management
+        port: 8081
+      - name: http-dashboard
+        port: 18083
+      - name: web-stomp
+        port: 61613
+  env:
+    EMQX_NAME: "emqx"
+    EMQX_HOST: "node1.emqx.local"
+    EMQX_CLUSTER__DISCOVERY_STRATEGY: "static"
+    EMQX_CLUSTER__STATIC__SEEDS: "[emqx@node1.emqx.local]"
+    EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard"
+  ports:
+    - containerPort: 1883
+    - containerPort: 8883
+    - containerPort: 8083
+    - containerPort: 8084
+    - containerPort: 8081
+    - containerPort: 18083
+    - containerPort: 61613
+  volumeMounts:
+    - name: emqx-data
+      mountPath: /opt/emqx/data
+    - name: emqx-log
+      mountPath: /opt/emqx/log
+    - name: emqx-etc
+      mountPath: /opt/emqx/etc
+  volumes:
+    - name: emqx-data
+      persistentVolumeClaim:
+        claimName: emqx-data-pvc
+    - name: emqx-log
+      persistentVolumeClaim:
+        claimName: emqx-log-pvc
+    - name: emqx-etc
+      persistentVolumeClaim:
+        claimName: emqx-etc-pvc
+  healthcheck:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 25
+    failureThreshold: 5

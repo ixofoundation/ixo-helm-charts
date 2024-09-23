@@ -1,0 +1,15 @@
+{{- if .Values.emqx.volumes }}
+{{- range .Values.emqx.volumes }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .persistentVolumeClaim.claimName }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 40Gi
+{{- end }}
+{{- end }}

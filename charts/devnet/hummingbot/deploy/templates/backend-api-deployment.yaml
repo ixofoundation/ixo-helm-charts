@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hummingbot-chart.fullname" . }}-backend-api
+  labels:
+    app: {{ include "hummingbot-chart.name" . }}
+    component: backend-api
+spec:
+  replicas: {{ .Values.backendApi.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "hummingbot-chart.name" . }}
+      component: backend-api
+  template:
+    metadata:
+      labels:
+        app: {{ include "hummingbot-chart.name" . }}
+        component: backend-api
+    spec:
+      containers:
+        - name: backend-api
+          image: {{ .Values.backendApi.image }}
+          ports:
+            - containerPort: {{ .Values.backendApi.ports[0].containerPort }}
+          env:
+            {{- range $key, $value := .Values.backendApi.env }}
+              - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
+          volumeMounts:
+            {{- range .Values.backendApi.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              {{- if .subPath }}
+              subPath: {{ .subPath }}
+              {{- end }}
+            {{- end }}
+      volumes:
+        {{- range .Values.backendApi.volumes }}
+        - name: {{ .name }}
+          {{- if .hostPath }}
+          hostPath:
+            path: {{ .hostPath.path }}
+          {{- end }}
+        {{- end }}

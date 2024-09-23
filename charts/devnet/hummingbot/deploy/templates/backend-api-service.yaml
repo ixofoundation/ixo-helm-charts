@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hummingbot-chart.fullname" . }}-backend-api
+  labels:
+    app: {{ include "hummingbot-chart.name" . }}
+    component: backend-api
+spec:
+  type: {{ .Values.backendApi.service.type }}
+  ports:
+    - port: {{ .Values.backendApi.service.port }}
+      targetPort: {{ .Values.backendApi.ports[0].containerPort }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "hummingbot-chart.name" . }}
+    component: backend-api

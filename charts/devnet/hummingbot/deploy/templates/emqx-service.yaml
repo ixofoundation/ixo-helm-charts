@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hummingbot-chart.fullname" . }}-emqx
+  labels:
+    app: {{ include "hummingbot-chart.name" . }}
+    component: emqx
+spec:
+  type: {{ .Values.emqx.service.type }}
+  ports:
+    {{- range .Values.emqx.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .port }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    app: {{ include "hummingbot-chart.name" . }}
+    component: emqx

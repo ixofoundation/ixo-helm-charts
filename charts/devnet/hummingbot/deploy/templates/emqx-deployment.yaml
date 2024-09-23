@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hummingbot-chart.fullname" . }}-emqx
+  labels:
+    app: {{ include "hummingbot-chart.name" . }}
+    component: emqx
+spec:
+  replicas: {{ .Values.emqx.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "hummingbot-chart.name" . }}
+      component: emqx
+  template:
+    metadata:
+      labels:
+        app: {{ include "hummingbot-chart.name" . }}
+        component: emqx
+    spec:
+      containers:
+        - name: emqx
+          image: {{ .Values.emqx.image }}
+          ports:
+            {{- range .Values.emqx.ports }}
+            - containerPort: {{ . }}
+            {{- end }}
+          env:
+            {{- range $key, $value := .Values.emqx.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
+          volumeMounts:
+            {{- range .Values.emqx.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+            {{- end }}
+          readinessProbe:
+            exec:
+              command: [ "/opt/emqx/bin/emqx_ctl", "status" ]
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 25
+            failureThreshold: 5
+      volumes:
+        {{- range .Values.emqx.volumes }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .persistentVolumeClaim.claimName }}
+        {{- end }}
