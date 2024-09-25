@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-whizz
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.1
-appVersion: v0.0.1
+version: 0.0.2
+appVersion: v0.0.2
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update
+      description: Update ixofoundation/ixo-whizz app version from v0.0.1 to v0.0.2
