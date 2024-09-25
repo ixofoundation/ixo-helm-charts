@@ -16,6 +16,12 @@ dashboard:
   ports:
     - containerPort: 8501
   useCredentials: false
+  resources:
+    requests:
+      cpu: "40m"
+      memory: "200Mi"
+    limits:
+      memory: "300Mi"
 
 backendApi:
   image: hummingbot/backend-api:latest
@@ -34,6 +40,12 @@ backendApi:
       mountPath: /backend-api/bots
     - name: docker-sock
       mountPath: /var/run/docker.sock
+  resources:
+    requests:
+      cpu: "40m"
+      memory: "200Mi"
+    limits:
+      memory: "300Mi"
 
 emqx:
   image: emqx:5
@@ -61,6 +73,12 @@ emqx:
     EMQX_CLUSTER__DISCOVERY_STRATEGY: "static"
     EMQX_CLUSTER__STATIC__SEEDS: "[emqx@node1.emqx.local]"
     EMQX_LOADED_PLUGINS: "emqx_recon,emqx_retainer,emqx_management,emqx_dashboard"
+  resources:
+    requests:
+      cpu: "40m"
+      memory: "200Mi"
+    limits:
+      memory: "300Mi"
   ports:
     - containerPort: 1883
     - containerPort: 8883

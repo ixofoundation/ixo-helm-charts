@@ -48,6 +48,8 @@ spec:
               subPath: {{ .subPath }}
               {{- end }}
             {{- end }}
+          resources:
+            {{- toYaml .Values.backendApi.resources | nindent 12 }}
       volumes:
       - name: bots
         emptyDir: {}

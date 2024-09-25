@@ -41,6 +41,8 @@ spec:
             periodSeconds: 5
             timeoutSeconds: 25
             failureThreshold: 5
+          resources:
+            {{- toYaml .Values.emqx.resources | nindent 12 }}
       volumes:
         - name: emqx-data
           emptyDir: {}

@@ -55,6 +55,8 @@ spec:
             {{- end }}
             - name: pages
               mountPath: /home/dashboard/frontend/pages
+          resources:
+            {{- toYaml .Values.dashboard.resources | nindent 12 }}
       volumes:
         {{- if .Values.dashboard.useCredentials }}
         - name: credentials
