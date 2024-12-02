@@ -1,0 +1,28 @@
+image:
+  repository: informalsystems/hermes
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+config:
+  chains:
+    - id: "chainA"
+      rpc_addr: "http://chainA-node:26657"
+      grpc_addr: "http://chainA-node:9090"
+    - id: "chainB"
+      rpc_addr: "http://chainB-node:26657"
+      grpc_addr: "http://chainB-node:9090"
+
+keys:
+  chainA:
+    name: "testkey-chainA"
+    secretKey: "hermes-chainA-key"
+  chainB:
+    name: "testkey-chainB"
+    secretKey: "hermes-chainB-key"
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

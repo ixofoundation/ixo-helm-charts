@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  labels:
+      {{- include "hermes.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: hermes
+  template:
+    metadata:
+      labels:
+        app: hermes
+    spec:
+      containers:
+        - name: hermes
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/hermes/config.toml
+              subPath: config.toml
+            - name: wallet-keys
+              mountPath: /etc/hermes/keys
+          command:
+            - hermes
+            - start
+          env:
+            - name: HERMES_CONFIG
+              value: "/etc/hermes/config.toml"
+      volumes:
+        - name: config
+          configMap:
+            name: hermes-config
+        - name: wallet-keys
+          secret:
+            secretName: hermes-wallet-keys
