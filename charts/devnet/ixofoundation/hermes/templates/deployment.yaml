@@ -31,7 +31,7 @@ spec:
               #!/bin/bash
               set -e
               # Iterate over the keys in values.yaml
-              for chain in {{ .Values.keys }}; do
+              for chain in {{ .Values.keys | toJson }}; do
                 keyName=$(jq -r ".$chain.name" <<< '{{ .Values.keys | toJson }}')
                 secretKey=$(jq -r ".$chain.secretKey" <<< '{{ .Values.keys | toJson }}')
                 mnemonicFile="/root/.hermes/keys/${secretKey}"
