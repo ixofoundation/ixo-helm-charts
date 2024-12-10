@@ -24,6 +24,7 @@ spec:
               subPath: config.toml
             - name: wallet-keys
               mountPath: /root/.hermes/keys
+              readOnly: false
           command:
             - /bin/bash
             - -c
