@@ -5,22 +5,13 @@ image:
 
 replicaCount: 1
 
-config:
-  chains:
-    - id: "chainA"
-      rpc_addr: "http://chainA-node:26657"
-      grpc_addr: "http://chainA-node:9090"
-    - id: "chainB"
-      rpc_addr: "http://chainB-node:26657"
-      grpc_addr: "http://chainB-node:9090"
-
 keys:
   chainA:
-    name: "testkey-chainA"
-    secretKey: "hermes-chainA-key"
+    name: "pandora-8"
+    secretKey: "hermes-pandora-8-key"
   chainB:
-    name: "testkey-chainB"
-    secretKey: "hermes-chainB-key"
+    name: "axelar-testnet-lisbon-3"
+    secretKey: "hermes-axelar-testnet-lisbon-3-key"
 
 resources: {}
 nodeSelector: {}

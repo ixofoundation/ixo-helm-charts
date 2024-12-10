@@ -3,14 +3,4 @@ kind: ConfigMap
 metadata:
   name: hermes-config
 data:
-  config.toml: |
-    [global]
-    log_level = "info"
-    mode = "full"
-
-    {{- range .Values.config.chains }}
-    [[chains]]
-    id = "{{ .id }}"
-    rpc_addr = "{{ .rpc_addr }}"
-    grpc_addr = "{{ .grpc_addr }}"
-    {{- end }}
+{{ (.Files.Glob "files/config.toml").AsConfig | indent 4 }}
