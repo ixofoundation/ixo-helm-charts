@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: hermes
+        {{- include "hermes.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: hermes
