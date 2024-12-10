@@ -4,7 +4,8 @@ FROM rust:latest
 RUN apt-get update && apt-get install -y \
     pkg-config \
     libssl-dev \
-    protobuf-compiler
+    protobuf-compiler \
+    jq
 
 # Clone and build Hermes
 RUN git clone https://github.com/informalsystems/ibc-rs.git /hermes
