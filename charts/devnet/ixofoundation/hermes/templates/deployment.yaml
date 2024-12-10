@@ -8,7 +8,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: hermes
+      {{- include "hermes.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
