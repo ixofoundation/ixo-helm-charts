@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-guru
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.16
-appVersion: 6.10.0
+version: 0.0.17
+appVersion: 6.12.0
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/ixo-ai-oracles-guru app version from 6.9.0 to 6.10.0
+      description: Update ixoworld/ixo-ai-oracles-guru app version from 6.10.0 to 6.12.0
