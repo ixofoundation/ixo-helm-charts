@@ -27,6 +27,10 @@ spec:
             - name: wallet-keys-hermes
               mountPath: /root/.hermes/keys
               readOnly: false
+          ports:
+            - name: telemetry
+              containerPort: 3001
+              protocol: TCP
           command:
             - /bin/bash
             - -c
