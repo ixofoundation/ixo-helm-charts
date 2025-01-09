@@ -2,9 +2,10 @@ apiVersion: v2
 name: ixo-message-relayer
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.1
-appVersion: v1.2.0-develop.1
+version: 0.0.2
+appVersion: v1.2.0-develop.2
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update
+      description: Update ixofoundation/ixo-message-relayer app version from v1.2.0-develop.1 to v1.2.0-develop.2
+
