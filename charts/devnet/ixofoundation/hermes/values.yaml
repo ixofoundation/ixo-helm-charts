@@ -8,10 +8,10 @@ replicaCount: 1
 keys:
   pandora_8:
     name: "pandora-8"
-    secretKey: "hermes-pandora-8-key"
+    secretKeyValue: "<path:${vault_mount}/data/hermes#pandora-8>"
   axelar_testnet_lisbon_3:
     name: "axelar-testnet-lisbon-3"
-    secretKey: "hermes-axelar-testnet-lisbon-3-key"
+    secretKeyValue: "<path:${vault_mount}/data/hermes#axelar-testnet-lisbon-3>"
 
 resources: {}
 nodeSelector: {}
