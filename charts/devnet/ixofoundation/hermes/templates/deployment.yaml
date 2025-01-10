@@ -45,7 +45,7 @@ spec:
                 mnemonicFile="/root/.hermes/keys/${chain}"
 
                 echo "Adding key for chain: $chain"
-                hermes keys add --key-name "$keyName" --chain "$chain" --mnemonic-file "$mnemonicFile"
+                hermes keys add --key-name "$keyName" --chain "$keyName" --mnemonic-file "$mnemonicFile"
               done
 
               # Start Hermes
