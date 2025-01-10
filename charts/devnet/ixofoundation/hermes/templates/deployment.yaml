@@ -42,8 +42,7 @@ spec:
               # Iterate over the keys in values.yaml
               for chain in $(echo "$keys_json" | jq -r 'keys[]'); do
                 keyName=$(echo "$keys_json" | jq -r ".\"$chain\".name")
-                secretKey=$(echo "$keys_json" | jq -r ".\"$chain\".secretKeyValue")
-                mnemonicFile="/root/.hermes/keys/${secretKey}"
+                mnemonicFile="/root/.hermes/keys/${chain}"
 
                 echo "Adding key for chain: $chain"
                 hermes keys add --key-name "$keyName" --chain "$chain" --mnemonic-file "$mnemonicFile"
