@@ -38,7 +38,7 @@ spec:
               #!/bin/bash
               set -e
               cp /root/.hermes/keys-kubernetes/* /root/.hermes/keys/
-              keys_json="{{ .Values.keys | toJson }}"
+              keys_json="{{ .Values.keys | toJson | quote }}"
               # Iterate over the keys in values.yaml
               for chain in $(echo "$keys_json" | jq -r 'keys[]'); do
                 keyName=$(echo "$keys_json" | jq -r ".\"$chain\".name")
