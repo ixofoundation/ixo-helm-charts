@@ -1,0 +1,114 @@
+[global]
+log_level = "info"
+
+[mode]
+[mode.clients]
+enabled = true
+refresh = true
+misbehaviour = true
+
+[mode.connections]
+enabled = true
+
+[mode.channels]
+enabled = true
+
+[mode.packets]
+enabled = true
+clear_interval = 100
+clear_on_start = true
+tx_confirmation = false
+auto_register_counterparty_payee = false
+
+[rest]
+enabled = true
+host = "0.0.0.0"
+port = 3010
+
+[telemetry]
+enabled = true
+host = "0.0.0.0"
+port = 3001
+
+[telemetry.buckets]
+latency_submitted = { start = 500, end = 10000, buckets = 10 }
+latency_confirmed = { start = 1000, end = 10000, buckets = 10 }
+
+# ------------------------------------------------------
+# pandora-8
+# ------------------------------------------------------
+[[chains]]
+id = "pandora-8"
+type = "CosmosSdk"
+rpc_addr = "https://rpc.testnet.ixo.earth/"
+grpc_addr = "https://testnet-grpc.ixo.earth/"
+rpc_timeout = "10s"
+trusted_node = false
+account_prefix = "ixo"
+key_name = "relayer"
+key_store_type = "Test"
+store_prefix = "ibc"
+default_gas = 100000
+max_gas = 400000
+gas_multiplier = 1.1
+gas_price = { price = 0.025, denom = 'uixo' }
+max_msg_num = 30
+max_tx_size = 2097152
+max_grpc_decoding_size = 33554432
+clock_drift = "5s"
+max_block_time = "30s"
+trust_threshold = { numerator = '1', denominator = '3' }
+ccv_consumer_chain = false
+memo_prefix = ""
+sequential_batch_tx = false
+event_source = { mode = 'pull', interval = '1s' }
+# event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+address_type = { derivation = 'cosmos' }
+
+[chains.packet_filter]
+policy = "allow"
+list = [
+  ['ica*', '*'],
+  ['transfer', 'channel-10'],
+  ['transfer', 'channel-9'],
+]
+# [chains.packet_filter.min_fees]
+
+# ------------------------------------------------------
+# axelar-testnet-lisbon-3
+# ------------------------------------------------------
+[[chains]]
+id = "axelar-testnet-lisbon-3"
+type = "CosmosSdk"
+rpc_addr = "https://axelar-testnet-rpc.polkachu.com/"
+grpc_addr = "http://axelar-testnet-grpc.polkachu.com:15190/"
+rpc_timeout = "10s"
+trusted_node = false
+account_prefix = "axelar"
+key_name = "relayer"
+key_store_type = "Test"
+store_prefix = "ibc"
+default_gas = 100000
+max_gas = 400000
+gas_multiplier = 1.1
+gas_price = { price = 0.025, denom = 'uaxl' }
+max_msg_num = 30
+max_tx_size = 2097152
+max_grpc_decoding_size = 33554432
+clock_drift = "5s"
+max_block_time = "30s"
+trust_threshold = { numerator = '1', denominator = '3' }
+ccv_consumer_chain = false
+memo_prefix = ""
+sequential_batch_tx = false
+event_source = { mode = 'pull', interval = '2s' }
+# event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+address_type = { derivation = 'cosmos' }
+
+[chains.packet_filter]
+policy = "allow"
+list = [
+  ['ica*', '*'],
+  ['transfer', 'channel-271'],
+]
+# [chains.packet_filter.min_fees]

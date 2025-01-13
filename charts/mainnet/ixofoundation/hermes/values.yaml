@@ -1,0 +1,19 @@
+image:
+  repository: informalsystems/hermes
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 1
+
+keys:
+  pandora_8:
+    name: "pandora-8"
+    secretKeyValue: "<path:ixo_core/data/hermes#pandora-8>"
+  axelar_testnet_lisbon_3:
+    name: "axelar-testnet-lisbon-3"
+    secretKeyValue: "<path:ixo_core/data/hermes#axelar-testnet-lisbon-3>"
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

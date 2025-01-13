@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  labels:
+      {{- include "hermes.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hermes.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "hermes.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: hermes
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          volumeMounts:
+            - name: config
+              mountPath: /root/.hermes/config.toml
+              subPath: config.toml
+            - name: wallet-keys-kubernetes
+              mountPath: /root/.hermes/keys-kubernetes
+            - name: wallet-keys-hermes
+              mountPath: /root/.hermes/keys
+              readOnly: false
+          ports:
+            - name: telemetry
+              containerPort: 3001
+              protocol: TCP
+          command:
+            - /bin/bash
+            - -c
+            - |
+              #!/bin/bash
+              set -e
+              cp /root/.hermes/keys-kubernetes/* /root/.hermes/keys/
+              keys_json="{{ .Values.keys | toJson | quote }}"
+              # Iterate over the keys in values.yaml
+              for chain in $(echo "$keys_json" | jq -r 'keys[]'); do
+                keyName=$(echo "$keys_json" | jq -r ".\"$chain\".name")
+                mnemonicFile="/root/.hermes/keys/${chain}"
+
+                echo "Adding key for chain: $chain"
+                hermes keys add --key-name "relayer" --chain "$keyName" --mnemonic-file "$mnemonicFile"
+              done
+
+              # Start Hermes
+              hermes start
+      volumes:
+        - name: config
+          configMap:
+            name: hermes-config
+        - name: wallet-keys-kubernetes
+          secret:
+            secretName: hermes-wallet-keys
+        - name: wallet-keys-hermes
+          emptyDir: {}
