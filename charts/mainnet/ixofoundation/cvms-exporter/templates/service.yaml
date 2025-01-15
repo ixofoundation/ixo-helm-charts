@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-exporter
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+    - port: {{ .Values.exporter.port }}
+      targetPort: {{ .Values.exporter.port }}
+  selector:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+  type: ClusterIP

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-exporter
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: exporter
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.exporter.port }}
+          command:
+            - /bin/cvms
+          args:
+            - start
+            - exporter
+            - --config=/var/lib/cvms/config.yaml
+            - --log-color-disable
+            - "{{ .Values.exporter.logColorDisable }}"
+            - --log-level
+            - "{{ .Values.exporter.logLevel }}"
+            - --port={{ .Values.exporter.port }}
+          volumeMounts:
+          {{- range .Values.volumeMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              subPath: {{ .subPath }}
+              readOnly: {{ .readOnly }}
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-config
+        - name: support-chains
+          configMap:
+            name: {{ .Release.Name }}-support-chains
+        - name: custom-chains
+          configMap:
+            name: {{ .Release.Name }}-custom-chains
+      restartPolicy: Always

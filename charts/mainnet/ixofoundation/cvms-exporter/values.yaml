@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/ixofoundation/ixo-cvms-exporter
+  tag: latest
+  pullPolicy: IfNotPresent
+
+exporter:
+  port: 9200
+  logLevel: 4
+  logColorDisable: false
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+volumeMounts:
+  - name: config
+    mountPath: /var/lib/cvms/config.yaml
+    subPath: config.yaml
+    readOnly: true
+  - name: support-chains
+    mountPath: /var/lib/cvms/docker/cvms/support_chains.yaml
+    subPath: support_chains.yaml
+    readOnly: true
+  - name: custom-chains
+    mountPath: /var/lib/cvms/docker/cvms/custom_chains.yaml
+    subPath: custom_chains.yaml
+    readOnly: true
