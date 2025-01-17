@@ -1,15 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-exporter
+  name: {{ .Release.Name }}
   labels:
     app: {{ .Chart.Name }}
     release: {{ .Release.Name }}
+    app.kubernetes.io/part-of: ixo
 spec:
   ports:
-    - port: {{ .Values.exporter.port }}
+    - protocol: TCP
+      port: {{ .Values.exporter.port }}
       targetPort: {{ .Values.exporter.port }}
   selector:
     app: {{ .Chart.Name }}
     release: {{ .Release.Name }}
+    app.kubernetes.io/part-of: ixo
   type: ClusterIP
