@@ -7,7 +7,6 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      name: 'metrics'
       port: 26657
       targetPort: 26657
   selector:

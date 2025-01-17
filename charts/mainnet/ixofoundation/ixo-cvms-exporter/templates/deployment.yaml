@@ -26,6 +26,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.exporter.port }}
+              name: 'metrics'
+              protocol: TCP
           command:
             - /bin/cvms
           args:
