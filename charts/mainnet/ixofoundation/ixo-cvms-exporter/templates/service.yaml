@@ -9,6 +9,7 @@ metadata:
 spec:
   ports:
     - protocol: TCP
+      name: 'metrics'
       port: {{ .Values.exporter.port }}
       targetPort: {{ .Values.exporter.port }}
   selector:
