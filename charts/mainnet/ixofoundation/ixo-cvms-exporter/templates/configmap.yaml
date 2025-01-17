@@ -18,7 +18,6 @@ metadata:
     app: {{ .Chart.Name }}
     release: {{ .Release.Name }}
 data:
-  support_chains.yaml: |-
 {{ (.Files.Glob "files/support_chains.yaml").AsConfig | default "" | indent 4 }}
 
 ---
