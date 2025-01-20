@@ -1,6 +1,6 @@
 # ixo-matrix-appservice-rooms
 
-![Version: 0.0.10](https://img.shields.io/badge/Version-0.0.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.0.3-develop.8](https://img.shields.io/badge/AppVersion-v0.0.3--develop.8-informational?style=flat-square)
+![Version: 0.0.11](https://img.shields.io/badge/Version-0.0.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.0-develop.1](https://img.shields.io/badge/AppVersion-v0.1.0--develop.1-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
