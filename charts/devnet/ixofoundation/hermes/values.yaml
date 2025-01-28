@@ -12,6 +12,12 @@ keys:
   axelar_testnet_lisbon_3:
     name: "axelar-testnet-lisbon-3"
     secretKeyValue: "<path:ixo_core/data/hermes#axelar-testnet-lisbon-3>"
+  ixo_5:
+    name: "ixo-5"
+    secretKeyValue: "<path:ixo_core/data/hermes#ixo-5>"
+  noble_1:
+    name: "noble-1"
+    secretKeyValue: "<path:ixo_core/data/hermes#noble-1>"
 
 resources: {}
 nodeSelector: {}

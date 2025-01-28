@@ -37,11 +37,88 @@ latency_confirmed = { start = 1000, end = 10000, buckets = 10 }
 # ------------------------------------------------------
 # pandora-8
 # ------------------------------------------------------
+# [[chains]]
+# id = "pandora-8"
+# type = "CosmosSdk"
+# rpc_addr = "https://rpc.testnet.ixo.earth/"
+# grpc_addr = "https://testnet-grpc.ixo.earth/"
+# rpc_timeout = "10s"
+# trusted_node = false
+# account_prefix = "ixo"
+# key_name = "relayer"
+# key_store_type = "Test"
+# store_prefix = "ibc"
+# default_gas = 100000
+# max_gas = 400000
+# gas_multiplier = 1.2
+# gas_price = { price = 0.025, denom = 'uixo' }
+# max_msg_num = 30
+# max_tx_size = 2097152
+# max_grpc_decoding_size = 33554432
+# clock_drift = "5s"
+# max_block_time = "30s"
+# trust_threshold = { numerator = '1', denominator = '3' }
+# ccv_consumer_chain = false
+# memo_prefix = ""
+# sequential_batch_tx = false
+# event_source = { mode = 'pull', interval = '1s' }
+# # event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+# address_type = { derivation = 'cosmos' }
+
+# [chains.packet_filter]
+# policy = "allow"
+# list = [
+#   ['ica*', '*'],
+#   ['transfer', 'channel-10'],
+#   ['transfer', 'channel-9'],
+# ]
+
+# ------------------------------------------------------
+# axelar-testnet-lisbon-3
+# ------------------------------------------------------
+# [[chains]]
+# id = "axelar-testnet-lisbon-3"
+# type = "CosmosSdk"
+# rpc_addr = "https://axelar-testnet-rpc.polkachu.com/"
+# grpc_addr = "http://axelar-testnet-grpc.polkachu.com:15190/"
+# rpc_timeout = "10s"
+# trusted_node = false
+# account_prefix = "axelar"
+# key_name = "relayer"
+# key_store_type = "Test"
+# store_prefix = "ibc"
+# default_gas = 100000
+# max_gas = 400000
+# gas_multiplier = 1.2
+# gas_price = { price = 0.025, denom = 'uaxl' }
+# max_msg_num = 30
+# max_tx_size = 2097152
+# max_grpc_decoding_size = 33554432
+# clock_drift = "5s"
+# max_block_time = "30s"
+# trust_threshold = { numerator = '1', denominator = '3' }
+# ccv_consumer_chain = false
+# memo_prefix = ""
+# sequential_batch_tx = false
+# event_source = { mode = 'pull', interval = '2s' }
+# # event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+# address_type = { derivation = 'cosmos' }
+
+# [chains.packet_filter]
+# policy = "allow"
+# list = [
+#   ['ica*', '*'],
+#   ['transfer', 'channel-271'],
+# ]
+
+# ------------------------------------------------------
+# ixo-5
+# ------------------------------------------------------
 [[chains]]
-id = "pandora-8"
+id = "ixo-5"
 type = "CosmosSdk"
-rpc_addr = "https://rpc.testnet.ixo.earth/"
-grpc_addr = "https://testnet-grpc.ixo.earth/"
+rpc_addr = "https://impacthub.ixo.world/rpc/"
+grpc_addr = "https://impacthub-grpc.ixo.world/"
 rpc_timeout = "10s"
 trusted_node = false
 account_prefix = "ixo"
@@ -50,48 +127,8 @@ key_store_type = "Test"
 store_prefix = "ibc"
 default_gas = 100000
 max_gas = 400000
-gas_multiplier = 1.1
+gas_multiplier = 1.2
 gas_price = { price = 0.025, denom = 'uixo' }
-max_msg_num = 30
-max_tx_size = 2097152
-max_grpc_decoding_size = 33554432
-clock_drift = "5s"
-max_block_time = "30s"
-trust_threshold = { numerator = '1', denominator = '3' }
-ccv_consumer_chain = false
-memo_prefix = ""
-sequential_batch_tx = false
-event_source = { mode = 'pull', interval = '1s' }
-# event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
-address_type = { derivation = 'cosmos' }
-
-[chains.packet_filter]
-policy = "allow"
-list = [
-  ['ica*', '*'],
-  ['transfer', 'channel-10'],
-  ['transfer', 'channel-9'],
-]
-# [chains.packet_filter.min_fees]
-
-# ------------------------------------------------------
-# axelar-testnet-lisbon-3
-# ------------------------------------------------------
-[[chains]]
-id = "axelar-testnet-lisbon-3"
-type = "CosmosSdk"
-rpc_addr = "https://axelar-testnet-rpc.polkachu.com/"
-grpc_addr = "http://axelar-testnet-grpc.polkachu.com:15190/"
-rpc_timeout = "10s"
-trusted_node = false
-account_prefix = "axelar"
-key_name = "relayer"
-key_store_type = "Test"
-store_prefix = "ibc"
-default_gas = 100000
-max_gas = 400000
-gas_multiplier = 1.1
-gas_price = { price = 0.025, denom = 'uaxl' }
 max_msg_num = 30
 max_tx_size = 2097152
 max_grpc_decoding_size = 33554432
@@ -109,6 +146,42 @@ address_type = { derivation = 'cosmos' }
 policy = "allow"
 list = [
   ['ica*', '*'],
-  ['transfer', 'channel-271'],
+  ['transfer', 'channel-26'],
 ]
-# [chains.packet_filter.min_fees]
+
+# ------------------------------------------------------
+# noble-1
+# ------------------------------------------------------
+[[chains]]
+id = "noble-1"
+type = "CosmosSdk"
+rpc_addr = "https://noble-rpc.polkachu.com/"
+grpc_addr = "http://noble-grpc.polkachu.com:21590/"
+rpc_timeout = "10s"
+trusted_node = false
+account_prefix = "noble"
+key_name = "relayer"
+key_store_type = "Test"
+store_prefix = "ibc"
+default_gas = 100000
+max_gas = 400000
+gas_multiplier = 1.2
+gas_price = { price = 0.025, denom = 'uusdc' }
+max_msg_num = 30
+max_tx_size = 2097152
+max_grpc_decoding_size = 33554432
+clock_drift = "5s"
+max_block_time = "30s"
+trust_threshold = { numerator = '1', denominator = '3' }
+ccv_consumer_chain = false
+memo_prefix = ""
+sequential_batch_tx = false
+event_source = { mode = 'pull', interval = '2s' }
+# event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+address_type = { derivation = 'cosmos' }
+
+[chains.packet_filter]
+policy = "allow"
+list = [
+  ['transfer', 'channel-15'],
+]
