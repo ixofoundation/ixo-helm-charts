@@ -29,9 +29,9 @@ spec:
           - path: {{ .path }}
             backend:
               service:
-                name: {{ $fullName }}
+                name: hermes
                 port:
-                  number: {{ $svcPort }}
+                  number: 3010
           {{- end }}
     {{- end }}
 {{- end }}
