@@ -7,7 +7,7 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: 26657
-      targetPort: 26657
+      port: 3010
+      targetPort: 3010
   selector:
     {{- include "hermes.selectorLabels" . | nindent 4 }}

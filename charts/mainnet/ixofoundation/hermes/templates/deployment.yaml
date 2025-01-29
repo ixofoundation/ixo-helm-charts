@@ -28,6 +28,9 @@ spec:
               mountPath: /root/.hermes/keys
               readOnly: false
           ports:
+            - name: hermes
+              containerPort: 3010
+              protocol: TCP
             - name: telemetry
               containerPort: 3001
               protocol: TCP
