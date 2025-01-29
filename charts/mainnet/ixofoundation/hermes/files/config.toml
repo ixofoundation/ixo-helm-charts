@@ -15,7 +15,7 @@ enabled = true
 
 [mode.packets]
 enabled = true
-clear_interval = 100
+clear_interval = 80
 clear_on_start = true
 tx_confirmation = false
 auto_register_counterparty_payee = false
@@ -48,7 +48,9 @@ latency_confirmed = { start = 1000, end = 10000, buckets = 10 }
 # key_name = "relayer"
 # key_store_type = "Test"
 # store_prefix = "ibc"
-# default_gas = 100000
+# query_packets_chunk_size = 50
+# client_refresh_rate = '1/3'
+# default_gas = 300000
 # max_gas = 400000
 # gas_multiplier = 1.2
 # gas_price = { price = 0.025, denom = 'uixo' }
@@ -64,6 +66,7 @@ latency_confirmed = { start = 1000, end = 10000, buckets = 10 }
 # event_source = { mode = 'pull', interval = '1s' }
 # # event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
 # address_type = { derivation = 'cosmos' }
+# allow_ccq = true
 
 # [chains.packet_filter]
 # policy = "allow"
@@ -87,7 +90,9 @@ latency_confirmed = { start = 1000, end = 10000, buckets = 10 }
 # key_name = "relayer"
 # key_store_type = "Test"
 # store_prefix = "ibc"
-# default_gas = 100000
+# query_packets_chunk_size = 50
+# client_refresh_rate = '1/3'
+# default_gas = 300000
 # max_gas = 400000
 # gas_multiplier = 1.2
 # gas_price = { price = 0.025, denom = 'uaxl' }
@@ -103,6 +108,7 @@ latency_confirmed = { start = 1000, end = 10000, buckets = 10 }
 # event_source = { mode = 'pull', interval = '2s' }
 # # event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
 # address_type = { derivation = 'cosmos' }
+# allow_ccq = true
 
 # [chains.packet_filter]
 # policy = "allow"
@@ -125,7 +131,9 @@ account_prefix = "ixo"
 key_name = "relayer"
 key_store_type = "Test"
 store_prefix = "ibc"
-default_gas = 100000
+query_packets_chunk_size = 50
+client_refresh_rate = '1/3'
+default_gas = 300000
 max_gas = 400000
 gas_multiplier = 1.2
 gas_price = { price = 0.025, denom = 'uixo' }
@@ -141,12 +149,15 @@ sequential_batch_tx = false
 event_source = { mode = 'pull', interval = '2s' }
 # event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
 address_type = { derivation = 'cosmos' }
+allow_ccq = true
 
 [chains.packet_filter]
 policy = "allow"
 list = [
   ['ica*', '*'],
-  ['transfer', 'channel-26'],
+  ['transfer', 'channel-26'],  # noble-1
+  ['transfer', 'channel-4'],  # osmosis-1
+  ['transfer', 'channel-23'],  # axelar-dojo-1
 ]
 
 # ------------------------------------------------------
@@ -163,7 +174,9 @@ account_prefix = "noble"
 key_name = "relayer"
 key_store_type = "Test"
 store_prefix = "ibc"
-default_gas = 100000
+query_packets_chunk_size = 50
+client_refresh_rate = '1/3'
+default_gas = 300000
 max_gas = 400000
 gas_multiplier = 1.2
 gas_price = { price = 0.025, denom = 'uusdc' }
@@ -179,9 +192,130 @@ sequential_batch_tx = false
 event_source = { mode = 'pull', interval = '2s' }
 # event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
 address_type = { derivation = 'cosmos' }
+allow_ccq = true
 
 [chains.packet_filter]
 policy = "allow"
 list = [
   ['transfer', 'channel-15'],
 ]
+
+# ------------------------------------------------------
+# axelar-dojo-1
+# ------------------------------------------------------
+[[chains]]
+id = "axelar-dojo-1"
+type = "CosmosSdk"
+rpc_addr = "https://axelar-rpc.polkachu.com/"
+grpc_addr = "http://axelar-grpc.polkachu.com:15190/"
+rpc_timeout = "10s"
+trusted_node = false
+account_prefix = "axelar"
+key_name = "relayer"
+key_store_type = "Test"
+store_prefix = "ibc"
+query_packets_chunk_size = 50
+client_refresh_rate = '1/3'
+default_gas = 300000
+max_gas = 400000
+gas_multiplier = 1.2
+gas_price = { price = 0.025, denom = 'uaxl' }
+max_msg_num = 30
+max_tx_size = 2097152
+max_grpc_decoding_size = 33554432
+clock_drift = "5s"
+max_block_time = "30s"
+trust_threshold = { numerator = '1', denominator = '3' }
+ccv_consumer_chain = false
+memo_prefix = ""
+sequential_batch_tx = false
+event_source = { mode = 'pull', interval = '2s' }
+# event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+address_type = { derivation = 'cosmos' }
+allow_ccq = true
+
+[chains.packet_filter]
+policy = "allow"
+list = [
+  ['transfer', 'channel-114'],
+]
+
+# ------------------------------------------------------
+# osmosis-1
+# ------------------------------------------------------
+[[chains]]
+id = "osmosis-1"
+type = "CosmosSdk"
+rpc_addr = "https://osmosis-rpc.polkachu.com/"
+grpc_addr = "http://osmosis-grpc.polkachu.com:12590/"
+rpc_timeout = "10s"
+trusted_node = false
+account_prefix = "osmo"
+key_name = "relayer"
+key_store_type = "Test"
+store_prefix = "ibc"
+query_packets_chunk_size = 50
+client_refresh_rate = '1/3'
+default_gas = 300000
+max_gas = 400000
+gas_multiplier = 1.2
+gas_price = { price = 0.025, denom = 'uosmo' }
+max_msg_num = 30
+max_tx_size = 2097152
+max_grpc_decoding_size = 33554432
+clock_drift = "5s"
+max_block_time = "30s"
+trust_threshold = { numerator = '1', denominator = '3' }
+ccv_consumer_chain = false
+memo_prefix = ""
+sequential_batch_tx = false
+event_source = { mode = 'pull', interval = '2s' }
+# event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+address_type = { derivation = 'cosmos' }
+allow_ccq = true
+
+[chains.packet_filter]
+policy = "allow"
+list = [
+  ['transfer', 'channel-38'],
+]
+
+# # ------------------------------------------------------
+# # gravity-bridge-3
+# # ------------------------------------------------------
+# [[chains]]
+# id = "gravity-bridge-3"
+# type = "CosmosSdk"
+# rpc_addr = "https://gravity-rpc.polkachu.com/"
+# grpc_addr = "http://gravity-grpc.polkachu.com:14290/"
+# rpc_timeout = "10s"
+# trusted_node = false
+# account_prefix = "gravity"
+# key_name = "relayer"
+# key_store_type = "Test"
+# store_prefix = "ibc"
+# query_packets_chunk_size = 50
+# client_refresh_rate = '1/3'
+# default_gas = 300000
+# max_gas = 400000
+# gas_multiplier = 1.2
+# gas_price = { price = 0.025, denom = 'uosmo' }
+# max_msg_num = 30
+# max_tx_size = 2097152
+# max_grpc_decoding_size = 33554432
+# clock_drift = "5s"
+# max_block_time = "30s"
+# trust_threshold = { numerator = '1', denominator = '3' }
+# ccv_consumer_chain = false
+# memo_prefix = ""
+# sequential_batch_tx = false
+# event_source = { mode = 'pull', interval = '2s' }
+# # event_source = { mode = 'push', url = 'ws://127.0.0.1:26657/websocket', batch_delay = '500ms' }
+# address_type = { derivation = 'cosmos' }
+# allow_ccq = true
+
+# [chains.packet_filter]
+# policy = "allow"
+# list = [
+#   ['transfer', 'channel-38'],
+# ]

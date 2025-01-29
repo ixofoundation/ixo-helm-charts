@@ -12,6 +12,12 @@ keys:
   noble_1:
     name: "noble-1"
     secretKeyValue: "<path:ixo_core/data/hermes#noble-1>"
+  axelar_dojo_1:
+    name: "axelar-dojo-1"
+    secretKeyValue: "<path:ixo_core/data/hermes#axelar-dojo-1>"
+  osmosis_1:
+    name: "osmosis-1"
+    secretKeyValue: "<path:ixo_core/data/hermes#osmosis-1>"
 
 resources: {}
 nodeSelector: {}
