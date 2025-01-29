@@ -1,0 +1,10 @@
+apiVersion: v2
+name: dmrv-registry-server
+description: A Helm chart for Kubernetes
+type: application
+version: 0.0.2
+appVersion: v1.0.0
+annotations:
+  artifacthub.io/changes: |
+    - kind: changed
+      description: Update ixoworld/dmrv-registry-server app version from v1.0.0 to 
