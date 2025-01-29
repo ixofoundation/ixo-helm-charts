@@ -18,6 +18,9 @@ keys:
   osmosis_1:
     name: "osmosis-1"
     secretKeyValue: "<path:ixo_core/data/hermes#osmosis-1>"
+  gravity_bridge_3:
+    name: "gravity-bridge-3"
+    secretKeyValue: "<path:ixo_core/data/hermes#gravity-bridge-3>"
 
 ingress:
   enabled: false
