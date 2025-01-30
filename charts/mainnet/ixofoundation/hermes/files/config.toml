@@ -158,6 +158,7 @@ list = [
   ['transfer', 'channel-26'],  # noble-1
   ['transfer', 'channel-4'],  # osmosis-1
   ['transfer', 'channel-23'],  # axelar-dojo-1
+  ['transfer', 'channel-28'],  # gravity-bridge-3
 ]
 
 # ------------------------------------------------------
@@ -317,5 +318,5 @@ allow_ccq = true
 [chains.packet_filter]
 policy = "allow"
 list = [
-  ['transfer', 'channel-171'],
+  ['transfer', 'channel-172'],
 ]
