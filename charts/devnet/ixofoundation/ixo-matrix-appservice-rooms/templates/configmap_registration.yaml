@@ -25,6 +25,8 @@ data:
           # your bridge with other people who might be using it.
           # covering did-ixo-<random> to cover both did-ixo-entity- and did-ixo-wasm- dids
           regex: "#did-ixo-.*"
+        - exclusive: true
+          regex: "#ixo-room-bot-signature-hashes*"
       users:
         - exclusive: true
           regex: "@test:localhost:8408"
