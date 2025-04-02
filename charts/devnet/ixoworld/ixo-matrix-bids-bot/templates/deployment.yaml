@@ -81,9 +81,6 @@ spec:
             - name: config
               mountPath: /bot/config
               readOnly: true
-            - name: registration
-              mountPath: /bot/registration
-              readOnly: true
       volumes:
         - name: gcp-service-account-key
           secret:
@@ -94,9 +91,6 @@ spec:
         - name: config
           configMap:
             name: {{ include "ixo-matrix-bids-bot.fullname" . }}-config
-        - name: registration
-          configMap:
-            name: {{ include "ixo-matrix-bids-bot.fullname" . }}-registration
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
