@@ -10,7 +10,7 @@ data:
     # is where clients would be connecting to in order to send messages.
     homeserverUrl: "http://matrix-synapse.matrix-synapse.svc.cluster.local:8008"
     homeserverName: "devmx.ixo.earth"
-    accessToken: "<path:ixo_core/data/matrix#MATRIX_BIDS_BOT_ACCESS_TOKEN>"
+    accessToken: "<path:ixo_core/data/matrix#MATRIX_CLAIMS_BOT_ACCESS_TOKEN>"
     graphqlUrl: "https://devnet-blocksync-graphql.ixo.earth/graphql"
     rpcUrl: "https://devnet.ixo.earth/rpc/"
 
@@ -18,7 +18,7 @@ data:
     autoJoin: true
 
     # Location on disk for where to store various bot information.
-    dataPath: "./ixo-bids-bot-storage"
+    dataPath: "./ixo-claims-bot-storage"
 
     encryption: true
 
