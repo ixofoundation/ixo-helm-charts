@@ -1,6 +1,6 @@
 # ixo-matrix-bids-bot
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.2](https://img.shields.io/badge/AppVersion-v1.0.0--develop.2-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.3](https://img.shields.io/badge/AppVersion-v1.0.0--develop.3-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -20,7 +20,7 @@ A Helm chart for Kubernetes
 | backup.resources.requests.memory | string | `"50Mi"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ghcr.io/ixofoundation/ixo-matrix-bids-bot"` |  |
+| image.repository | string | `"ghcr.io/ixoworld/ixo-matrix-bids-bot"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
