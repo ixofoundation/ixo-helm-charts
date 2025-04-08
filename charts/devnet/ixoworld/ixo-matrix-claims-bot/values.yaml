@@ -89,6 +89,6 @@ backup:
       memory: 50Mi
     limits:
       memory: 128Mi
-  path: /bot/ixo-bids-bot-storage
+  path: /bot/ixo-claims-bot-storage
   gcs:
     bucket:
