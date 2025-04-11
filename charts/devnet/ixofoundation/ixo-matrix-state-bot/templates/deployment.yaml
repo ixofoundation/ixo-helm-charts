@@ -41,9 +41,8 @@ spec:
               apt-get update && apt-get install -y zip
               gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS
               while true; do
-                cd {{ .Values.backup.path }} && zip -r data.zip .
-                gsutil cp -r {{ .Values.backup.path }}/data.zip {{ .Values.backup.gcs.bucket }}/$(date +'%Y-%m-%d_%H-%M-%S')/
-                rm -f {{ .Values.backup.path }}/data.zip
+                BACKUP_DIR=$(date +'%Y-%m-%d_%H-%M-%S')
+                cd {{ .Values.backup.path }} && zip -0 -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip
                 sleep 86400 # 24 hours
               done
           volumeMounts:
