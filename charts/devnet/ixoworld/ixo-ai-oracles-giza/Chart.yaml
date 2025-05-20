@@ -1,0 +1,10 @@
+apiVersion: v2
+name: ixo-giza
+description: A Helm chart for Kubernetes
+type: application
+version: 0.0.18
+appVersion: 6.13.1
+annotations:
+  artifacthub.io/changes: |
+    - kind: changed
+      description: Update ixoworld/ixo-ai-oracles-guru app version from 6.10.0 to 6.12.0
