@@ -6,8 +6,8 @@ metadata:
     app.kubernetes.io/name: {{ .Release.Name }}-storage
 spec:
   accessModes:
-    - ReadWriteOnce
+{{- .Values.persistentVolume.accessModes | toYaml | nindent 4 }}
   resources:
     requests:
-      storage: 40Gi
-  storageClassName: vultr-block-storage
+      storage: {{ .Values.persistentVolume.size }}
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
