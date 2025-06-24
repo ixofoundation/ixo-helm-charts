@@ -89,12 +89,13 @@ tolerations: []
 affinity: {}
 
 backup:
+  enabled: true
   resources:
     requests:
       cpu: 10m
       memory: 128Mi
     limits:
-      memory: 256Mi
+      memory: 512Mi
   path: /bot/storage
   gcs:
     bucket:

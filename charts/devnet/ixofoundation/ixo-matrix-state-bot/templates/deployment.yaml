@@ -28,6 +28,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+        {{- if .Values.backup.enabled }}
         - name: gcp-backups
           image: google/cloud-sdk:latest
           imagePullPolicy: IfNotPresent
@@ -38,13 +39,44 @@ spec:
             - "/bin/sh"
             - "-c"
             - |
-              apt-get update && apt-get install -y zip
-              gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS
+              # Function to handle errors gracefully
+              handle_error() {
+                echo "Error occurred: $1"
+                echo "Backup container will continue running but skip this backup cycle"
+                return 0
+              }
+              
+              # Install dependencies with error handling
+              apt-get update && apt-get install -y zip || handle_error "Failed to install dependencies"
+              
+              # Authenticate with GCP with error handling
+              gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS || handle_error "Failed to authenticate with GCP"
+              
+              echo "Backup container started successfully"
+              
               while true; do
                 BACKUP_DIR=$(date +'%Y-%m-%d_%H-%M-%S')
-                cd {{ .Values.backup.path }} && zip -0 -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip
+                cd {{ .Values.backup.path }}
+                
+                # Use zip with compression for better memory efficiency
+                # Stream directly to GCS without storing locally
+                echo "Starting backup: $BACKUP_DIR"
+                if zip -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip; then
+                  echo "Backup successful: $BACKUP_DIR"
+                else
+                  echo "Backup failed: $BACKUP_DIR - will retry in next cycle"
+                fi
+                
+                echo "Sleeping for 24 hours until next backup..."
                 sleep 86400 # 24 hours
               done
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "echo 'Backup container shutting down gracefully'"
           volumeMounts:
             - name: gcp-service-account-key
               mountPath: /bot/gcp-key
@@ -52,6 +84,7 @@ spec:
               mountPath: {{ .Values.backup.path }}
           resources:
             {{- toYaml .Values.backup.resources | nindent 12 }}
+        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
