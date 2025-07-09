@@ -79,3 +79,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+persistentVolume:
+  size: 40Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClass: vultr-block-storage-hdd
