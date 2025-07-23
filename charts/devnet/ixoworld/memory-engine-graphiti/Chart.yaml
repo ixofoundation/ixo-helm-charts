@@ -3,7 +3,7 @@ name: memory-engine-graphiti
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.1
-appVersion: main-7e62d1b
+appVersion: main-9d84ad2
 annotations:
   artifacthub.io/changes: |
     - kind: changed
