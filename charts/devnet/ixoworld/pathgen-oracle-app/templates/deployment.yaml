@@ -54,7 +54,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: storage
-              mountPath: /app/matrix-storage
+              mountPath: /app/apps/app/matrix-storage
       volumes:
         - name: storage
           persistentVolumeClaim:
