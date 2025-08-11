@@ -13,6 +13,12 @@ env: []
 nameOverride: ""
 fullnameOverride: ""
 
+persistentVolume:
+  size: 40Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClass: vultr-block-storage-hdd
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
