@@ -52,9 +52,9 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: storage
-              mountPath: /app/apps/app/matrix-storage
+          # volumeMounts:
+          #   - name: storage
+          #     mountPath: /app/apps/app/matrix-storage
       volumes:
         - name: storage
           persistentVolumeClaim:
