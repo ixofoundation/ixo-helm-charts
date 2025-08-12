@@ -55,11 +55,11 @@ spec:
           # volumeMounts:
           #   - name: storage
           #     mountPath: /app/apps/app/matrix-storage
-      volumes:
-        - name: storage
-          persistentVolumeClaim:
-            claimName: {{ include "pathgen-oracle.fullname" . }}-storage
-      {{- with .Values.nodeSelector }}
+      # volumes:
+      #   - name: storage
+      #     persistentVolumeClaim:
+      #       claimName: {{ include "pathgen-oracle.fullname" . }}-storage
+      # {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
