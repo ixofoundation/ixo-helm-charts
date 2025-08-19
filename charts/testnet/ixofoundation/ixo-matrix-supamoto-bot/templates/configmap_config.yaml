@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ixo-matrix-supamoto-bot.fullname" . }}-config
+  labels:
+    {{- include "ixo-matrix-supamoto-bot.labels" . | nindent 4 }}
+data:
+  production.yaml: |-
+    # Where the homeserver's Client-Server API is located. Typically this
+    # is where clients would be connecting to in order to send messages.
+    homeserverUrl: "http://matrix-synapse.matrix-synapse.svc.cluster.local:8008"
+    accessToken: "<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_ACCESS_TOKEN>"
+    rpcUrl: "https://testnet.ixo.earth/rpc/"
+
+    # Whether or not to autojoin rooms when invited.
+    autoJoin: true
+
+    # Location on disk for where to store various bot information.
+    dataPath: "./storage"
+
+    encryption: true
+
+    screeningCollectionId: "145"
+    contractCollectionId: "150"
+    homeVisitCollectionId: "147"
+    bagStoveCollectionId: "151"
+
+    # REST API config
+    restApi:
+      # Set to true to enable the REST API
+      enabled: true
+      # Port to listen on for the REST API, default is 8080
+      port: 8083
+      # express trust proxy config for if you are using a reverse proxy
+      trustProxy: 1
