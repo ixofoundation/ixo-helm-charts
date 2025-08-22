@@ -52,6 +52,13 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: storage
+              mountPath: /app/apps/app/matrix-storage
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{ include "website-bot-oracle.fullname" . }}-storage
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
