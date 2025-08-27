@@ -6,26 +6,95 @@ metadata:
     {{- include "ixo-matrix-supamoto-bot.labels" . | nindent 4 }}
 data:
   production.yaml: |-
+    # -------------------------------------------------------------------------------------------------
+    # MATRIX CONFIG
+    # -------------------------------------------------------------------------------------------------
     # Where the homeserver's Client-Server API is located. Typically this
     # is where clients would be connecting to in order to send messages.
-    homeserverUrl: "http://matrix-synapse.matrix-synapse.svc.cluster.local:8008"
-    accessToken: "<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_ACCESS_TOKEN>"
-    rpcUrl: "https://testnet.ixo.earth/rpc/"
+    homeserverUrl: 'https://testmx.ixo.earth'
 
+    # An access token for the bot to use. Learn how to get an access token
+    # at https://t2bot.io/docs/access_tokens
+    accessToken: "<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_ACCESS_TOKEN>"
+
+    # The id of the only room the bot must join - all other invites will be
+    # ignored.
+    roomId: '!yzCJgXyPtGfcOFZzpV:testmx.ixo.earth'
+
+    # -------------------------------------------------------------------------------------------------
+    # CLAIM COLLECTION ID CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The id for the lead claim collection
+    leadCollectionId: '231'
+    # The id for the screening claim collection
+    screeningCollectionId: '225'
+    # The id for the contract claim collection
+    contractCollectionId: '226'
+    # The id for the onboarding fee claim collection
+    onboardingFeeCollectionId: '233'
+    # The id for the home visit claim collection
+    homeVisitCollectionId: '229'
+    # The id for the fuel purchase claim collection
+    fuelPurchaseCollectionId: '234'
+    # The id for the bag & stove collection claim collection
+    bagStoveCollectionId: '230'
+
+    # -------------------------------------------------------------------------------------------------
+    # CHAIN CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The RPC URL of the chain to query for the claim collection details etc
+    rpcUrl: 'https://testnet.ixo.earth/rpc/'
+
+    # The URL of the block sync graphql endpoint
+    blockSyncGraphqlUrl: 'https://testnet-blocksync-graphql.ixo.earth/graphql'
+
+    # The URL of the room bot to use for matrix account registration and room management
+    roomBotUrl: 'https://rooms.bot.testmx.ixo.earth'
+
+    # The DID of the entity that owns the claim collections
+    entityDid: 'did:ixo:entity:bba828660334c74beec66f85038ac730'
+
+    # The network to use for the ixo blockchain
+    chainNetwork: 'testnet'
+
+    # The URL of the feegrant service to use
+    feegrantServiceUrl: 'https://feegrant.testnet.ixo.earth'
+
+    # The API key to use for the feegrant service
+    feegrantServiceApiKey: "<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_FEEGRANT_API_KEY>"
+
+    # The URL of the remote contexts to use
+    remoteContexts:
+      - 'https://w3id.org/ixo/context/v1'
+
+    # -------------------------------------------------------------------------------------------------
+    # BOT CONFIG
+    # -------------------------------------------------------------------------------------------------
     # Whether or not to autojoin rooms when invited.
     autoJoin: true
 
     # Location on disk for where to store various bot information.
-    dataPath: "./storage"
+    dataPath: 'storage'
 
+    # Set to false to disable encryption support. Encrypted data will be
+    # stored under dataPath.
     encryption: true
 
-    screeningCollectionId: "145"
-    contractCollectionId: "150"
-    homeVisitCollectionId: "147"
-    bagStoveCollectionId: "151"
+    # -------------------------------------------------------------------------------------------------
+    # DATABASE CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The encryption key for securing sensitive data
+    encryptionKey: "<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_ENCRYPTION_KEY>"
 
-    # REST API config
+    # The URL of the database to store the claims and evaluations
+    databaseUrl: "<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_DATABASE_URL>"
+
+    # Whether to use SSL for the database connection
+    databaseUseSsl: true
+
+    # -------------------------------------------------------------------------------------------------
+    # REST API CONFIG
+    # -------------------------------------------------------------------------------------------------
     restApi:
       # Set to true to enable the REST API
       enabled: true
@@ -33,3 +102,32 @@ data:
       port: 8083
       # express trust proxy config for if you are using a reverse proxy
       trustProxy: 1
+
+    # -------------------------------------------------------------------------------------------------
+    # CRON CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # Chain sync jobs
+    chain:
+      sync_claims_and_evaluations:
+        enabled: true
+        schedule: '0 0,6,12,18 * * *' # Daily at 00:00, 06:00, 12:00 and 18:00
+        description: 'Sync submitted claims and claim evaluations from Chain to database'
+
+    # Customer jobs
+    customer:
+      create_customer_leads_and_accounts:
+        enabled: true
+        schedule: '50 5-23 * * *' # Daily, at :50 past every hour from 05:00 through 23:00 (skips 00:00–04:59)
+        description: 'Create customer leads and accounts from lead and screening claims'
+
+    # Credentials jobs
+    claims:
+      process_customer_credentials:
+        enabled: true
+        schedule: '10 6-23 * * *' # Daily, at :10 past every hour from 06:00 through 23:00 (skips 00:00–05:59)
+        description: 'Process any pending claims in the queue'
+
+      process_household_credentials:
+        enabled: true
+        schedule: '20 6-23 * * *' # Daily, at :20 past every hour from 06:00 through 23:00 (skips 00:00–05:59)
+        description: 'Retry claims that failed processing'
