@@ -247,8 +247,10 @@ list = [
 [[chains]]
 id = "osmosis-1"
 type = "CosmosSdk"
-rpc_addr = "https://osmosis-rpc.polkachu.com/"
-grpc_addr = "http://osmosis-grpc.polkachu.com:12590/"
+# rpc_addr = "https://osmosis-rpc.polkachu.com/"
+# grpc_addr = "http://osmosis-grpc.polkachu.com:12590/"
+rpc_addr = "https://rpc.lavenderfive.com:443/osmosis/"
+grpc_addr = "http://osmosis.lavenderfive.com:443/"
 rpc_timeout = "10s"
 trusted_node = false
 account_prefix = "osmo"
