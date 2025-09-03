@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-kyc-server
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.35
-appVersion: v1.0.0-develop.37
+version: 0.0.36
+appVersion: v1.0.0
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixofoundation/ixo-kyc-server app version from v1.0.0-develop.36 to v1.0.0-develop.37
+      description: Update ixofoundation/ixo-kyc-server app version from v1.0.0-develop.37 to v1.0.0
