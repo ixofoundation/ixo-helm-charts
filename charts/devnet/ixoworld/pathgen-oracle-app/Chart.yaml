@@ -2,9 +2,9 @@ apiVersion: v2
 name: pathgen-oracle
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.15
-appVersion: 0.1.34
+version: 0.0.16
+appVersion: 0.1.35
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/pathgen-oracle-app app version from 0.1.27 to 0.1.30
+      description: Update ixoworld/pathgen-oracle-app app version from 0.1.34 to 0.1.35
