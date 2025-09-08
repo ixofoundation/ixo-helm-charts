@@ -3,7 +3,7 @@ name: minerva-livekit
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.1
-appVersion: main-2701fe3
+appVersion: main-76ec066
 annotations:
   artifacthub.io/changes: |
     - kind: changed
