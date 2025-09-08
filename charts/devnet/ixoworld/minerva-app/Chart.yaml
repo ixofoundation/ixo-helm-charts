@@ -2,9 +2,9 @@ apiVersion: v2
 name: minerva
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.16
-appVersion: 0.1.35
+version: 0.0.17
+appVersion: 0.1.16
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/minerva-app app version from 0.1.34 to 0.1.35
+      description: Update ixoworld/minerva-app app version from 0.1.35 to 0.1.16
