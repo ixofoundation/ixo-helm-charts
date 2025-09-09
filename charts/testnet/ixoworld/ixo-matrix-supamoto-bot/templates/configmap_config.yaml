@@ -19,7 +19,7 @@ data:
     
     # The id of the only room the bot must join - all other invites will be
     # ignored.
-    roomId: '!yzCJgXyPtGfcOFZzpV:testmx.ixo.earth'
+    roomId: '!VRvLFqoWOYeVnJhBUX:testmx.ixo.earth'
     
     # -------------------------------------------------------------------------------------------------
     # CLAIM COLLECTION ID CONFIG
@@ -131,13 +131,19 @@ data:
         schedule: '50 5-23 * * *' # Daily, at :50 past every hour from 05:00 through 23:00 (skips 00:00–04:59)
         description: 'Create customer leads and accounts from lead and screening claims'
     
-      # # credentials jobs
-      #   process_customer_credentials:
-      #     enabled: true
-      #     schedule: '10 6-23 * * *' # Daily, at :10 past every hour from 06:00 through 23:00 (skips 00:00–05:59)
-      #     description: 'Process any pending claims in the queue'
+      createCustomerAccounts:
+        enabled: true
+        schedule: '50 5-23 * * *' # Daily, at :50 past every hour from 05:00 through 23:00 (skips 00:00–04:59)
+        description: 'Create ixo and matrix accounts for customers'
     
-      #   process_household_credentials:
-      #     enabled: true
-      #     schedule: '20 6-23 * * *' # Daily, at :20 past every hour from 06:00 through 23:00 (skips 00:00–05:59)
-      #     description: 'Retry claims that failed processing'
+      # credentials jobs
+      processCustomerCredentials:
+        enabled: false
+        schedule: '10 6-23 * * *' # Daily, at :10 past every hour from 06:00 through 23:00 (skips 00:00–05:59)
+        description: 'Process any customer credentials'
+    
+      processHouseholdCredentials:
+        enabled: false
+        schedule: '20 6-23 * * *' # Daily, at :20 past every hour from 06:00 through 23:00 (skips 00:00–05:59)
+        description: 'Process any household credentials'
+
