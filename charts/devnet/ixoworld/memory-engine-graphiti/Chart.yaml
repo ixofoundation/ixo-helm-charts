@@ -2,9 +2,9 @@ apiVersion: v2
 name: memory-engine-graphiti
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.1
-appVersion: main-2701fe3
+version: 0.0.2
+appVersion: main-f7f87dd
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update
+      description: Update ixoworld/memory-engine-graphiti app version from main-2701fe3 to main-f7f87dd
