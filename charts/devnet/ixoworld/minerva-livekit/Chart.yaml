@@ -2,9 +2,9 @@ apiVersion: v2
 name: minerva-livekit
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.2
-appVersion: main-b93dd0a
+version: 0.0.3
+appVersion: main-74612f9
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/minerva-livekit app version from main-76ec066 to main-abd49a3
+      description: Update ixoworld/minerva-livekit app version from main-b93dd0a to main-74612f9
