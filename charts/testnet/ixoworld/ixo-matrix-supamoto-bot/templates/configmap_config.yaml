@@ -20,6 +20,18 @@ data:
     # The id of the only room the bot must join - all other invites will be
     # ignored.
     roomId: '!VRvLFqoWOYeVnJhBUX:testmx.ixo.earth'
+
+    # The URL of the room bot to use for matrix account registration and room management
+    roomBotUrl: 'https://rooms.bot.testmx.ixo.earth'
+
+    # The URL of the state bot to use for state management
+    stateBotUrl: 'https://state.bot.testmx.ixo.earth'
+    
+    # The URL of the claims bot to use for claim fetching
+    claimsBotUrl: 'https://claim.bot.testmx.ixo.earth'
+
+    # The did-related access token to use for the claims bot
+    claimsBotAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CLAIMS_BOT_ACCESS_TOKEN>'
     
     # -------------------------------------------------------------------------------------------------
     # CLAIM COLLECTION ID CONFIG
@@ -47,9 +59,6 @@ data:
     
     # The URL of the block sync graphql endpoint
     blockSyncGraphqlUrl: 'https://testnet-blocksync-graphql.ixo.earth/graphql'
-    
-    # The URL of the room bot to use for matrix account registration and room management
-    roomBotUrl: 'https://rooms.bot.testmx.ixo.earth'
     
     # The DID of the entity that owns the claim collections
     entityDid: 'did:ixo:entity:bba828660334c74beec66f85038ac730'
