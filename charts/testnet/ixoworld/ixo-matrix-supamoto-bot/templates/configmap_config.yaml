@@ -131,20 +131,25 @@ data:
       #chain jobs
       syncWithChain:
         enabled: true
-        schedule: '0 0,6,12,18 * * *' # Daily at 00:00, 06:00, 12:00 and 18:00
+        schedule: '0,30 6-23 * * *' # Twice every hour (on the hour and half past), from 6:00 through 23:30
         description: 'Sync submitted claims and claim evaluations from Chain to database'
     
       # customer jobs
-      createCustomersLeadsAndAccounts:
+      createCustomers:
         enabled: true
-        schedule: '50 5-23 * * *' # Daily, at :50 past every hour from 05:00 through 23:00 (skips 00:00–04:59)
-        description: 'Create customer leads and accounts from lead and screening claims'
+        schedule: '5,35 6-23 * * *' # Twice every hour (:05 and :35 past the hour), from 6:05 through 23:35
+        description: 'Create customers from claims'
     
+      syncCustomerOnboardings:
+        enabled: true
+        schedule: '4,19,34,49 6-23 * * *' # Four times every hour (:04, :19, :34 and :49 past the hour), from 6:04 through 23:49
+        description: 'Sync customer onboarding statuses'
+
       createCustomerAccounts:
         enabled: true
-        schedule: '50 5-23 * * *' # Daily, at :50 past every hour from 05:00 through 23:00 (skips 00:00–04:59)
+        schedule: '10 6-23 * * *' # Daily, at :10 past every hour from 06:10 through 23:10
         description: 'Create ixo and matrix accounts for customers'
-    
+        
       # credentials jobs
       processCustomerCredentials:
         enabled: false
