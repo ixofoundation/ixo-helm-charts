@@ -1,6 +1,6 @@
 # ixo-matrix-claims-bot
 
-![Version: 0.0.10](https://img.shields.io/badge/Version-0.0.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.9](https://img.shields.io/badge/AppVersion-v1.0.0--develop.9-informational?style=flat-square)
+![Version: 0.0.11](https://img.shields.io/badge/Version-0.0.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.10](https://img.shields.io/badge/AppVersion-v1.0.0--develop.10-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -15,9 +15,9 @@ A Helm chart for Kubernetes
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | backup.gcs.bucket | string | `nil` |  |
 | backup.path | string | `"/bot/ixo-claims-bot-storage"` |  |
-| backup.resources.limits.memory | string | `"128Mi"` |  |
+| backup.resources.limits.memory | string | `"256Mi"` |  |
 | backup.resources.requests.cpu | string | `"10m"` |  |
-| backup.resources.requests.memory | string | `"50Mi"` |  |
+| backup.resources.requests.memory | string | `"128Mi"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixoworld/ixo-matrix-claims-bot"` |  |
@@ -31,6 +31,9 @@ A Helm chart for Kubernetes
 | ingress.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
+| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistentVolume.size | string | `"40Gi"` |  |
+| persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `0` |  |
 | podSecurityContext.runAsGroup | int | `0` |  |
