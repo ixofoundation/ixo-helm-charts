@@ -1,5 +1,5 @@
 apiVersion: v2
-name: ixo-matrix-supamoto-bot
+name: ixo-matrix-supamoto-claims-bot
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.41
@@ -7,4 +7,4 @@ appVersion: v1.0.38
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/ixo-matrix-supamoto-bot app version from v1.0.37 to v1.0.38
+      description: Update ixoworld/ixo-matrix-supamoto-claims-bot app version from v1.0.37 to v1.0.38

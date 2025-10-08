@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ixo-matrix-supamoto-bot.fullname" . }}
+  name: {{ include "ixo-matrix-supamoto-claims-bot.fullname" . }}
   labels:
-    {{- include "ixo-matrix-supamoto-bot.labels" . | nindent 4 }}
+    {{- include "ixo-matrix-supamoto-claims-bot.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "ixo-matrix-supamoto-bot.selectorLabels" . | nindent 6 }}
+      {{- include "ixo-matrix-supamoto-claims-bot.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "ixo-matrix-supamoto-bot.selectorLabels" . | nindent 8 }}
+        {{- include "ixo-matrix-supamoto-claims-bot.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "ixo-matrix-supamoto-bot.serviceAccountName" . }}
+      serviceAccountName: {{ include "ixo-matrix-supamoto-claims-bot.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -90,7 +90,7 @@ spec:
             claimName: {{ .Release.Name }}-storage
         - name: config
           configMap:
-            name: {{ include "ixo-matrix-supamoto-bot.fullname" . }}-config
+            name: {{ include "ixo-matrix-supamoto-claims-bot.fullname" . }}-config
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "ixo-matrix-supamoto-bot.fullname" . }}
+  name: {{ include "ixo-matrix-supamoto-claims-bot.fullname" . }}
   labels:
-    {{- include "ixo-matrix-supamoto-bot.labels" . | nindent 4 }}
+    {{- include "ixo-matrix-supamoto-claims-bot.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "ixo-matrix-supamoto-bot.selectorLabels" . | nindent 4 }}
+    {{- include "ixo-matrix-supamoto-claims-bot.selectorLabels" . | nindent 4 }}

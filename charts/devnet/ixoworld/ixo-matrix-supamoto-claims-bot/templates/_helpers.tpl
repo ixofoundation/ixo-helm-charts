@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "ixo-matrix-supamoto-bot.name" -}}
+{{- define "ixo-matrix-supamoto-claims-bot.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "ixo-matrix-supamoto-bot.fullname" -}}
+{{- define "ixo-matrix-supamoto-claims-bot.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "ixo-matrix-supamoto-bot.chart" -}}
+{{- define "ixo-matrix-supamoto-claims-bot.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "ixo-matrix-supamoto-bot.labels" -}}
-helm.sh/chart: {{ include "ixo-matrix-supamoto-bot.chart" . }}
-{{ include "ixo-matrix-supamoto-bot.selectorLabels" . }}
+{{- define "ixo-matrix-supamoto-claims-bot.labels" -}}
+helm.sh/chart: {{ include "ixo-matrix-supamoto-claims-bot.chart" . }}
+{{ include "ixo-matrix-supamoto-claims-bot.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,8 +46,8 @@ app.kubernetes.io/part-of: ixo
 {{/*
 Selector labels
 */}}
-{{- define "ixo-matrix-supamoto-bot.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "ixo-matrix-supamoto-bot.name" . }}
+{{- define "ixo-matrix-supamoto-claims-bot.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "ixo-matrix-supamoto-claims-bot.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/part-of: ixo
 {{- end }}
@@ -55,9 +55,9 @@ app.kubernetes.io/part-of: ixo
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "ixo-matrix-supamoto-bot.serviceAccountName" -}}
+{{- define "ixo-matrix-supamoto-claims-bot.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "ixo-matrix-supamoto-bot.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "ixo-matrix-supamoto-claims-bot.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
