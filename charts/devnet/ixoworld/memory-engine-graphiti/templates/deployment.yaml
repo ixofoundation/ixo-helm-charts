@@ -42,6 +42,12 @@ spec:
               hostPort: {{ .Values.hostPort }}
               {{- end }}
               protocol: TCP
+            - name: mcp
+              containerPort: {{ .Values.service.portMcp }}
+              {{- if .Values.hostPortMcp }}
+              hostPort: {{ .Values.hostPortMcp }}
+              {{- end }}
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthcheck
