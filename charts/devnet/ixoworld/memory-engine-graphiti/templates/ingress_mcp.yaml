@@ -1,6 +1,7 @@
 {{- if .Values.ingressMcp.enabled -}}
 {{- $fullName := include "memory-engine-graphiti.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
+{{- $svcPortMcp := .Values.service.portMcp -}}
 {{- if and .Values.ingressMcp.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingressMcp.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingressMcp.annotations "kubernetes.io/ingress.class" .Values.ingressMcp.className}}
@@ -15,7 +16,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: mcp-{{ $fullName }}
   labels:
     {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
   {{- with .Values.ingressMcp.annotations }}
@@ -51,10 +52,10 @@ spec:
               service:
                 name: {{ $fullName }}
                 port:
-                  number: {{ $svcPort }}
+                  number: {{ $svcPortMcp }}
               {{- else }}
               serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
+              servicePort: {{ $svcPortMcp }}
               {{- end }}
           {{- end }}
     {{- end }}
