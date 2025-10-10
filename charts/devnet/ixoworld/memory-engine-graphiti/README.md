@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-f433990](https://img.shields.io/badge/AppVersion-main--f433990-informational?style=flat-square)
+![Version: 0.0.7](https://img.shields.io/badge/Version-0.0.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-e2846d7](https://img.shields.io/badge/AppVersion-main--e2846d7-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -25,6 +25,13 @@ A Helm chart for Kubernetes
 | ingress.hosts[0].paths[0].path | string | `"/"` |  |
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
+| ingressMcp.annotations | object | `{}` |  |
+| ingressMcp.className | string | `""` |  |
+| ingressMcp.enabled | bool | `false` |  |
+| ingressMcp.hosts[0].host | string | `"chart-example.local"` |  |
+| ingressMcp.hosts[0].paths[0].path | string | `"/"` |  |
+| ingressMcp.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
+| ingressMcp.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
@@ -33,6 +40,7 @@ A Helm chart for Kubernetes
 | resources | object | `{}` |  |
 | securityContext | object | `{}` |  |
 | service.port | int | `80` |  |
+| service.portMcp | int | `8080` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
