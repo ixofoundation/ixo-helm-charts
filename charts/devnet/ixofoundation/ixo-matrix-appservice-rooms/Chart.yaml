@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-matrix-appservice-rooms
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.20
-appVersion: v0.1.0-develop.12
+version: 0.0.21
+appVersion: v0.1.0-develop.13
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixofoundation/ixo-matrix-appservice-rooms app version from v0.1.0-develop.11 to v0.1.0-develop.12
+      description: Update ixofoundation/ixo-matrix-appservice-rooms app version from v0.1.0-develop.12 to v0.1.0-develop.13
