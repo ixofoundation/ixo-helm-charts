@@ -3,7 +3,7 @@ name: ixo-matrix-claims-bot
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.10
-appVersion: v1.0.0-v9
+appVersion: v1.0.0-v10
 annotations:
   artifacthub.io/changes: |
     - kind: changed
