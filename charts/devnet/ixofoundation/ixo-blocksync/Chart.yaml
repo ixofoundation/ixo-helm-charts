@@ -3,7 +3,7 @@ name: ixo-blocksync
 description: A Helm chart for Kubernetes
 type: application
 version: 2.1.40
-appVersion: v2.4.0-v6
+appVersion: v2.4.0-ws1
 annotations:
   artifacthub.io/changes: |
     - kind: changed
