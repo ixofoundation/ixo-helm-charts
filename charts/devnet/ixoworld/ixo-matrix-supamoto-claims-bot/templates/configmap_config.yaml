@@ -11,7 +11,7 @@ data:
     # -------------------------------------------------------------------------------------------------
     # Where the homeserver's Client-Server API is located. Typically this
     # is where clients would be connecting to in order to send messages.
-    homeserverUrl: 'https://testmx.ixo.earth'
+    homeserverUrl: 'https://devmx.ixo.earth'
     
     # An access token for the bot to use. Learn how to get an access token
     # at https://t2bot.io/docs/access_tokens
@@ -19,19 +19,19 @@ data:
     
     # The id of the only room the bot must join - all other invites will be
     # ignored.
-    roomId: '!VRvLFqoWOYeVnJhBUX:testmx.ixo.earth'
+    roomId: '!VRvLFqoWOYeVnJhBUX:devmx.ixo.earth'
     
     # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
     # -------------------------------------------------------------------------------------------------
     # The network to use for the ixo blockchain
-    chainNetwork: 'testnet'
+    chainNetwork: 'devnet'
     
     # The RPC URL of the chain to query for the claim collection details etc
-    rpcUrl: 'https://testnet.ixo.earth/rpc/'
+    rpcUrl: 'https://devnet.ixo.earth/rpc/'
     
     # The URL of the block sync graphql endpoint
-    blockSyncGraphqlUrl: 'https://testnet-blocksync-graphql.ixo.earth/graphql'
+    blockSyncGraphqlUrl: 'https://devnet-blocksync-graphql.ixo.earth/graphql'
     
     # The URL of the remote contexts to use
     remoteContexts:
