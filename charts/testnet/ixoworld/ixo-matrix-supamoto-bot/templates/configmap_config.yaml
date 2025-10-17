@@ -129,43 +129,4 @@ data:
     # -------------------------------------------------------------------------------------------------
     cronjob: 
       schedule: '*/10 * * * *'
-    
-    cron:
-      #chain jobs
-      syncWithChain:
-        enabled: true
-        schedule: '0,30 6-23 * * *' # Twice every hour (on the hour and half past), from 6:00 through 23:30
-        description: 'Sync submitted claims and claim evaluations from Chain to database'
-    
-      # customer jobs
-      createCustomers:
-        enabled: true
-        schedule: '5,35 6-23 * * *' # Twice every hour (:05 and :35 past the hour), from 6:05 through 23:35
-        description: 'Create customers from claims'
-    
-      createCustomerAccounts:
-        enabled: true
-        schedule: '10 6-23 * * *' # Daily, at :10 past every hour from 06:10 through 23:10
-        description: 'Create ixo and matrix accounts for customers'
-
-      recoverCustomerDetails: 
-        enabled: true
-        schedule: '15 6-23 * * *' # Daily, at :15 past every hour from 06:15 through 23:15
-        description: 'Extract customer details from approved claims'
       
-      syncCustomerOnboardings:
-        enabled: true
-        schedule: '4,19,34,49 6-23 * * *' # Four times every hour (:04, :19, :34 and :49 past the hour), from 6:04 through 23:49
-        description: 'Sync customer onboarding statuses'
-
-      # credentials jobs
-      processCustomerCredentials:
-        enabled: true
-        schedule: '20,50 6-23 * * *' # Twice every hour (:20 and :50 past the hour), from 6:20 through 23:50
-        description: 'Process any customer credentials'
-    
-      processHouseholdCredentials:
-        enabled: true
-        schedule: '25,55 6-23 * * *' # Twice every hour (:25 and :22 past the hour), from 6:25 through 23:22
-        description: 'Process any household credentials'
-
