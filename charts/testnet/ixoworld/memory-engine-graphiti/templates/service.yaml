@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "memory-engine-graphiti.fullname" . }}
+  labels:
+    {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      {{- if .Values.service.hostPort }}
+      hostPort: {{ .Values.service.hostPort }}
+      {{- end }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ .Values.service.portMcp }}
+      {{- if .Values.service.hostPortMcp }}
+      hostPort: {{ .Values.service.hostPortMcp }}
+      {{- end }}
+      targetPort: mcp
+      protocol: TCP
+      name: mcp
+  selector:
+    {{- include "memory-engine-graphiti.selectorLabels" . | nindent 4 }}
