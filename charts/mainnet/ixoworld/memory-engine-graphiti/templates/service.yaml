@@ -18,5 +18,12 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.service.portMcp }}
+      {{- if .Values.service.hostPortMcp }}
+      hostPort: {{ .Values.service.hostPortMcp }}
+      {{- end }}
+      targetPort: mcp
+      protocol: TCP
+      name: mcp
   selector:
     {{- include "memory-engine-graphiti.selectorLabels" . | nindent 4 }}
