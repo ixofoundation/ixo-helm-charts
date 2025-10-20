@@ -7,6 +7,18 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixoworld/memory-engine-graphiti
   pullPolicy: IfNotPresent
+  tag: ""
+
+containers:
+  worker:
+    image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
+    resources: {}
+  apiServer:
+    image: ghcr.io/ixoworld/memory-engine-graphiti-api-server
+    resources: {}
+  mcpServer:
+    image: ghcr.io/ixoworld/memory-engine-graphiti-mcp-server
+    resources: {}
 
 imagePullSecrets: []
 env: []
