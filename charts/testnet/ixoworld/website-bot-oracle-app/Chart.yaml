@@ -2,9 +2,9 @@ apiVersion: v2
 name: website-bot-oracle
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.2
-appVersion: 1.0.35
+version: 0.0.3
+appVersion: 1.0.36
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/website-bot-oracle-app app version from 1.0.34 to 1.0.35
+      description: Update ixoworld/website-bot-oracle-app app version from 1.0.35 to 1.0.36
