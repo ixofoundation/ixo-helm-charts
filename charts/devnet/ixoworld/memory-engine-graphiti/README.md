@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.0.12](https://img.shields.io/badge/Version-0.0.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-bdc865b](https://img.shields.io/badge/AppVersion-main--bdc865b-informational?style=flat-square)
+![Version: 0.0.13](https://img.shields.io/badge/Version-0.0.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-088dd1d](https://img.shields.io/badge/AppVersion-main--088dd1d-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -13,10 +13,17 @@ A Helm chart for Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| containers.apiServer.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-api-server"` |  |
+| containers.apiServer.resources | object | `{}` |  |
+| containers.mcpServer.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-mcp-server"` |  |
+| containers.mcpServer.resources | object | `{}` |  |
+| containers.worker.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-community-worker"` |  |
+| containers.worker.resources | object | `{}` |  |
 | env | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixoworld/memory-engine-graphiti"` |  |
+| image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
@@ -34,6 +41,9 @@ A Helm chart for Kubernetes
 | ingressMcp.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
+| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistentVolume.size | string | `"40Gi"` |  |
+| persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
