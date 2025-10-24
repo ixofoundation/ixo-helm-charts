@@ -63,6 +63,9 @@ spec:
             initialDelaySeconds: 60
           resources:
             {{- toYaml .Values.containers.apiServer.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-storage
+              mountPath: {{ $matrixBotStorePath := "/storage" }}{{ range .Values.env }}{{ if eq .name "MATRIX_BOT_STORE_PATH" }}{{ $matrixBotStorePath = .value }}{{ end }}{{ end }}{{ $matrixBotStorePath }}
         - name: mcp-server
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -79,6 +82,13 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.containers.mcpServer.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-storage
+              mountPath: {{ $matrixBotStorePath := "/storage" }}{{ range .Values.env }}{{ if eq .name "MATRIX_BOT_STORE_PATH" }}{{ $matrixBotStorePath = .value }}{{ end }}{{ end }}{{ $matrixBotStorePath }}
+      volumes:
+        - name: {{ .Release.Name }}-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-storage
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
