@@ -23,6 +23,9 @@ data:
     # The blocksync API endpoint to query for users DID documents using graphql
     blocksyncUri: "https://devnet-blocksync-graphql.ixo.earth/"
 
+    # Network (devnet or testnet or mainnet)
+    network: "devnet"
+
     ecies:
       mnemonic: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_ECIES_MNEMONIC>"
 

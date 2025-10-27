@@ -27,6 +27,9 @@ data:
           regex: "#did-ixo-.*"
         - exclusive: true
           regex: "#ixo-room-bot-signature-hashes*"
+          # covering ixo<random>-pod to cover all POD rooms
+        - exclusive: true
+          regex: "#ixo.*-pod"
       users:
         - exclusive: true
           regex: "@test:localhost:8408"
