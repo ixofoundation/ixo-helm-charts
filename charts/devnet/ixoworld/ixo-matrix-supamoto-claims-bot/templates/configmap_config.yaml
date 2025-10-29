@@ -63,7 +63,7 @@ data:
     databaseUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_CLAIMS_BOT_DATABASE_URL>'
     
     # Whether to use SSL for the database connection
-    databaseUseSsl: false
+    databaseUseSsl: true
     
     # -------------------------------------------------------------------------------------------------
     # REST API CONFIG
