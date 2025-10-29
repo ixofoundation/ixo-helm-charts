@@ -19,7 +19,7 @@ data:
     
     # The id of the only room the bot must join - all other invites will be
     # ignored.
-    roomId: '!VRvLFqoWOYeVnJhBUX:devmx.ixo.earth'
+    roomId: '!tqfJZcXzJuRwAniyrd:devmx.ixo.earth'
     
     # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
