@@ -34,7 +34,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            {{- toYaml .Values.env | nindent 12 }}
+            - name: MATRIX_STORE_PATH
+              value: {{ .Values.persistentVolume.mountPath | quote }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -54,11 +58,18 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: storage
-              mountPath: /app/apps/app/matrix-storage
+              mountPath: {{ .Values.persistentVolume.mountPath }}
+              {{- if .Values.persistentVolume.subPath }}
+              subPath: {{ .Values.persistentVolume.subPath }}
+              {{- end }}
       volumes:
         - name: storage
           persistentVolumeClaim:
+            {{- if .Values.persistentVolume.useExisting }}
+            claimName: {{ .Values.persistentVolume.existingClaimName }}
+            {{- else }}
             claimName: {{ include "website-bot-oracle.fullname" . }}-storage
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
