@@ -86,7 +86,7 @@ persistentVolume:
   # Name of the existing PVC to mount (only used when useExisting is true)
   existingClaimName: "ixofoundation-core-common-storage"
   # Mount path for the persistent volume in the container
-  mountPath: /oracle-storage/companion
+  mountPath: /srv/oracle-storage/companion
   # Configuration for creating a new PVC (only used when useExisting is false)
   # size: 40Gi
   # accessModes:
