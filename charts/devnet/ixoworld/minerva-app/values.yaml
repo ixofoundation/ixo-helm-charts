@@ -14,10 +14,19 @@ nameOverride: ""
 fullnameOverride: ""
 
 persistentVolume:
-  size: 40Gi
-  accessModes:
-    - ReadWriteOnce
-  storageClass: vultr-block-storage-hdd
+  # Set to true to use an existing PVC instead of creating a new one
+  useExisting: true
+  # Name of the existing PVC to mount (only used when useExisting is true)
+  existingClaimName: "ixofoundation-core-common-storage"
+  # Mount path for the persistent volume in the container
+  mountPath: /oracle-storage/minerva
+  # Subdirectory of the PVC to mount (useful for shared PVCs)
+  subPath: "oracle-storage/minerva"
+  # Configuration for creating a new PVC (only used when useExisting is false)
+  # size: 40Gi
+  # accessModes:
+  #   - ReadWriteOnce
+  # storageClass: vultr-block-storage-hdd
 
 serviceAccount:
   # Specifies whether a service account should be created
