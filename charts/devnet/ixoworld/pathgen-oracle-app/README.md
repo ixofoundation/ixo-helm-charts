@@ -1,6 +1,6 @@
 # pathgen-oracle
 
-![Version: 0.0.21](https://img.shields.io/badge/Version-0.0.21-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.40](https://img.shields.io/badge/AppVersion-0.1.40-informational?style=flat-square)
+![Version: 0.0.22](https://img.shields.io/badge/Version-0.0.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.41](https://img.shields.io/badge/AppVersion-0.1.41-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -27,9 +27,10 @@ A Helm chart for Kubernetes
 | ingress.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
-| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| persistentVolume.size | string | `"40Gi"` |  |
-| persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
+| persistentVolume.existingClaimName | string | `"ixofoundation-core-common-storage"` |  |
+| persistentVolume.mountPath | string | `"/oracle-storage/pathgen"` |  |
+| persistentVolume.subPath | string | `"oracle-storage/pathgen"` |  |
+| persistentVolume.useExisting | bool | `true` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
