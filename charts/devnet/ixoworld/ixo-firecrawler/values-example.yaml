@@ -1,0 +1,170 @@
+# Example values for ixo-firecrawler deployment
+# This demonstrates the sub-chart architecture where each component
+# has its own Chart.yaml with independent appVersion (updated by CI/CD)
+
+replicaCount: 1
+
+# API Server Configuration
+# CI/CD will update charts/api-server/Chart.yaml appVersion
+# The deployment will use that appVersion as the image tag
+api-server:
+  image:
+    repository: ghcr.io/ixoworld/firecrawl  # Your forked repository
+    pullPolicy: IfNotPresent
+    # tag: ""  # Leave empty to use Chart.AppVersion from charts/api-server/Chart.yaml
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  env:
+    # ===== Required ENVS ======
+    - name: HOST
+      value: "0.0.0.0"
+    - name: PORT
+      value: "3002"
+    - name: INTERNAL_PORT
+      value: "3002"
+    - name: EXTRACT_WORKER_PORT
+      value: "3004"
+    - name: WORKER_PORT
+      value: "3005"
+    - name: USE_GO_MARKDOWN_PARSER
+      value: "true"
+    - name: ENV
+      value: "production"
+    - name: USE_DB_AUTHENTICATION
+      value: "false"
+    
+    # ===== Service URLs (localhost since same pod) ======
+    - name: PLAYWRIGHT_MICROSERVICE_URL
+      value: "http://localhost:3000/scrape"
+    - name: NUQ_DATABASE_URL
+      value: "postgres://postgres:postgres@nuq-postgres:5432/postgres"
+    
+    # ===== Redis ======
+    - name: REDIS_URL
+      value: "redis://redis:6379"
+    - name: REDIS_RATE_LIMIT_URL
+      value: "redis://redis:6379"
+    
+    # ===== AI Features ======
+    - name: OPENROUTER_API_KEY
+      value: "sk-or-v1-your-key-here"
+    - name: OPENAI_API_KEY
+      value: "sk-or-v1-your-key-here"
+    - name: LLM_PROVIDER
+      value: "openrouter"
+    - name: MODEL_NAME
+      value: "qwen/qwen3-235b-a22b-2507"
+    - name: OPENAI_BASE_URL
+      value: "https://openrouter.ai/api/v1"
+    - name: VLM_MODEL_NAME
+      value: "qwen/qwen3-vl-235b-a22b-instruct"
+    
+    # ===== Embeddings ======
+    - name: IXO_API_KEY
+      value: "none"
+    - name: EMBEDDING_PROVIDER
+      value: "ixo"
+    - name: IXO_BASE_URL
+      value: "https://nomic.testnet.ixo.earth/v1"
+    
+    # ===== Queue Admin Panel ======
+    - name: BULL_AUTH_KEY
+      value: "your-auth-key-here"
+
+# MCP Server Configuration
+# CI/CD will update charts/mcp-server/Chart.yaml appVersion
+mcp-server:
+  image:
+    repository: ghcr.io/firecrawl/firecrawl-mcp-server  # Original or your fork
+    pullPolicy: IfNotPresent
+    # tag: ""  # Leave empty to use Chart.AppVersion from charts/mcp-server/Chart.yaml
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  env:
+    - name: FIRECRAWL_API_KEY
+      value: "no-auth-required"
+    - name: FIRECRAWL_API_URL
+      value: "http://localhost:3002"  # localhost since same pod
+    - name: HTTP_STREAMABLE_SERVER
+      value: "true"
+    - name: HTTP_STREAMABLE_HOST
+      value: "0.0.0.0"
+    - name: HOST
+      value: "0.0.0.0"
+    - name: PORT
+      value: "3000"
+
+# Playwright Service Configuration
+# CI/CD will update charts/playwright-service/Chart.yaml appVersion
+playwright-service:
+  image:
+    repository: ghcr.io/firecrawl/playwright-service  # Original or your fork
+    pullPolicy: IfNotPresent
+    # tag: ""  # Leave empty to use Chart.AppVersion from charts/playwright-service/Chart.yaml
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+  env:
+    - name: PORT
+      value: "3000"
+    # Optional: Configure proxy if needed
+    # - name: PROXY_SERVER
+    #   value: ""
+    # - name: PROXY_USERNAME
+    #   value: ""
+    # - name: PROXY_PASSWORD
+    #   value: ""
+    # - name: BLOCK_MEDIA
+    #   value: ""
+
+# Service configuration
+service:
+  type: ClusterIP
+  apiPort: 3002
+  mcpPort: 3000
+  playwrightPort: 3000
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: firecrawler.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: api
+    - host: firecrawler-mcp.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: mcp
+  tls:
+    - secretName: firecrawler-tls
+      hosts:
+        - firecrawler.example.com
+        - firecrawler-mcp.example.com
+
+# Optional: Enable autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+

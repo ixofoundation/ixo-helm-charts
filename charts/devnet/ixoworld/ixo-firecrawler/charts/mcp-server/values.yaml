@@ -1,0 +1,20 @@
+# MCP Server values
+image:
+  repository: ghcr.io/firecrawl/firecrawl-mcp-server
+  pullPolicy: IfNotPresent
+  # tag defaults to Chart.AppVersion
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 250m
+  #   memory: 512Mi
+
+env: []
+  # - name: FIRECRAWL_API_KEY
+  #   value: "no-auth-required"
+  # - name: FIRECRAWL_API_URL
+  #   value: "http://localhost:3002"
+
