@@ -40,7 +40,7 @@ spec:
           {{- end }}
           ports:
             - name: api
-              containerPort: 3002
+              containerPort: {{ .Values.service.apiPort }}
               protocol: TCP
           resources:
             {{- toYaml (index .Values "api-server" "resources") | nindent 12 }}
@@ -57,7 +57,7 @@ spec:
           {{- end }}
           ports:
             - name: mcp
-              containerPort: 3000
+              containerPort: {{ .Values.service.mcpPort }}
               protocol: TCP
             - name: mcp-admin
               containerPort: 8080
@@ -77,7 +77,7 @@ spec:
           {{- end }}
           ports:
             - name: playwright
-              containerPort: 3000
+              containerPort: {{ .Values.service.playwrightPort }}
               protocol: TCP
           resources:
             {{- toYaml (index .Values "playwright-service" "resources") | nindent 12 }}
