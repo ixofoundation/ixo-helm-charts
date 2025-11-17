@@ -2,9 +2,9 @@ apiVersion: v2
 name: domain-indexer
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.5
-appVersion: v1.1.0-develop.3
+version: 0.0.6
+appVersion: v1.1.0-develop.4
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/domain-indexer app version from v1.1.0-develop.2 to v1.1.0-develop.3
+      description: Update ixoworld/domain-indexer app version from v1.1.0-develop.3 to v1.1.0-develop.4
