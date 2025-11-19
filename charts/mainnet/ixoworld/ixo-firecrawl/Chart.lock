@@ -1,0 +1,12 @@
+dependencies:
+- name: api-server
+  repository: file://./charts/api-server
+  version: 0.0.1
+- name: mcp-server
+  repository: file://./charts/mcp-server
+  version: 0.0.1
+- name: playwright-service
+  repository: file://./charts/playwright-service
+  version: 0.0.1
+digest: sha256:d67ef0129f1ffcf0b0745431cffdb54e4d324a1051d2cf4bb4b57cf58de026a3
+generated: "2025-11-12T17:59:31.984019+02:00"

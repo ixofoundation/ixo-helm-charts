@@ -1,0 +1,183 @@
+# Default values for ixo-firecrawler.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+# Sub-chart overrides
+# Each sub-chart has its own Chart.yaml with appVersion that CI/CD can update
+# The deployment will use: {{ .Subcharts.CHARTNAME.Chart.AppVersion }} as the image tag
+
+api-server:
+  image:
+    repository: ghcr.io/firecrawl/firecrawl
+    pullPolicy: IfNotPresent
+    # tag defaults to api-server Chart.AppVersion
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 500m
+    #   memory: 1Gi
+  env: []
+    # - name: HOST
+    #   value: "0.0.0.0"
+    # - name: PORT
+    #   value: "3002"
+    # - name: INTERNAL_PORT
+    #   value: "3002"
+    # - name: EXTRACT_WORKER_PORT
+    #   value: "3004"
+    # - name: WORKER_PORT
+    #   value: "3005"
+    # - name: USE_GO_MARKDOWN_PARSER
+    #   value: "true"
+    # - name: ENV
+    #   value: "production"
+    # - name: REDIS_URL
+    #   value: "redis://redis:6379"
+    # - name: REDIS_RATE_LIMIT_URL
+    #   value: "redis://redis:6379"
+    # - name: PLAYWRIGHT_MICROSERVICE_URL
+    #   value: "http://localhost:3000/scrape"
+    # - name: NUQ_DATABASE_URL
+    #   value: "postgres://postgres:postgres@nuq-postgres:5432/postgres"
+    # - name: USE_DB_AUTHENTICATION
+    #   value: "false"
+    # - name: OPENAI_API_KEY
+    #   value: ""
+    # - name: OPENAI_BASE_URL
+    #   value: "https://openrouter.ai/api/v1"
+    # - name: MODEL_NAME
+    #   value: ""
+    # - name: OPENROUTER_API_KEY
+    #   value: ""
+    # - name: LLM_PROVIDER
+    #   value: "openrouter"
+    # - name: VLM_MODEL_NAME
+    #   value: ""
+    # - name: IXO_API_KEY
+    #   value: "none"
+    # - name: EMBEDDING_PROVIDER
+    #   value: "ixo"
+    # - name: IXO_BASE_URL
+    #   value: "https://nomic.testnet.ixo.earth/v1"
+    # - name: BULL_AUTH_KEY
+    #   value: ""
+
+mcp-server:
+  image:
+    repository: ghcr.io/firecrawl/firecrawl-mcp-server
+    pullPolicy: IfNotPresent
+    # tag defaults to mcp-server Chart.AppVersion
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 1Gi
+    # requests:
+    #   cpu: 250m
+    #   memory: 512Mi
+  env: []
+    # - name: FIRECRAWL_API_KEY
+    #   value: "no-auth-required"
+    # - name: FIRECRAWL_API_URL
+    #   value: "http://localhost:3002"
+    # - name: HTTP_STREAMABLE_SERVER
+    #   value: "true"
+    # - name: HTTP_STREAMABLE_HOST
+    #   value: "0.0.0.0"
+    # - name: HOST
+    #   value: "0.0.0.0"
+    # - name: PORT
+    #   value: "3000"
+
+playwright-service:
+  image:
+    repository: ghcr.io/firecrawl/playwright-service
+    pullPolicy: IfNotPresent
+    # tag defaults to playwright-service Chart.AppVersion
+  resources: {}
+    # limits:
+    #   cpu: 1000m
+    #   memory: 2Gi
+    # requests:
+    #   cpu: 500m
+    #   memory: 1Gi
+  env: []
+    # - name: PORT
+    #   value: "3000"
+    # - name: PROXY_SERVER
+    #   value: ""
+    # - name: PROXY_USERNAME
+    #   value: ""
+    # - name: PROXY_PASSWORD
+    #   value: ""
+    # - name: BLOCK_MEDIA
+    #   value: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  # API Server port
+  apiPort: 3002
+  # MCP Server port
+  mcpPort: 3000
+  # Playwright Service port (used internally by API)
+  playwrightPort: 3000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          service: api
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

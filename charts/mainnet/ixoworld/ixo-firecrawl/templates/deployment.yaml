@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ixo-firecrawler.fullname" . }}
+  labels:
+    {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ixo-firecrawler.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ixo-firecrawler.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ixo-firecrawler.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        # API Server Container
+        - name: api
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ index .Values "api-server" "image" "repository" }}:{{ index .Values "api-server" "image" "tag" | default (index .Subcharts "api-server").Chart.AppVersion }}"
+          imagePullPolicy: {{ index .Values "api-server" "image" "pullPolicy" }}
+          {{- with (index .Values "api-server" "env") }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: api
+              containerPort: {{ .Values.service.apiPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml (index .Values "api-server" "resources") | nindent 12 }}
+        
+        # MCP Server Container
+        - name: mcp-server
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ index .Values "mcp-server" "image" "repository" }}:{{ index .Values "mcp-server" "image" "tag" | default (index .Subcharts "mcp-server").Chart.AppVersion }}"
+          imagePullPolicy: {{ index .Values "mcp-server" "image" "pullPolicy" }}
+          {{- with (index .Values "mcp-server" "env") }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: mcp
+              containerPort: {{ .Values.service.mcpPort }}
+              protocol: TCP
+            - name: mcp-admin
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml (index .Values "mcp-server" "resources") | nindent 12 }}
+        
+        # Playwright Service Container
+        - name: playwright-service
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ index .Values "playwright-service" "image" "repository" }}:{{ index .Values "playwright-service" "image" "tag" | default (index .Subcharts "playwright-service").Chart.AppVersion }}"
+          imagePullPolicy: {{ index .Values "playwright-service" "image" "pullPolicy" }}
+          {{- with (index .Values "playwright-service" "env") }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: playwright
+              containerPort: {{ .Values.service.playwrightPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml (index .Values "playwright-service" "resources") | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
