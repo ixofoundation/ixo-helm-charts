@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.0.15](https://img.shields.io/badge/Version-0.0.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-d9d96d8](https://img.shields.io/badge/AppVersion-main--d9d96d8-informational?style=flat-square)
+![Version: 0.0.16](https://img.shields.io/badge/Version-0.0.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-ef0c7c9](https://img.shields.io/badge/AppVersion-main--ef0c7c9-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
