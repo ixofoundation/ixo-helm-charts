@@ -15,7 +15,7 @@ data:
     autoJoin: true
 
     # Location on disk for where to store various bot information.
-    dataPath: "./ixo-rooms-bot-storage"
+    dataPath: {{ .Values.persistentVolume.mountPath | quote }}
 
     # The blockchain API endpoint to query for DID documents
     blockchainRpcUri: "https://devnet.ixo.earth/rpc/"

@@ -41,16 +41,19 @@ spec:
               apt-get update && apt-get install -y zip
               gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS
               while true; do
-                cd {{ .Values.backup.path }} && zip -r data.zip .
-                gsutil cp -r {{ .Values.backup.path }}/data.zip {{ .Values.backup.gcs.bucket }}/$(date +'%Y-%m-%d_%H-%M-%S')/
-                rm -f {{ .Values.backup.path }}/data.zip
+                cd {{ .Values.persistentVolume.mountPath }} && zip -r data.zip .
+                gsutil cp -r {{ .Values.persistentVolume.mountPath }}/data.zip {{ .Values.backup.gcs.bucket }}/$(date +'%Y-%m-%d_%H-%M-%S')/
+                rm -f {{ .Values.persistentVolume.mountPath }}/data.zip
                 sleep 86400 # 24 hours
               done
           volumeMounts:
             - name: gcp-service-account-key
               mountPath: /bot/gcp-key
             - name: storage
-              mountPath: {{ .Values.backup.path }}
+              mountPath: {{ .Values.persistentVolume.mountPath }}
+              {{- if .Values.persistentVolume.subPath }}
+              subPath: {{ .Values.persistentVolume.subPath }}
+              {{- end }}
           resources:
             {{- toYaml .Values.backup.resources | nindent 12 }}
         - name: {{ .Chart.Name }}
@@ -77,7 +80,10 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: storage
-              mountPath: {{ .Values.backup.path }}
+              mountPath: {{ .Values.persistentVolume.mountPath }}
+              {{- if .Values.persistentVolume.subPath }}
+              subPath: {{ .Values.persistentVolume.subPath }}
+              {{- end }}
             - name: config
               mountPath: /bot/config
               readOnly: true
@@ -90,7 +96,11 @@ spec:
             secretName: gcp-key-secret
         - name: storage
           persistentVolumeClaim:
+            {{- if .Values.persistentVolume.useExisting }}
+            claimName: {{ .Values.persistentVolume.existingClaimName }}
+            {{- else }}
             claimName: {{ .Release.Name }}-storage
+            {{- end }}
         - name: config
           configMap:
             name: {{ include "ixo-matrix-appservice-rooms.fullname" . }}-config
