@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+strategy:
+  type: Recreate
+
 # Sub-chart overrides
 # Each sub-chart has its own Chart.yaml with appVersion that CI/CD can update
 # The deployment will use: {{ .Subcharts.CHARTNAME.Chart.AppVersion }} as the image tag
