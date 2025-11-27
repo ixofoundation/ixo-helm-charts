@@ -40,6 +40,8 @@ spec:
           env:
             - name: MATRIX_STORE_PATH
               value: {{ .Values.persistentVolume.mountPath | quote }}
+            - name: SQLITE_DATABASE_PATH
+              value: {{ printf "%s/db" .Values.persistentVolume.mountPath | quote }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
