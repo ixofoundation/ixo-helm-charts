@@ -1,6 +1,6 @@
 # ixo-matrix-state-bot
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.0-develop.2](https://img.shields.io/badge/AppVersion-v0.1.0--develop.2-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.0-develop.3](https://img.shields.io/badge/AppVersion-v0.1.0--develop.3-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -13,11 +13,12 @@ A Helm chart for Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| backup.enabled | bool | `true` |  |
 | backup.gcs.bucket | string | `nil` |  |
 | backup.path | string | `"/bot/storage"` |  |
-| backup.resources.limits.memory | string | `"128Mi"` |  |
+| backup.resources.limits.memory | string | `"512Mi"` |  |
 | backup.resources.requests.cpu | string | `"10m"` |  |
-| backup.resources.requests.memory | string | `"50Mi"` |  |
+| backup.resources.requests.memory | string | `"128Mi"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixofoundation/ixo-matrix-state-bot"` |  |
@@ -31,6 +32,9 @@ A Helm chart for Kubernetes
 | ingress.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
+| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistentVolume.size | string | `"40Gi"` |  |
+| persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `0` |  |
 | podSecurityContext.runAsGroup | int | `0` |  |
