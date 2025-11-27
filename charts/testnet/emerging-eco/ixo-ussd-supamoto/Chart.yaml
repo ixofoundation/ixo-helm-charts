@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-ussd-supamoto
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.4
-appVersion: v1.0.0-stage.3
+version: 0.0.5
+appVersion: v1.0.0-stage.4
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update emerging-eco/ixo-ussd-supamoto app version from v1.0.0-stage.2 to v1.0.0-stage.3
+      description: Update emerging-eco/ixo-ussd-supamoto app version from v1.0.0-stage.3 to v1.0.0-stage.4

@@ -1,6 +1,6 @@
 # ixo-ussd-supamoto
 
-![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-stage.3](https://img.shields.io/badge/AppVersion-v1.0.0--stage.3-informational?style=flat-square)
+![Version: 0.0.5](https://img.shields.io/badge/Version-0.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-stage.4](https://img.shields.io/badge/AppVersion-v1.0.0--stage.4-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -16,7 +16,7 @@ A Helm chart for Kubernetes
 | env | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ghcr.io/ixofoundation/ixo-ussd-supamoto"` |  |
+| image.repository | string | `"ghcr.io/emerging-eco/ixo-ussd-supamoto"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
