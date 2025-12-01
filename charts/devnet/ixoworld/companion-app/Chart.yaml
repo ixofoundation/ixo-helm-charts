@@ -2,9 +2,9 @@ apiVersion: v2
 name: companion
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.16
-appVersion: 1.1.7
+version: 0.0.17
+appVersion: 1.1.71
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/companion-app app version from 1.1.6 to 1.1.7
+      description: Update ixoworld/companion-app app version from 1.1.7 to 1.1.71
