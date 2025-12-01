@@ -11,7 +11,7 @@ data:
     # -------------------------------------------------------------------------------------------------
     # Where the homeserver's Client-Server API is located. Typically this
     # is where clients would be connecting to in order to send messages.
-    homeserverUrl: 'https://devmx.ixo.earth'
+    homeserverUrl: 'https://testmx.ixo.earth'
     
     # An access token for the bot to use. Learn how to get an access token
     # at https://t2bot.io/docs/access_tokens
@@ -19,16 +19,16 @@ data:
     
     # The id of the only room the bot must join - all other invites will be
     # ignored.
-    roomId: '!tqfJZcXzJuRwAniyrd:devmx.ixo.earth'
+    roomId: '!VRvLFqoWOYeVnJhBUX:testmx.ixo.earth'
     
     # The URL of the room bot to use for matrix account registration and room management
-    roomBotUrl: 'https://rooms.bot.devmx.ixo.earth'
+    roomBotUrl: 'https://rooms.bot.testmx.ixo.earth'
     
     # The URL of the state bot to use for state management
-    stateBotUrl: 'https://state.bot.devmx.ixo.earth'
+    stateBotUrl: 'https://state.bot.testmx.ixo.earth'
     
     # The URL of the claims bot to use for claim fetching
-    claimsBotUrl: 'https://claim.bot.devmx.ixo.earth'
+    claimsBotUrl: 'https://claim.bot.testmx.ixo.earth'
     
     # The did-related access token to use for the claims bot
     claimsBotAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CLAIMS_BOT_ACCESS_TOKEN>'
@@ -37,37 +37,37 @@ data:
     # CLAIM COLLECTION ID CONFIG
     # -------------------------------------------------------------------------------------------------
     # The id for the lead claim collection
-    leadCollectionId: '410'
+    leadCollectionId: '231'
     # The id for the screening claim collection
-    screeningCollectionId: '417'
+    screeningCollectionId: '225'
     # The id for the contract claim collection
-    contractCollectionId: '416'
+    contractCollectionId: '226'
     # The id for the onboarding fee claim collection
-    onboardingFeeCollectionId: '413'
+    onboardingFeeCollectionId: '233'
     # The id for the home visit claim collection
-    homeVisitCollectionId: '420'
+    homeVisitCollectionId: '229'
     # The id for the fuel purchase claim collection
-    fuelPurchaseCollectionId: '419'
+    fuelPurchaseCollectionId: '234'
     # The id for the bag & stove collection claim collection
-    bagStoveCollectionId: '415'
+    bagStoveCollectionId: '230'
     
     # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
     # -------------------------------------------------------------------------------------------------
     # The RPC URL of the chain to query for the claim collection details etc
-    rpcUrl: 'https://devnet.ixo.earth/rpc/'
+    rpcUrl: 'https://testnet.ixo.earth/rpc/'
     
     # The URL of the block sync graphql endpoint
-    blockSyncGraphqlUrl: 'https://devnet-blocksync-graphql.ixo.earth/graphql'
+    blockSyncGraphqlUrl: 'https://testnet-blocksync-graphql.ixo.earth/graphql'
     
     # The DID of the entity that owns the claim collections
-    entityDid: 'did:ixo:entity:b5a329141a39a277189b9ba7d5e12902'
+    entityDid: 'did:ixo:entity:bba828660334c74beec66f85038ac730'
     
     # The network to use for the ixo blockchain
-    chainNetwork: 'devnet'
+    chainNetwork: 'testnet'
     
     # The URL of the feegrant service to use
-    feegrantServiceUrl: 'https://feegrant.devnet.ixo.earth'
+    feegrantServiceUrl: 'https://feegrant.testnet.ixo.earth'
     
     # The API key to use for the feegrant service
     feegrantServiceApiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_FEEGRANT_API_KEY>'
@@ -83,7 +83,7 @@ data:
     credentialsMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CREDENTIALS_MNEMONIC>'
     
     # The DID that will be used as the issuer for all credentials
-    issuerDid: 'did:ixo:entity:54bede0aced5282b2401c58a048a731a'
+    issuerDid: 'did:ixo:entity:bf042e4f57621516854f9be523ef6850'
     
     # -------------------------------------------------------------------------------------------------
     # BOT CONFIG
@@ -128,4 +128,4 @@ data:
     # CRON CONFIG
     # -------------------------------------------------------------------------------------------------
     cronjob:
-      schedule: '*/10 * * * *'
+      schedule: '*/5 * * * *'
