@@ -32,9 +32,6 @@ spec:
         - name: gcp-backups
           image: google/cloud-sdk:latest
           imagePullPolicy: IfNotPresent
-          {{- if .Values.backup.restartPolicy }}
-          restartPolicy: {{ .Values.backup.restartPolicy }}
-          {{- end }}
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /bot/gcp-key/key.json
