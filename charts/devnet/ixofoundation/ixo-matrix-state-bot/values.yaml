@@ -90,6 +90,7 @@ affinity: {}
 
 backup:
   enabled: true
+  restartPolicy: Always
   resources:
     requests:
       cpu: 10m

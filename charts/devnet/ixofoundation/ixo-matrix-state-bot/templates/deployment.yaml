@@ -32,6 +32,9 @@ spec:
         - name: gcp-backups
           image: google/cloud-sdk:latest
           imagePullPolicy: IfNotPresent
+          {{- if .Values.backup.restartPolicy }}
+          restartPolicy: {{ .Values.backup.restartPolicy }}
+          {{- end }}
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /bot/gcp-key/key.json
@@ -47,7 +50,7 @@ spec:
               }
               
               # Install dependencies with error handling
-              apt-get update && apt-get install -y zip || handle_error "Failed to install dependencies"
+              # apt-get update && apt-get install -y zip || handle_error "Failed to install dependencies"
               
               # Authenticate with GCP with error handling
               gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS || handle_error "Failed to authenticate with GCP"
@@ -58,10 +61,10 @@ spec:
                 BACKUP_DIR=$(date +'%Y-%m-%d_%H-%M-%S')
                 cd {{ .Values.backup.path }}
                 
-                # Use zip with compression for better memory efficiency
-                # Stream directly to GCS without storing locally
+                # Use tar with gzip for memory-efficient streaming
+                # tar streams files sequentially without buffering everything in memory
                 echo "Starting backup: $BACKUP_DIR"
-                if zip -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip; then
+                if tar -czf - . 2>/dev/null | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.tar.gz; then
                   echo "Backup successful: $BACKUP_DIR"
                 else
                   echo "Backup failed: $BACKUP_DIR - will retry in next cycle"
