@@ -8,6 +8,9 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  {{- with .Values.strategy }}
+  strategy:
+  {{- toYaml . | nindent 4 }}
   selector:
     matchLabels:
       {{- include "ixo-matrix-supamoto-claims-bot.selectorLabels" . | nindent 6 }}
