@@ -27,14 +27,12 @@ spec:
       serviceAccountName: {{ include "ixo-matrix-state-bot.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      containers:
-        {{- if .Values.backup.enabled }}
+      {{- if .Values.backup.enabled }}
+      initContainers:
         - name: gcp-backups
           image: google/cloud-sdk:latest
           imagePullPolicy: IfNotPresent
-          {{- if .Values.backup.restartPolicy }}
-          restartPolicy: {{ .Values.backup.restartPolicy }}
-          {{- end }}
+          restartPolicy: Always
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /bot/gcp-key/key.json
@@ -87,7 +85,8 @@ spec:
               mountPath: {{ .Values.backup.path }}
           resources:
             {{- toYaml .Values.backup.resources | nindent 12 }}
-        {{- end }}
+      {{- end }}
+      containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
