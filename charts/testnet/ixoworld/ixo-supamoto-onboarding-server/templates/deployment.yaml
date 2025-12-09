@@ -8,6 +8,10 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "ixo-supamoto-onboarding-server.selectorLabels" . | nindent 6 }}
@@ -27,10 +31,11 @@ spec:
       serviceAccountName: {{ include "ixo-supamoto-onboarding-server.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      containers:
+      initContainers:
         - name: gcp-backups
           image: google/cloud-sdk:latest
           imagePullPolicy: IfNotPresent
+          restartPolicy: Always
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /bot/gcp-key/key.json
@@ -53,6 +58,7 @@ spec:
               mountPath: {{ .Values.backup.path }}
           resources:
             {{- toYaml .Values.backup.resources | nindent 12 }}
+      containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
