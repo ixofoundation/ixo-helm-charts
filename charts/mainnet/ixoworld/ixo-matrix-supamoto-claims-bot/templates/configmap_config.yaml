@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ixo-matrix-supamoto-claims-bot.fullname" . }}-config
+  labels:
+    {{- include "ixo-matrix-supamoto-claims-bot.labels" . | nindent 4 }}
+data:
+  production.yaml: |-
+    # -------------------------------------------------------------------------------------------------
+    # MATRIX CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # Where the homeserver's Client-Server API is located. Typically this
+    # is where clients would be connecting to in order to send messages.
+    homeserverUrl: 'https://testmx.ixo.earth'
+    
+    # An access token for the bot to use. Learn how to get an access token
+    # at https://t2bot.io/docs/access_tokens
+    accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_CLAIMS_BOT_ACCESS_TOKEN>'
+    
+    # The id of the only room the bot must join - all other invites will be
+    # ignored.
+    roomId: '!VRvLFqoWOYeVnJhBUX:testmx.ixo.earth'
+    
+    # -------------------------------------------------------------------------------------------------
+    # CHAIN CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The network to use for the ixo blockchain
+    chainNetwork: 'testnet'
+    
+    # The RPC URL of the chain to query for the claim collection details etc
+    rpcUrl: 'https://testnet.ixo.earth/rpc/'
+    
+    # The URL of the block sync graphql endpoint
+    blockSyncGraphqlUrl: 'https://testnet-blocksync-graphql.ixo.earth/graphql'
+    
+    # The URL of the remote contexts to use
+    remoteContexts:
+      - 'https://w3id.org/ixo/context/v1'
+    
+    # -------------------------------------------------------------------------------------------------
+    # CREDENTIALS CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The mnemonic phrase for generating credential signing keys
+    agentMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_CLAIMS_BOT_AGENT_MNEMONIC>'
+    
+    # -------------------------------------------------------------------------------------------------
+    # BOT CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # Whether or not to autojoin rooms when invited.
+    autoJoin: true
+    
+    # Location on disk for where to store various bot information.
+    dataPath: 'storage'
+    
+    # Set to false to disable encryption support. Encrypted data will be
+    # stored under dataPath.
+    encryption: true
+    
+    # -------------------------------------------------------------------------------------------------
+    # DATABASE CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The URL of the database to store the claims and evaluations
+    databaseUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_CLAIMS_BOT_DATABASE_URL>'
+    
+    # Whether to use SSL for the database connection
+    databaseUseSsl: true
+    
+    # -------------------------------------------------------------------------------------------------
+    # REST API CONFIG
+    # -------------------------------------------------------------------------------------------------
+    restApi:
+      # Set to true to enable the REST API
+      enabled: true
+      # Port to listen on for the REST API, default is 8080
+      port: 8083
+      # express trust proxy config for if you are using a reverse proxy
+      trustProxy: 1
+
