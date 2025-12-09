@@ -1,6 +1,6 @@
 # ixo-matrix-supamoto-claims-bot
 
-![Version: 0.0.13](https://img.shields.io/badge/Version-0.0.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.10](https://img.shields.io/badge/AppVersion-v1.1.10-informational?style=flat-square)
+![Version: 0.0.14](https://img.shields.io/badge/Version-0.0.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.11](https://img.shields.io/badge/AppVersion-v1.1.11-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -46,6 +46,7 @@ A Helm chart for Kubernetes
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
+| strategy.type | string | `"Recreate"` |  |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------
