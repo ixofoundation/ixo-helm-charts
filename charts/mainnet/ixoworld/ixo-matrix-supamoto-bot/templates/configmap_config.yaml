@@ -21,12 +21,6 @@ data:
     # ignored.
     roomId: '!XUXqEEmIhStjNZsjUq:mx.ixo.earth'
 
-    # The URL of the room bot to use for matrix account registration and room management
-    roomBotUrl: 'https://rooms.bot.mx.ixo.earth'
-
-    # The URL of the state bot to use for state management
-    stateBotUrl: 'https://state.bot.mx.ixo.earth'
-
     # The URL of the claims bot to use for claim fetching
     claimsBotUrl: 'https://claim.bot.mx.ixo.earth'
 
@@ -34,56 +28,13 @@ data:
     claimsBotAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CLAIMS_BOT_ACCESS_TOKEN>'
 
     # -------------------------------------------------------------------------------------------------
-    # CLAIM COLLECTION ID CONFIG
-    # -------------------------------------------------------------------------------------------------
-    # The id for the lead claim collection
-    leadCollectionId: '71'
-    # The id for the screening claim collection
-    screeningCollectionId: '72'
-    # The id for the contract claim collection
-    contractCollectionId: '73'
-    # The id for the onboarding fee claim collection
-    onboardingFeeCollectionId: '74'
-    # The id for the home visit claim collection
-    homeVisitCollectionId: '77'
-    # The id for the fuel purchase claim collection
-    fuelPurchaseCollectionId: '75'
-    # The id for the bag & stove collection claim collection
-    bagStoveCollectionId: '76'
-
-    # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
     # -------------------------------------------------------------------------------------------------
-    # The RPC URL of the chain to query for the claim collection details etc
-    rpcUrl: 'https://impacthub.ixo.world/rpc/'
-
-    # The URL of the block sync graphql endpoint
-    blockSyncGraphqlUrl: 'https://blocksync-graphql.ixo.earth/graphql'
-
     # The DID of the entity that owns the claim collections
     entityDid: 'did:ixo:entity:5763555c83aa9ad82c48aa06fbac551f'
 
-    # The network to use for the ixo blockchain
-    chainNetwork: 'mainnet'
-
-    # The URL of the feegrant service to use
-    feegrantServiceUrl: 'https://feegrant.ixo.world'
-
-    # The API key to use for the feegrant service
-    feegrantServiceApiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_FEEGRANT_API_KEY>'
-
-    # The URL of the remote contexts to use
-    remoteContexts:
-      - 'https://w3id.org/ixo/context/v1'
-
-    # -------------------------------------------------------------------------------------------------
-    # CREDENTIALS CONFIG
-    # -------------------------------------------------------------------------------------------------
-    # The mnemonic phrase for generating credential signing keys
-    credentialsMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CREDENTIALS_MNEMONIC>'
-
-    # The DID that will be used as the issuer for all credentials
-    issuerDid: 'did:ixo:entity:d0cb514eb9df4f49e4a3fed005b89841'
+    # The RPC URL of the chain to query for the claim collection details etc
+    rpcUrl: 'https://impacthub.ixo.world/rpc/'
 
     # -------------------------------------------------------------------------------------------------
     # BOT CONFIG
@@ -120,13 +71,7 @@ data:
       # Set to true to enable the REST API
       enabled: true
       # Port to listen on for the REST API, default is 8080
-      port: 8083
+      port: 8084
       # express trust proxy config for if you are using a reverse proxy
       trustProxy: 1
-
-    # -------------------------------------------------------------------------------------------------
-    # CRON CONFIG
-    # -------------------------------------------------------------------------------------------------
-    cronjob:
-      schedule: '*/10 * * * *'
 
