@@ -1,6 +1,6 @@
 # ixo-matrix-supamoto-bot
 
-![Version: 0.0.74](https://img.shields.io/badge/Version-0.0.74-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.19-dev.12](https://img.shields.io/badge/AppVersion-v1.1.19--dev.12-informational?style=flat-square)
+![Version: 0.0.75](https://img.shields.io/badge/Version-0.0.75-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.19-dev.13](https://img.shields.io/badge/AppVersion-v1.1.19--dev.13-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
