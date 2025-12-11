@@ -67,7 +67,7 @@ spec:
               containerPort: 9000
               protocol: TCP
             - name: rest
-              containerPort: 8083
+              containerPort: 8084
               protocol: TCP
           livenessProbe:
             httpGet:
