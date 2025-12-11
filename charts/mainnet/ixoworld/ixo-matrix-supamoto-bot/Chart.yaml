@@ -3,7 +3,7 @@ name: ixo-matrix-supamoto-bot
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.41
-appVersion: v1.0.38
+appVersion: v1.1.21
 annotations:
   artifacthub.io/changes: |
     - kind: changed
