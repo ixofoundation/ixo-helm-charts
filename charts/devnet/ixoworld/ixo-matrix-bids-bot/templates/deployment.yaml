@@ -54,17 +54,54 @@ spec:
               
               echo "Backup container started successfully"
               
+              # Calculate ulimit from memory limit (80% of container limit)
+              # Parse memory limit from environment or use default
+              {{- if .Values.backup.resources.limits.memory }}
+              MEMORY_LIMIT="{{ .Values.backup.resources.limits.memory }}"
+              # Convert memory limit to KB for ulimit -v
+              if echo "$MEMORY_LIMIT" | grep -qi "Gi"; then
+                MEM_GB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
+                ULIMIT_KB=$(echo "$MEM_GB * 1048576 * 0.8" | bc | cut -d. -f1)
+              elif echo "$MEMORY_LIMIT" | grep -qi "Mi"; then
+                MEM_MB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
+                ULIMIT_KB=$(echo "$MEM_MB * 1024 * 0.8" | bc | cut -d. -f1)
+              elif echo "$MEMORY_LIMIT" | grep -qi "G"; then
+                MEM_GB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
+                ULIMIT_KB=$(echo "$MEM_GB * 1000000 * 0.8" | bc | cut -d. -f1)
+              elif echo "$MEMORY_LIMIT" | grep -qi "M"; then
+                MEM_MB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
+                ULIMIT_KB=$(echo "$MEM_MB * 1000 * 0.8" | bc | cut -d. -f1)
+              else
+                # Default to 800MB if can't parse
+                ULIMIT_KB=819200
+              fi
+              {{- else }}
+              # Default to 800MB if not specified
+              ULIMIT_KB=819200
+              {{- end }}
+              
+              echo "Setting memory limit to ${ULIMIT_KB}KB (80% of container limit)"
+              
               while true; do
                 BACKUP_DIR=$(date +'%Y-%m-%d_%H-%M-%S')
                 cd {{ .Values.backup.path }}
                 
-                # Use zip with compression for better memory efficiency
-                # Stream directly to GCS without storing locally
+                # Run backup in a subshell with memory limits to prevent OOMKill
                 echo "Starting backup: $BACKUP_DIR"
-                if zip -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip; then
+                (
+                  # Set virtual memory limit to prevent OOMKill
+                  # When this limit is hit, the process fails gracefully instead of OOMKill
+                  ulimit -v $ULIMIT_KB
+                  
+                  # Use zip with compression for better memory efficiency
+                  # Stream directly to GCS without storing locally
+                  zip -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip
+                )
+                
+                if [ $? -eq 0 ]; then
                   echo "Backup successful: $BACKUP_DIR"
                 else
-                  echo "Backup failed: $BACKUP_DIR - will retry in next cycle"
+                  echo "Backup failed: $BACKUP_DIR (exit code: $?) - will retry in next cycle"
                 fi
                 
                 echo "Sleeping for 24 hours until next backup..."
