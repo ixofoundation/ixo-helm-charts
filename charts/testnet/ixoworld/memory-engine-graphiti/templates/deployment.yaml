@@ -59,12 +59,12 @@ spec:
             httpGet:
               path: /healthcheck
               port: http
-            initialDelaySeconds: 90
+            initialDelaySeconds: 180
           readinessProbe:
             httpGet:
               path: /healthcheck
               port: http
-            initialDelaySeconds: 90
+            initialDelaySeconds: 180
           resources:
             {{- toYaml .Values.containers.apiServer.resources | nindent 12 }}
           volumeMounts:
