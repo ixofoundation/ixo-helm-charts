@@ -89,7 +89,7 @@ persistentVolume:
   # Name of the existing PVC to mount (only used when useExisting is true)
   existingClaimName: "ixofoundation-core-common-storage"
   # Mount path for the persistent volume in the container
-  mountPath: /oracle-storage/domain-creator-oracle
+  mountPath: /srv/oracle-storage/domain-creator-oracle
   # Subdirectory of the PVC to mount (useful for shared PVCs)
   subPath: "oracle-storage/domain-creator-oracle"
   # Configuration for creating a new PVC (only used when useExisting is false)
