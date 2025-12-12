@@ -92,6 +92,7 @@ tolerations: []
 affinity: {}
 
 backup:
+  restartPolicy: Always
   resources:
     requests:
       cpu: 10m
