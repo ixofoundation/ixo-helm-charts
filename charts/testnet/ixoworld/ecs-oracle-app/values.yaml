@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+strategy:
+  type: Recreate
+
 image:
   repository: ghcr.io/ixoworld/ecs-oracle/app
   pullPolicy: IfNotPresent
@@ -86,7 +89,7 @@ persistentVolume:
   # Name of the existing PVC to mount (only used when useExisting is true)
   #existingClaimName: "ixofoundation-core-common-storage"
   # Mount path for the persistent volume in the container
-  #mountPath: /srv/oracle-storage/companion
+  mountPath: /app/apps/app/matrix-storage
   # Subdirectory of the PVC to mount (useful for shared PVCs)
   #subPath: "oracle-storage/companion"
   # Configuration for creating a new PVC (only used when useExisting is false)
