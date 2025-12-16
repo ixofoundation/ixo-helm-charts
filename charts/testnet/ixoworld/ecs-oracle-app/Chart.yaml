@@ -2,9 +2,9 @@ apiVersion: v2
 name: ecs-oracle
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.2
-appVersion: 1.2.0
+version: 0.0.3
+appVersion: 1.2.1
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/ecs-oracle-app app version from 1.1.77 to 1.2.0
+      description: Update ixoworld/ecs-oracle-app app version from 1.2.0 to 1.2.1

@@ -1,6 +1,6 @@
 # ecs-oracle
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.0](https://img.shields.io/badge/AppVersion-1.2.0-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.1](https://img.shields.io/badge/AppVersion-1.2.1-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -27,6 +27,11 @@ A Helm chart for Kubernetes
 | ingress.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
+| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistentVolume.mountPath | string | `"/app/apps/app/matrix-storage"` |  |
+| persistentVolume.size | string | `"40Gi"` |  |
+| persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
+| persistentVolume.useExisting | bool | `false` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
@@ -37,6 +42,7 @@ A Helm chart for Kubernetes
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
+| strategy.type | string | `"Recreate"` |  |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------
