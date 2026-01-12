@@ -54,54 +54,126 @@ spec:
               
               echo "Backup container started successfully"
               
-              # Calculate ulimit from memory limit (80% of container limit)
-              # Parse memory limit from environment or use default
-              {{- if .Values.backup.resources.limits.memory }}
-              MEMORY_LIMIT="{{ .Values.backup.resources.limits.memory }}"
-              # Convert memory limit to KB for ulimit -v
-              if echo "$MEMORY_LIMIT" | grep -qi "Gi"; then
-                MEM_GB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
-                ULIMIT_KB=$(echo "$MEM_GB * 1048576 * 0.8" | bc | cut -d. -f1)
-              elif echo "$MEMORY_LIMIT" | grep -qi "Mi"; then
-                MEM_MB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
-                ULIMIT_KB=$(echo "$MEM_MB * 1024 * 0.8" | bc | cut -d. -f1)
-              elif echo "$MEMORY_LIMIT" | grep -qi "G"; then
-                MEM_GB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
-                ULIMIT_KB=$(echo "$MEM_GB * 1000000 * 0.8" | bc | cut -d. -f1)
-              elif echo "$MEMORY_LIMIT" | grep -qi "M"; then
-                MEM_MB=$(echo "$MEMORY_LIMIT" | sed 's/[^0-9.]//g')
-                ULIMIT_KB=$(echo "$MEM_MB * 1000 * 0.8" | bc | cut -d. -f1)
-              else
-                # Default to 800MB if can't parse
-                ULIMIT_KB=819200
-              fi
-              {{- else }}
-              # Default to 800MB if not specified
-              ULIMIT_KB=819200
-              {{- end }}
-              
-              echo "Setting memory limit to ${ULIMIT_KB}KB (80% of container limit)"
-              
               while true; do
                 BACKUP_DIR=$(date +'%Y-%m-%d_%H-%M-%S')
                 cd {{ .Values.backup.path }}
                 
-                # Run backup in a subshell with memory limits to prevent OOMKill
-                echo "Starting backup: $BACKUP_DIR"
-                (
-                  # Set virtual memory limit to prevent OOMKill
-                  # When this limit is hit, the process fails gracefully instead of OOMKill
-                  ulimit -v $ULIMIT_KB
-                  
-                  # Use zip with compression for better memory efficiency
-                  # Stream directly to GCS without storing locally
-                  zip -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip
-                )
+                {{- if .Values.backup.chunking.enabled }}
+                # Use configured chunk size in MB
+                CHUNK_SIZE_MB={{ .Values.backup.chunking.chunkSizeMB }}
+                {{- else }}
+                # Default: 1GB chunks for streaming zip efficiency
+                CHUNK_SIZE_MB=1024
+                {{- end }}
                 
-                if [ $? -eq 0 ]; then
-                  echo "Backup successful: $BACKUP_DIR"
+                echo "========================================="
+                echo "Starting chunked streaming backup: $BACKUP_DIR"
+                echo "Target chunk size: ${CHUNK_SIZE_MB}MB"
+                echo "========================================="
+                
+                # Get all files with their sizes
+                CHUNK_LIST="/tmp/chunk_files.txt"
+                find . -type f -printf "%s %p\n" > "$CHUNK_LIST"
+                
+                if [ ! -s "$CHUNK_LIST" ]; then
+                  echo "No files to backup, skipping..."
+                  rm -f "$CHUNK_LIST"
+                  sleep 86400
+                  continue
+                fi
+                
+                # Count total files and calculate total size
+                TOTAL_FILES=$(wc -l < "$CHUNK_LIST")
+                TOTAL_SIZE_MB=$(awk '{sum+=$1} END {printf "%.0f", sum/1024/1024}' "$CHUNK_LIST")
+                
+                echo "Total files: $TOTAL_FILES"
+                echo "Total size: ${TOTAL_SIZE_MB}MB"
+                
+                # Calculate estimated number of chunks
+                EST_CHUNKS=$(( (TOTAL_SIZE_MB + CHUNK_SIZE_MB - 1) / CHUNK_SIZE_MB ))
+                echo "Estimated chunks: $EST_CHUNKS"
+                echo "========================================="
+                
+                # Process files in size-based chunks with streaming
+                CHUNK_NUM=1
+                CURRENT_CHUNK_SIZE=0
+                CURRENT_CHUNK_FILES="/tmp/current_chunk.txt"
+                SUCCESS_COUNT=0
+                FAILED_COUNT=0
+                
+                > "$CURRENT_CHUNK_FILES"
+                
+                while IFS= read -r line; do
+                  FILE_SIZE=$(echo "$line" | awk '{print $1}')
+                  FILE_PATH=$(echo "$line" | cut -d' ' -f2-)
+                  FILE_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $FILE_SIZE/1024/1024}")
+                  
+                  # Add file to current chunk
+                  echo "$FILE_PATH" >> "$CURRENT_CHUNK_FILES"
+                  CURRENT_CHUNK_SIZE=$(awk "BEGIN {printf \"%.2f\", $CURRENT_CHUNK_SIZE + $FILE_SIZE_MB}")
+                  
+                  # Check if chunk size limit reached
+                  CHUNK_FULL=$(awk "BEGIN {print ($CURRENT_CHUNK_SIZE >= $CHUNK_SIZE_MB)}")
+                  
+                  if [ "$CHUNK_FULL" -eq 1 ]; then
+                    # Stream this chunk to GCS
+                    FILE_COUNT=$(wc -l < "$CURRENT_CHUNK_FILES")
+                    echo "Processing chunk $CHUNK_NUM: ${FILE_COUNT} files, ${CURRENT_CHUNK_SIZE}MB..."
+                    
+                    # Use streaming zip: memory-efficient, processes files one-by-one
+                    if cat "$CURRENT_CHUNK_FILES" | tr '\n' '\0' | xargs -0 zip -q -r - | \
+                       gsutil -o GSUtil:parallel_composite_upload_threshold=150M \
+                       cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip; then
+                      echo "✓ Chunk $CHUNK_NUM uploaded successfully"
+                      SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+                    else
+                      echo "✗ Chunk $CHUNK_NUM failed (exit code: $?)"
+                      FAILED_COUNT=$((FAILED_COUNT + 1))
+                    fi
+                    
+                    # Reset for next chunk
+                    CHUNK_NUM=$((CHUNK_NUM + 1))
+                    CURRENT_CHUNK_SIZE=0
+                    > "$CURRENT_CHUNK_FILES"
+                  fi
+                done < "$CHUNK_LIST"
+                
+                # Upload remaining files if any
+                if [ -s "$CURRENT_CHUNK_FILES" ]; then
+                  FILE_COUNT=$(wc -l < "$CURRENT_CHUNK_FILES")
+                  echo "Processing final chunk $CHUNK_NUM: ${FILE_COUNT} files, ${CURRENT_CHUNK_SIZE}MB..."
+                  
+                  if cat "$CURRENT_CHUNK_FILES" | tr '\n' '\0' | xargs -0 zip -q -r - | \
+                     gsutil -o GSUtil:parallel_composite_upload_threshold=150M \
+                     cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip; then
+                    echo "✓ Chunk $CHUNK_NUM uploaded successfully"
+                    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+                  else
+                    echo "✗ Chunk $CHUNK_NUM failed (exit code: $?)"
+                    FAILED_COUNT=$((FAILED_COUNT + 1))
+                  fi
+                fi
+                
+                # Cleanup
+                rm -f "$CHUNK_LIST" "$CURRENT_CHUNK_FILES"
+                
+                # Summary
+                TOTAL_CHUNKS=$((SUCCESS_COUNT + FAILED_COUNT))
+                AVG_CHUNK_SIZE=$(awk "BEGIN {printf \"%.0f\", $TOTAL_SIZE_MB / $TOTAL_CHUNKS}")
+                echo "========================================="
+                echo "Backup Summary for $BACKUP_DIR:"
+                echo "Total files: $TOTAL_FILES"
+                echo "Total size: ${TOTAL_SIZE_MB}MB"
+                echo "Total chunks: $TOTAL_CHUNKS"
+                echo "Average chunk size: ${AVG_CHUNK_SIZE}MB"
+                echo "Successful uploads: $SUCCESS_COUNT"
+                echo "Failed uploads: $FAILED_COUNT"
+                echo "========================================="
+                
+                if [ $FAILED_COUNT -eq 0 ]; then
+                  echo "✓ All chunks backed up successfully!"
                 else
-                  echo "Backup failed: $BACKUP_DIR (exit code: $?) - will retry in next cycle"
+                  echo "⚠ Warning: $FAILED_COUNT chunk(s) failed - will retry in next cycle"
                 fi
                 
                 echo "Sleeping for 24 hours until next backup..."
