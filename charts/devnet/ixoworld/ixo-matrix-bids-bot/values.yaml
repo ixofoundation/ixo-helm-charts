@@ -112,4 +112,4 @@ backup:
     # - 512MB: 7 chunks for 3.5GB data
     # 
     # Default when disabled: 1024MB (1GB chunks)
-    chunkSizeMB: 1024
+    chunkSizeMB: 5120
