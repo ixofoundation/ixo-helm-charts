@@ -94,26 +94,50 @@ spec:
                 echo "Estimated chunks: $EST_CHUNKS"
                 echo "========================================="
                 
-                # Calculate files per chunk (simpler and MUCH faster than size-based)
-                FILES_PER_CHUNK=$((CHUNK_SIZE_MB * 100))  # ~100 files per MB estimate
-                
-                # Process files in fixed-count chunks with streaming
+                # Accurate size-based chunking using awk (fast single-pass)
                 CHUNK_NUM=1
                 SUCCESS_COUNT=0
                 FAILED_COUNT=0
+                CHUNK_SIZE_BYTES=$((CHUNK_SIZE_MB * 1024 * 1024))
                 
-                echo "Processing $TOTAL_FILES files in chunks of ~$FILES_PER_CHUNK files..."
+                echo "Creating size-based chunks of ${CHUNK_SIZE_MB}MB..."
                 
-                # Split files into chunks and process
-                split -l $FILES_PER_CHUNK -d --additional-suffix=.chunk "$CHUNK_LIST" /tmp/backup_chunk_
+                # Use awk to create chunks based on actual cumulative size (FAST!)
+                awk -v chunk_size="$CHUNK_SIZE_BYTES" -v prefix="/tmp/backup_chunk_" '
+                BEGIN {
+                  chunk_num = 0
+                  current_size = 0
+                  chunk_file = prefix chunk_num ".chunk"
+                }
+                {
+                  file_size = $1
+                  file_path = substr($0, index($0, $2))
+                  
+                  # Start new chunk if adding this file exceeds limit
+                  if (current_size > 0 && current_size + file_size > chunk_size) {
+                    close(chunk_file)
+                    chunk_num++
+                    chunk_file = prefix chunk_num ".chunk"
+                    current_size = 0
+                  }
+                  
+                  # Add file to current chunk
+                  print file_size " " file_path > chunk_file
+                  current_size += file_size
+                }
+                END {
+                  if (current_size > 0) close(chunk_file)
+                }
+                ' "$CHUNK_LIST"
                 
+                # Process each chunk
                 for CHUNK_FILE in /tmp/backup_chunk_*.chunk; do
                   [ -f "$CHUNK_FILE" ] || continue
                   
                   CHUNK_SIZE=$(awk '{sum+=$1} END {printf "%.0f", sum/1024/1024}' "$CHUNK_FILE")
                   FILE_COUNT=$(wc -l < "$CHUNK_FILE")
                   
-                  echo "Processing chunk $CHUNK_NUM: $FILE_COUNT files, ~${CHUNK_SIZE}MB..."
+                  echo "Processing chunk $CHUNK_NUM: $FILE_COUNT files, ${CHUNK_SIZE}MB..."
                   
                   # Extract just file paths and stream to zip
                   if awk '{$1=""; print substr($0,2)}' "$CHUNK_FILE" | \
