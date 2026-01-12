@@ -94,56 +94,31 @@ spec:
                 echo "Estimated chunks: $EST_CHUNKS"
                 echo "========================================="
                 
-                # Process files in size-based chunks with streaming
+                # Calculate files per chunk (simpler and MUCH faster than size-based)
+                FILES_PER_CHUNK=$((CHUNK_SIZE_MB * 100))  # ~100 files per MB estimate
+                
+                # Process files in fixed-count chunks with streaming
                 CHUNK_NUM=1
-                CURRENT_CHUNK_SIZE=0
-                CURRENT_CHUNK_FILES="/tmp/current_chunk.txt"
                 SUCCESS_COUNT=0
                 FAILED_COUNT=0
                 
-                > "$CURRENT_CHUNK_FILES"
+                echo "Processing $TOTAL_FILES files in chunks of ~$FILES_PER_CHUNK files..."
                 
-                while IFS= read -r line; do
-                  FILE_SIZE=$(echo "$line" | awk '{print $1}')
-                  FILE_PATH=$(echo "$line" | cut -d' ' -f2-)
-                  FILE_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $FILE_SIZE/1024/1024}")
-                  
-                  # Add file to current chunk
-                  echo "$FILE_PATH" >> "$CURRENT_CHUNK_FILES"
-                  CURRENT_CHUNK_SIZE=$(awk "BEGIN {printf \"%.2f\", $CURRENT_CHUNK_SIZE + $FILE_SIZE_MB}")
-                  
-                  # Check if chunk size limit reached
-                  CHUNK_FULL=$(awk "BEGIN {print ($CURRENT_CHUNK_SIZE >= $CHUNK_SIZE_MB)}")
-                  
-                  if [ "$CHUNK_FULL" -eq 1 ]; then
-                    # Stream this chunk to GCS
-                    FILE_COUNT=$(wc -l < "$CURRENT_CHUNK_FILES")
-                    echo "Processing chunk $CHUNK_NUM: ${FILE_COUNT} files, ${CURRENT_CHUNK_SIZE}MB..."
-                    
-                    # Use streaming zip: memory-efficient, processes files one-by-one
-                    if cat "$CURRENT_CHUNK_FILES" | tr '\n' '\0' | xargs -0 zip -q -r - | \
-                       gsutil -o GSUtil:parallel_composite_upload_threshold=150M \
-                       cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip; then
-                      echo "✓ Chunk $CHUNK_NUM uploaded successfully"
-                      SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
-                    else
-                      echo "✗ Chunk $CHUNK_NUM failed (exit code: $?)"
-                      FAILED_COUNT=$((FAILED_COUNT + 1))
-                    fi
-                    
-                    # Reset for next chunk
-                    CHUNK_NUM=$((CHUNK_NUM + 1))
-                    CURRENT_CHUNK_SIZE=0
-                    > "$CURRENT_CHUNK_FILES"
-                  fi
-                done < "$CHUNK_LIST"
+                # Split files into chunks and process
+                split -l $FILES_PER_CHUNK -d --additional-suffix=.chunk "$CHUNK_LIST" /tmp/backup_chunk_
                 
-                # Upload remaining files if any
-                if [ -s "$CURRENT_CHUNK_FILES" ]; then
-                  FILE_COUNT=$(wc -l < "$CURRENT_CHUNK_FILES")
-                  echo "Processing final chunk $CHUNK_NUM: ${FILE_COUNT} files, ${CURRENT_CHUNK_SIZE}MB..."
+                for CHUNK_FILE in /tmp/backup_chunk_*.chunk; do
+                  [ -f "$CHUNK_FILE" ] || continue
                   
-                  if cat "$CURRENT_CHUNK_FILES" | tr '\n' '\0' | xargs -0 zip -q -r - | \
+                  CHUNK_SIZE=$(awk '{sum+=$1} END {printf "%.0f", sum/1024/1024}' "$CHUNK_FILE")
+                  FILE_COUNT=$(wc -l < "$CHUNK_FILE")
+                  
+                  echo "Processing chunk $CHUNK_NUM: $FILE_COUNT files, ~${CHUNK_SIZE}MB..."
+                  
+                  # Extract just file paths and stream to zip
+                  if awk '{$1=""; print substr($0,2)}' "$CHUNK_FILE" | \
+                     tr '\n' '\0' | \
+                     xargs -0 zip -q -r - | \
                      gsutil -o GSUtil:parallel_composite_upload_threshold=150M \
                      cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip; then
                     echo "✓ Chunk $CHUNK_NUM uploaded successfully"
@@ -152,10 +127,13 @@ spec:
                     echo "✗ Chunk $CHUNK_NUM failed (exit code: $?)"
                     FAILED_COUNT=$((FAILED_COUNT + 1))
                   fi
-                fi
+                  
+                  rm -f "$CHUNK_FILE"
+                  CHUNK_NUM=$((CHUNK_NUM + 1))
+                done
                 
                 # Cleanup
-                rm -f "$CHUNK_LIST" "$CURRENT_CHUNK_FILES"
+                rm -f "$CHUNK_LIST" /tmp/backup_chunk_*.chunk
                 
                 # Summary
                 TOTAL_CHUNKS=$((SUCCESS_COUNT + FAILED_COUNT))
