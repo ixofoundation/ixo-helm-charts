@@ -2,9 +2,9 @@ apiVersion: v2
 name: ixo-supamoto-onboarding-server
 description: A Helm chart for Kubernetes
 type: application
-version: 0.0.32
-appVersion: v1.1.16
+version: 0.0.33
+appVersion: v1.1.17
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/ixo-supamoto-onboarding-server app version from v1.1.15 to v1.1.16
+      description: Update ixoworld/ixo-supamoto-onboarding-server app version from v1.1.16 to v1.1.17
