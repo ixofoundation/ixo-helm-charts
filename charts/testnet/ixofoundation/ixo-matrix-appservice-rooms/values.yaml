@@ -92,9 +92,9 @@ backup:
   resources:
     requests:
       cpu: 10m
-      memory: 50Mi
-    limits:
       memory: 128Mi
+    limits:
+      memory: 256Mi
   path: /bot/ixo-rooms-bot-storage
   gcs:
     bucket:
