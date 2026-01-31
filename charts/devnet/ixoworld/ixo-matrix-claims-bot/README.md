@@ -1,6 +1,6 @@
 # ixo-matrix-claims-bot
 
-![Version: 0.0.14](https://img.shields.io/badge/Version-0.0.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.13](https://img.shields.io/badge/AppVersion-v1.0.0--develop.13-informational?style=flat-square)
+![Version: 0.0.15](https://img.shields.io/badge/Version-0.0.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-develop.14](https://img.shields.io/badge/AppVersion-v1.0.0--develop.14-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -18,6 +18,7 @@ A Helm chart for Kubernetes
 | backup.resources.limits.memory | string | `"256Mi"` |  |
 | backup.resources.requests.cpu | string | `"10m"` |  |
 | backup.resources.requests.memory | string | `"128Mi"` |  |
+| backup.restartPolicy | string | `"Always"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixoworld/ixo-matrix-claims-bot"` |  |
