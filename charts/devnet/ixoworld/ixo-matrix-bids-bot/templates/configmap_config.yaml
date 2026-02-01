@@ -22,6 +22,10 @@ data:
 
     encryption: true
 
+    # Recovery key for restoring encryption keys from server backup
+    # Format: Base58 with spaces (e.g., "EsTc LW2K ...")
+    recoveryKey: "<path:ixo_core/data/matrix#MATRIX_BID_BOT_RECOVERY_KEY>"
+
     # The blockchain API endpoint to query for DID documents
     blockchainRpcUri: "https://devnet.ixo.earth/rpc/"
 
