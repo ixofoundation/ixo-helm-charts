@@ -218,15 +218,12 @@ spec:
                   
                   # Extract just file paths and stream to zip, capture errors
                   CHUNK_ERROR_FILE="/tmp/chunk_${CHUNK_NUM}_error.log"
-                  # Use pipefail to capture exit code from pipeline
-                  set -o pipefail
                   awk '{$1=""; print substr($0,2)}' "$CHUNK_FILE" | \
                      tr '\n' '\0' | \
                      xargs -0 zip -q -r - 2>&1 | \
                      gsutil -o GSUtil:parallel_composite_upload_threshold=150M \
                      cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip > "$CHUNK_ERROR_FILE" 2>&1
                   CHUNK_EXIT=$?
-                  set +o pipefail
                   
                   if [ $CHUNK_EXIT -eq 0 ]; then
                     echo "✓ Chunk $CHUNK_NUM uploaded successfully"
