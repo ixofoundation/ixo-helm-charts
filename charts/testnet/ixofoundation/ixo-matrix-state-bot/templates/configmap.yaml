@@ -24,6 +24,10 @@ data:
     # stored under dataPath.
     encryption: true
 
+    # Recovery key for restoring encryption keys from server backup
+    # Format: Base58 with spaces (e.g., "EsTc LW2K ...")
+    recoveryKey: "<path:ixo_core/data/matrix#MATRIX_STATE_BOT_RECOVERY_KEY>"
+
     # REST API config
     restApi:
       # Set to true to enable the REST API
