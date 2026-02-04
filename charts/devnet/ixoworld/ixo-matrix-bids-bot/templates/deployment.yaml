@@ -35,22 +35,106 @@ spec:
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /bot/gcp-key/key.json
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: slack-webhook-secret
+                  key: webhook-url
+                  optional: true
           command:
             - "/bin/sh"
             - "-c"
             - |
-              # Function to handle errors gracefully
+              # Set Helm chart fullname for notifications
+              CHART_FULLNAME="{{ include "ixo-matrix-bids-bot.fullname" . }}"
+              
+              # Function to send Slack notifications
+              send_slack_notification() {
+                local title="$1"
+                local message="$2"
+                local color="${3:-danger}"  # danger (red), warning (yellow), good (green)
+                
+                # Skip if Slack webhook URL is not configured
+                if [ -z "$SLACK_WEBHOOK_URL" ]; then
+                  return 0
+                fi
+                
+                # Get pod name and namespace for context
+                POD_NAME="${HOSTNAME:-unknown-pod}"
+                TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
+                
+                # Escape JSON special characters in message
+                ESCAPED_MESSAGE=$(echo "$message" | sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/g' | tr -d '\n' | sed 's/\\n$//')
+                
+                # Create Slack message payload
+                PAYLOAD=$(cat <<EOF
+{
+  "attachments": [
+    {
+      "color": "$color",
+      "title": "$title",
+      "text": "$ESCAPED_MESSAGE",
+      "fields": [
+        {
+          "title": "Pod",
+          "value": "$POD_NAME",
+          "short": true
+        },
+        {
+          "title": "Timestamp",
+          "value": "$TIMESTAMP",
+          "short": true
+        }
+      ],
+      "footer": "$CHART_FULLNAME Backup",
+      "ts": $(date +%s)
+    }
+  ]
+}
+EOF
+)
+                
+                # Send to Slack (fail silently to not break backup process)
+                curl -s -X POST -H 'Content-type: application/json' \
+                  --data "$PAYLOAD" \
+                  "$SLACK_WEBHOOK_URL" > /dev/null 2>&1 || true
+              }
+              
+              # Function to handle errors gracefully and notify Slack
               handle_error() {
-                echo "Error occurred: $1"
+                local error_msg="$1"
+                local error_details="${2:-}"
+                local full_error="${error_msg}"
+                
+                if [ -n "$error_details" ]; then
+                  full_error="${error_msg}\n\nError details:\n${error_details}"
+                fi
+                
+                echo "Error occurred: $error_msg"
+                if [ -n "$error_details" ]; then
+                  echo "Error details: $error_details"
+                fi
                 echo "Backup container will continue running but skip this backup cycle"
+                
+                # Send Slack notification
+                send_slack_notification "❌ Backup Error: $error_msg" "$full_error" "danger"
+                
                 return 0
               }
               
               # Install dependencies with error handling
-              apt-get update && apt-get install -y zip || handle_error "Failed to install dependencies"
+              ERROR_OUTPUT=$(apt-get update 2>&1 && apt-get install -y zip 2>&1)
+              INSTALL_EXIT=$?
+              if [ $INSTALL_EXIT -ne 0 ]; then
+                handle_error "Failed to install dependencies" "$ERROR_OUTPUT"
+              fi
               
               # Authenticate with GCP with error handling
-              gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS || handle_error "Failed to authenticate with GCP"
+              AUTH_OUTPUT=$(gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS 2>&1)
+              AUTH_EXIT=$?
+              if [ $AUTH_EXIT -ne 0 ]; then
+                handle_error "Failed to authenticate with GCP" "$AUTH_OUTPUT"
+              fi
               
               echo "Backup container started successfully"
               
@@ -139,17 +223,39 @@ spec:
                   
                   echo "Processing chunk $CHUNK_NUM: $FILE_COUNT files, ${CHUNK_SIZE}MB..."
                   
-                  # Extract just file paths and stream to zip
-                  if awk '{$1=""; print substr($0,2)}' "$CHUNK_FILE" | \
+                  # Extract just file paths and stream to zip, capture errors
+                  CHUNK_ERROR_FILE="/tmp/chunk_${CHUNK_NUM}_error.log"
+                  # Use pipefail to capture exit code from pipeline
+                  set -o pipefail
+                  awk '{$1=""; print substr($0,2)}' "$CHUNK_FILE" | \
                      tr '\n' '\0' | \
-                     xargs -0 zip -q -r - | \
+                     xargs -0 zip -q -r - 2>&1 | \
                      gsutil -o GSUtil:parallel_composite_upload_threshold=150M \
-                     cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip; then
+                     cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip > "$CHUNK_ERROR_FILE" 2>&1
+                  CHUNK_EXIT=$?
+                  set +o pipefail
+                  
+                  if [ $CHUNK_EXIT -eq 0 ]; then
                     echo "✓ Chunk $CHUNK_NUM uploaded successfully"
                     SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+                    rm -f "$CHUNK_ERROR_FILE"
                   else
-                    echo "✗ Chunk $CHUNK_NUM failed (exit code: $?)"
+                    echo "✗ Chunk $CHUNK_NUM failed (exit code: $CHUNK_EXIT)"
                     FAILED_COUNT=$((FAILED_COUNT + 1))
+                    
+                    # Read error output if available
+                    CHUNK_ERROR_OUTPUT=""
+                    if [ -f "$CHUNK_ERROR_FILE" ] && [ -s "$CHUNK_ERROR_FILE" ]; then
+                      CHUNK_ERROR_OUTPUT=$(cat "$CHUNK_ERROR_FILE")
+                    fi
+                    
+                    # Send Slack notification for chunk failure
+                    CHUNK_ERROR_MSG="Chunk $CHUNK_NUM upload failed for backup: $BACKUP_DIR\n\nChunk details:\n- Size: ${CHUNK_SIZE}MB\n- Files: $FILE_COUNT\n- Exit code: $CHUNK_EXIT"
+                    if [ -n "$CHUNK_ERROR_OUTPUT" ]; then
+                      CHUNK_ERROR_MSG="${CHUNK_ERROR_MSG}\n\nError output:\n${CHUNK_ERROR_OUTPUT}"
+                    fi
+                    send_slack_notification "❌ Backup Chunk Upload Failed" "$CHUNK_ERROR_MSG" "danger"
+                    rm -f "$CHUNK_ERROR_FILE"
                   fi
                   
                   rm -f "$CHUNK_FILE"
@@ -176,6 +282,9 @@ spec:
                   echo "✓ All chunks backed up successfully!"
                 else
                   echo "⚠ Warning: $FAILED_COUNT chunk(s) failed - will retry in next cycle"
+                  # Send summary notification for failed chunks
+                  SUMMARY_MSG="Backup completed with failures for: $BACKUP_DIR\n\nSummary:\n- Total chunks: $TOTAL_CHUNKS\n- Successful: $SUCCESS_COUNT\n- Failed: $FAILED_COUNT\n- Total files: $TOTAL_FILES\n- Total size: ${TOTAL_SIZE_MB}MB\n\nWill retry failed chunks in next backup cycle."
+                  send_slack_notification "⚠ Backup Completed with Failures" "$SUMMARY_MSG" "warning"
                 fi
                 
                 echo "Sleeping for 24 hours until next backup..."
