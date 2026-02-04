@@ -35,22 +35,99 @@ spec:
           env:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /bot/gcp-key/key.json
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: slack-webhook-secret
+                  key: webhook-url
+                  optional: true
           command:
             - "/bin/sh"
             - "-c"
             - |
-              # Function to handle errors gracefully
+              # Set Helm chart fullname for notifications
+              CHART_FULLNAME="{{ include "ixo-matrix-claims-bot.fullname" . }}"
+              
+              # Function to send Slack notifications
+              send_slack_notification() {
+                local title="$1"
+                local message="$2"
+                local color="${3:-danger}"  # danger (red), warning (yellow), good (green)
+                
+                # Skip if Slack webhook URL is not configured
+                if [ -z "$SLACK_WEBHOOK_URL" ]; then
+                  return 0
+                fi
+                
+                # Get pod name and namespace for context
+                POD_NAME="${HOSTNAME:-unknown-pod}"
+                TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
+                TIMESTAMP_TS=$(date +%s)
+                
+                # Create Slack message payload using jq (much cleaner than manual string building)
+                PAYLOAD=$(jq -n \
+                  --arg color "$color" \
+                  --arg title "$title" \
+                  --arg text "$message" \
+                  --arg pod "$POD_NAME" \
+                  --arg timestamp "$TIMESTAMP" \
+                  --arg footer "$CHART_FULLNAME Backup" \
+                  --argjson ts "$TIMESTAMP_TS" \
+                  '{
+                    attachments: [{
+                      color: $color,
+                      title: $title,
+                      text: $text,
+                      fields: [
+                        {title: "Pod", value: $pod, short: true},
+                        {title: "Timestamp", value: $timestamp, short: true}
+                      ],
+                      footer: $footer,
+                      ts: $ts
+                    }]
+                  }')
+                
+                # Send to Slack (fail silently to not break backup process)
+                curl -s -X POST -H 'Content-type: application/json' \
+                  --data "$PAYLOAD" \
+                  "$SLACK_WEBHOOK_URL" > /dev/null 2>&1 || true
+              }
+              
+              # Function to handle errors gracefully and notify Slack
               handle_error() {
-                echo "Error occurred: $1"
+                local error_msg="$1"
+                local error_details="${2:-}"
+                local full_error="${error_msg}"
+                
+                if [ -n "$error_details" ]; then
+                  full_error="${error_msg}\n\nError details:\n${error_details}"
+                fi
+                
+                echo "Error occurred: $error_msg"
+                if [ -n "$error_details" ]; then
+                  echo "Error details: $error_details"
+                fi
                 echo "Backup container will continue running but skip this backup cycle"
+                
+                # Send Slack notification
+                send_slack_notification "❌ Backup Error: $error_msg" "$full_error" "danger"
+                
                 return 0
               }
               
               # Install dependencies with error handling
-              apt-get update && apt-get install -y zip || handle_error "Failed to install dependencies"
+              ERROR_OUTPUT=$(apt-get update 2>&1 && apt-get install -y zip jq 2>&1)
+              INSTALL_EXIT=$?
+              if [ $INSTALL_EXIT -ne 0 ]; then
+                handle_error "Failed to install dependencies" "$ERROR_OUTPUT"
+              fi
               
               # Authenticate with GCP with error handling
-              gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS || handle_error "Failed to authenticate with GCP"
+              AUTH_OUTPUT=$(gcloud auth login --cred-file=$GOOGLE_APPLICATION_CREDENTIALS 2>&1)
+              AUTH_EXIT=$?
+              if [ $AUTH_EXIT -ne 0 ]; then
+                handle_error "Failed to authenticate with GCP" "$AUTH_OUTPUT"
+              fi
               
               echo "Backup container started successfully"
               
@@ -58,13 +135,146 @@ spec:
                 BACKUP_DIR=$(date +'%Y-%m-%d_%H-%M-%S')
                 cd {{ .Values.backup.path }}
                 
-                # Use zip with compression for better memory efficiency
-                # Stream directly to GCS without storing locally
-                echo "Starting backup: $BACKUP_DIR"
-                if zip -r - . | gsutil cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data.zip; then
-                  echo "Backup successful: $BACKUP_DIR"
+                {{- if .Values.backup.chunking.enabled }}
+                # Use configured chunk size in MB
+                CHUNK_SIZE_MB={{ .Values.backup.chunking.chunkSizeMB }}
+                {{- else }}
+                # Default: 1GB chunks for streaming zip efficiency
+                CHUNK_SIZE_MB=1024
+                {{- end }}
+                
+                echo "========================================="
+                echo "Starting chunked streaming backup: $BACKUP_DIR"
+                echo "Target chunk size: ${CHUNK_SIZE_MB}MB"
+                echo "========================================="
+                
+                # Get all files with their sizes
+                CHUNK_LIST="/tmp/chunk_files.txt"
+                find . -type f -printf "%s %p\n" > "$CHUNK_LIST"
+                
+                if [ ! -s "$CHUNK_LIST" ]; then
+                  echo "No files to backup, skipping..."
+                  rm -f "$CHUNK_LIST"
+                  sleep 86400
+                  continue
+                fi
+                
+                # Count total files and calculate total size
+                TOTAL_FILES=$(wc -l < "$CHUNK_LIST")
+                TOTAL_SIZE_MB=$(awk '{sum+=$1} END {printf "%.0f", sum/1024/1024}' "$CHUNK_LIST")
+                
+                echo "Total files: $TOTAL_FILES"
+                echo "Total size: ${TOTAL_SIZE_MB}MB"
+                
+                # Calculate estimated number of chunks
+                EST_CHUNKS=$(( (TOTAL_SIZE_MB + CHUNK_SIZE_MB - 1) / CHUNK_SIZE_MB ))
+                echo "Estimated chunks: $EST_CHUNKS"
+                echo "========================================="
+                
+                # Accurate size-based chunking using awk (fast single-pass)
+                CHUNK_NUM=1
+                SUCCESS_COUNT=0
+                FAILED_COUNT=0
+                CHUNK_SIZE_BYTES=$((CHUNK_SIZE_MB * 1024 * 1024))
+                
+                echo "Creating size-based chunks of ${CHUNK_SIZE_MB}MB..."
+                
+                # Use awk to create chunks based on actual cumulative size (FAST!)
+                awk -v chunk_size="$CHUNK_SIZE_BYTES" -v prefix="/tmp/backup_chunk_" '
+                BEGIN {
+                  chunk_num = 0
+                  current_size = 0
+                  chunk_file = prefix chunk_num ".chunk"
+                }
+                {
+                  file_size = $1
+                  file_path = substr($0, index($0, $2))
+                  
+                  # Start new chunk if adding this file exceeds limit
+                  if (current_size > 0 && current_size + file_size > chunk_size) {
+                    close(chunk_file)
+                    chunk_num++
+                    chunk_file = prefix chunk_num ".chunk"
+                    current_size = 0
+                  }
+                  
+                  # Add file to current chunk
+                  print file_size " " file_path > chunk_file
+                  current_size += file_size
+                }
+                END {
+                  if (current_size > 0) close(chunk_file)
+                }
+                ' "$CHUNK_LIST"
+                
+                # Process each chunk
+                for CHUNK_FILE in /tmp/backup_chunk_*.chunk; do
+                  [ -f "$CHUNK_FILE" ] || continue
+                  
+                  CHUNK_SIZE=$(awk '{sum+=$1} END {printf "%.0f", sum/1024/1024}' "$CHUNK_FILE")
+                  FILE_COUNT=$(wc -l < "$CHUNK_FILE")
+                  
+                  echo "Processing chunk $CHUNK_NUM: $FILE_COUNT files, ${CHUNK_SIZE}MB..."
+                  
+                  # Extract just file paths and stream to zip, capture errors
+                  CHUNK_ERROR_FILE="/tmp/chunk_${CHUNK_NUM}_error.log"
+                  awk '{$1=""; print substr($0,2)}' "$CHUNK_FILE" | \
+                     tr '\n' '\0' | \
+                     xargs -0 zip -q -r - 2>&1 | \
+                     gsutil -o GSUtil:parallel_composite_upload_threshold=150M \
+                     cp - {{ .Values.backup.gcs.bucket }}/$BACKUP_DIR/data-${CHUNK_NUM}.zip > "$CHUNK_ERROR_FILE" 2>&1
+                  CHUNK_EXIT=$?
+                  
+                  if [ $CHUNK_EXIT -eq 0 ]; then
+                    echo "✓ Chunk $CHUNK_NUM uploaded successfully"
+                    SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+                    rm -f "$CHUNK_ERROR_FILE"
+                  else
+                    echo "✗ Chunk $CHUNK_NUM failed (exit code: $CHUNK_EXIT)"
+                    FAILED_COUNT=$((FAILED_COUNT + 1))
+                    
+                    # Read error output if available
+                    CHUNK_ERROR_OUTPUT=""
+                    if [ -f "$CHUNK_ERROR_FILE" ] && [ -s "$CHUNK_ERROR_FILE" ]; then
+                      CHUNK_ERROR_OUTPUT=$(cat "$CHUNK_ERROR_FILE")
+                    fi
+                    
+                    # Send Slack notification for chunk failure
+                    CHUNK_ERROR_MSG="Chunk $CHUNK_NUM upload failed for backup: $BACKUP_DIR\n\nChunk details:\n- Size: ${CHUNK_SIZE}MB\n- Files: $FILE_COUNT\n- Exit code: $CHUNK_EXIT"
+                    if [ -n "$CHUNK_ERROR_OUTPUT" ]; then
+                      CHUNK_ERROR_MSG="${CHUNK_ERROR_MSG}\n\nError output:\n${CHUNK_ERROR_OUTPUT}"
+                    fi
+                    send_slack_notification "❌ Backup Chunk Upload Failed" "$CHUNK_ERROR_MSG" "danger"
+                    rm -f "$CHUNK_ERROR_FILE"
+                  fi
+                  
+                  rm -f "$CHUNK_FILE"
+                  CHUNK_NUM=$((CHUNK_NUM + 1))
+                done
+                
+                # Cleanup
+                rm -f "$CHUNK_LIST" /tmp/backup_chunk_*.chunk
+                
+                # Summary
+                TOTAL_CHUNKS=$((SUCCESS_COUNT + FAILED_COUNT))
+                AVG_CHUNK_SIZE=$(awk "BEGIN {printf \"%.0f\", $TOTAL_SIZE_MB / $TOTAL_CHUNKS}")
+                echo "========================================="
+                echo "Backup Summary for $BACKUP_DIR:"
+                echo "Total files: $TOTAL_FILES"
+                echo "Total size: ${TOTAL_SIZE_MB}MB"
+                echo "Total chunks: $TOTAL_CHUNKS"
+                echo "Average chunk size: ${AVG_CHUNK_SIZE}MB"
+                echo "Successful uploads: $SUCCESS_COUNT"
+                echo "Failed uploads: $FAILED_COUNT"
+                echo "========================================="
+                
+                if [ $FAILED_COUNT -eq 0 ]; then
+                  echo "✓ All chunks backed up successfully!"
                 else
-                  echo "Backup failed: $BACKUP_DIR - will retry in next cycle"
+                  echo "⚠ Warning: $FAILED_COUNT chunk(s) failed - will retry in next cycle"
+                  # Send summary notification for failed chunks
+                  SUMMARY_MSG="Backup completed with failures for: $BACKUP_DIR\n\nSummary:\n- Total chunks: $TOTAL_CHUNKS\n- Successful: $SUCCESS_COUNT\n- Failed: $FAILED_COUNT\n- Total files: $TOTAL_FILES\n- Total size: ${TOTAL_SIZE_MB}MB\n\nWill retry failed chunks in next backup cycle."
+                  send_slack_notification "⚠ Backup Completed with Failures" "$SUMMARY_MSG" "warning"
                 fi
                 
                 echo "Sleeping for 24 hours until next backup..."
