@@ -89,12 +89,13 @@ tolerations: []
 affinity: {}
 
 backup:
+  restartPolicy: Always
   resources:
     requests:
       cpu: 10m
-      memory: 128Mi
+      memory: 200Mi
     limits:
-      memory: 256Mi
+      memory: 512Mi
   path: /bot/ixo-rooms-bot-storage
   gcs:
     bucket:
