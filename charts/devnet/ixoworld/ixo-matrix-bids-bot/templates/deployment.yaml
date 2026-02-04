@@ -62,37 +62,30 @@ spec:
                 # Get pod name and namespace for context
                 POD_NAME="${HOSTNAME:-unknown-pod}"
                 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S UTC')
+                TIMESTAMP_TS=$(date +%s)
                 
-                # Escape JSON special characters in message
-                ESCAPED_MESSAGE=$(echo "$message" | sed 's/\\/\\\\/g; s/"/\\"/g; s/$/\\n/g' | tr -d '\n' | sed 's/\\n$//')
-                
-                # Create Slack message payload
-                PAYLOAD=$(cat <<EOF
-{
-  "attachments": [
-    {
-      "color": "$color",
-      "title": "$title",
-      "text": "$ESCAPED_MESSAGE",
-      "fields": [
-        {
-          "title": "Pod",
-          "value": "$POD_NAME",
-          "short": true
-        },
-        {
-          "title": "Timestamp",
-          "value": "$TIMESTAMP",
-          "short": true
-        }
-      ],
-      "footer": "$CHART_FULLNAME Backup",
-      "ts": $(date +%s)
-    }
-  ]
-}
-EOF
-)
+                # Create Slack message payload using jq (much cleaner than manual string building)
+                PAYLOAD=$(jq -n \
+                  --arg color "$color" \
+                  --arg title "$title" \
+                  --arg text "$message" \
+                  --arg pod "$POD_NAME" \
+                  --arg timestamp "$TIMESTAMP" \
+                  --arg footer "$CHART_FULLNAME Backup" \
+                  --argjson ts "$TIMESTAMP_TS" \
+                  '{
+                    attachments: [{
+                      color: $color,
+                      title: $title,
+                      text: $text,
+                      fields: [
+                        {title: "Pod", value: $pod, short: true},
+                        {title: "Timestamp", value: $timestamp, short: true}
+                      ],
+                      footer: $footer,
+                      ts: $ts
+                    }]
+                  }')
                 
                 # Send to Slack (fail silently to not break backup process)
                 curl -s -X POST -H 'Content-type: application/json' \
@@ -123,7 +116,7 @@ EOF
               }
               
               # Install dependencies with error handling
-              ERROR_OUTPUT=$(apt-get update 2>&1 && apt-get install -y zip 2>&1)
+              ERROR_OUTPUT=$(apt-get update 2>&1 && apt-get install -y zip jq 2>&1)
               INSTALL_EXIT=$?
               if [ $INSTALL_EXIT -ne 0 ]; then
                 handle_error "Failed to install dependencies" "$ERROR_OUTPUT"
