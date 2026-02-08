@@ -89,12 +89,31 @@ tolerations: []
 affinity: {}
 
 backup:
+  restartPolicy: Always
   resources:
     requests:
       cpu: 10m
-      memory: 100Mi
+      memory: 200Mi
     limits:
-      memory: 256Mi
+      memory: 512Mi
   path: /bot/storage
   gcs:
     bucket:
+  chunking:
+    # Enable custom chunking configuration
+    # If disabled, uses default 1GB chunks (optimal for streaming zip)
+    enabled: true
+    # Chunk size in MB (used when enabled: true)
+    # Streaming zip is memory-efficient: ~100-150Mi per 1GB chunk
+    # 
+    # Target chunk size in MB - creates ACCURATE size-based chunks
+    # Each chunk will be close to this size (±10% depending on file boundaries)
+    # 
+    # Recommended sizes for 23GB / 167k files:
+    # - 1024MB (1GB): ~23 chunks, safe for 512Mi memory (RECOMMENDED)
+    # - 2048MB (2GB): ~12 chunks, safe for 512Mi memory
+    # - 5120MB (5GB): ~5 chunks, needs 1Gi memory for safety
+    # 
+    # Larger chunks = fewer files to manage, but need more memory
+    # Default when disabled: 1024MB (1GB chunks)
+    chunkSizeMB: 5120
