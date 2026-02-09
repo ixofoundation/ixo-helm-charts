@@ -1,6 +1,6 @@
 # ixo-supamoto-onboarding-server
 
-![Version: 0.0.50](https://img.shields.io/badge/Version-0.0.50-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.34](https://img.shields.io/badge/AppVersion-v1.1.34-informational?style=flat-square)
+![Version: 0.0.51](https://img.shields.io/badge/Version-0.0.51-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.35](https://img.shields.io/badge/AppVersion-v1.1.35-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -13,11 +13,14 @@ A Helm chart for Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| backup.chunking.chunkSizeMB | int | `5120` |  |
+| backup.chunking.enabled | bool | `true` |  |
 | backup.gcs.bucket | string | `nil` |  |
 | backup.path | string | `"/bot/storage"` |  |
-| backup.resources.limits.memory | string | `"128Mi"` |  |
+| backup.resources.limits.memory | string | `"512Mi"` |  |
 | backup.resources.requests.cpu | string | `"10m"` |  |
-| backup.resources.requests.memory | string | `"50Mi"` |  |
+| backup.resources.requests.memory | string | `"200Mi"` |  |
+| backup.restartPolicy | string | `"Always"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixoworld/ixo-supamoto-onboarding-server"` |  |
