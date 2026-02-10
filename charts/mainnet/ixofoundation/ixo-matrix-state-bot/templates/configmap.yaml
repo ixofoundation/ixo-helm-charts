@@ -28,6 +28,12 @@ data:
     # Format: Base58 with spaces (e.g., "EsTc LW2K ...")
     recoveryKey: "<path:ixo_core/data/matrix#MATRIX_STATE_BOT_RECOVERY_KEY>"
 
+    # The blocksync API endpoint to query for users DID documents using graphql
+    blocksyncUri: "https://blocksync-graphql.ixo.earth/"
+
+    # Network (devnet or testnet or mainnet)
+    network: "mainnet"
+
     # REST API config
     restApi:
       # Set to true to enable the REST API

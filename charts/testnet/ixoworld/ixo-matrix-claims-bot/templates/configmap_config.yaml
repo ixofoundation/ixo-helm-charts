@@ -32,6 +32,9 @@ data:
     # The blocksync API endpoint to query for users DID documents using graphql
     blocksyncUri: "https://testnet-blocksync-graphql.ixo.earth/"
 
+    # Network (devnet or testnet or mainnet)
+    network: "testnet"
+
     # REST API config
     restApi:
       # Set to true to enable the REST API
