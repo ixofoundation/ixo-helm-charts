@@ -1,6 +1,6 @@
 # ixo-matrix-claims-bot
 
-![Version: 0.0.14](https://img.shields.io/badge/Version-0.0.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.0](https://img.shields.io/badge/AppVersion-v1.4.0-informational?style=flat-square)
+![Version: 0.0.15](https://img.shields.io/badge/Version-0.0.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.5.0](https://img.shields.io/badge/AppVersion-v1.5.0-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -13,11 +13,14 @@ A Helm chart for Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| backup.chunking.chunkSizeMB | int | `5120` |  |
+| backup.chunking.enabled | bool | `true` |  |
 | backup.gcs.bucket | string | `nil` |  |
 | backup.path | string | `"/bot/ixo-claims-bot-storage"` |  |
-| backup.resources.limits.memory | string | `"128Mi"` |  |
+| backup.resources.limits.memory | string | `"512Mi"` |  |
 | backup.resources.requests.cpu | string | `"10m"` |  |
-| backup.resources.requests.memory | string | `"50Mi"` |  |
+| backup.resources.requests.memory | string | `"200Mi"` |  |
+| backup.restartPolicy | string | `"Always"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixoworld/ixo-matrix-claims-bot"` |  |
