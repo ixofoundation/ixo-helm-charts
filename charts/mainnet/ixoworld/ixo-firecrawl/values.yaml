@@ -180,7 +180,11 @@ autoscaling:
 
 nodeSelector: {}
 
-tolerations: []
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "bigmem"
+    effect: "NoSchedule"
 
 affinity: {}
 
