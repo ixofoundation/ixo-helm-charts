@@ -180,7 +180,7 @@ autoscaling:
 
 nodeSelector: {}
 
-tolerations:
+tolerations: # Requires a node with the taint "dedicated=bigmem:NoSchedule", kubectl taint nodes <node> dedicated=bigmem:NoSchedule
   - key: "dedicated"
     operator: "Equal"
     value: "bigmem"
