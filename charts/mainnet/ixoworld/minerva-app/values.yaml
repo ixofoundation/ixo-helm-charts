@@ -18,6 +18,10 @@ persistentVolume:
   accessModes:
     - ReadWriteOnce
   storageClass: vultr-block-storage-hdd
+   # Mount path for the persistent volume in the container
+  mountPath: /app/apps/app/matrix-storage
+  # Subdirectory of the PVC to mount (useful for shared PVCs)
+  # subPath: "oracle-storage/minerva"
 
 serviceAccount:
   # Specifies whether a service account should be created
