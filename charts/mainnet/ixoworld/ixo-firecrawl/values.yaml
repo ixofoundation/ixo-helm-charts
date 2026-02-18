@@ -178,6 +178,14 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# PodDisruptionBudget to prevent descheduler (e.g. LowNodeUtilization) from evicting the pod
+pdb:
+  enabled: true
+  # minAvailable: 1 ensures at least one pod stays running (use for single-replica or critical workloads)
+  minAvailable: 1
+  # maxUnavailable: use instead of minAvailable if you prefer "at most N pods down" (mutually exclusive with minAvailable)
+  # maxUnavailable: 0
+
 nodeSelector: {}
 
 tolerations: # Requires a node with the taint "dedicated=bigmem:NoSchedule", kubectl taint nodes <node> dedicated=bigmem:NoSchedule
