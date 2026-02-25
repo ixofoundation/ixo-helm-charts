@@ -1,8 +1,14 @@
 # memory-engine-graphiti
 
-![Version: 0.0.19](https://img.shields.io/badge/Version-0.0.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-ffecbd7](https://img.shields.io/badge/AppVersion-main--ffecbd7-informational?style=flat-square)
+![Version: 0.0.20](https://img.shields.io/badge/Version-0.0.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-d65990d](https://img.shields.io/badge/AppVersion-main--d65990d-informational?style=flat-square)
 
 A Helm chart for Kubernetes
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.1 |
 
 ## Values
 
@@ -39,9 +45,17 @@ A Helm chart for Kubernetes
 | ingressMcp.hosts[0].paths[0].path | string | `"/"` |  |
 | ingressMcp.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingressMcp.tls | list | `[]` |  |
+| matrix-bridge-api.enabled | bool | `false` |  |
+| matrix-bridge-api.env | list | `[]` |  |
+| matrix-bridge-api.image.pullPolicy | string | `"IfNotPresent"` |  |
+| matrix-bridge-api.image.repository | string | `"ghcr.io/ixoworld/matrix-bridge-api"` |  |
+| matrix-bridge-api.port | int | `3100` |  |
+| matrix-bridge-api.resources | object | `{}` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistentVolume.bridgeSubPath | string | `"bridge-storage"` |  |
+| persistentVolume.mountPath | string | `"/storage/matrix_bot_store"` |  |
 | persistentVolume.size | string | `"40Gi"` |  |
 | persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
 | podAnnotations | object | `{}` |  |
