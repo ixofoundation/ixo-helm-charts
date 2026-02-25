@@ -1,0 +1,10 @@
+apiVersion: v2
+name: matrix-bridge-api
+description: Matrix Bridge API sidecar — Node.js/TypeScript HTTP service wrapping @ixo/matrix SDK for Graphiti memory engine
+type: application
+version: 0.0.1
+appVersion: latest
+annotations:
+  artifacthub.io/changes: |
+    - kind: added
+      description: Matrix Bridge API subchart for versioned sidecar image

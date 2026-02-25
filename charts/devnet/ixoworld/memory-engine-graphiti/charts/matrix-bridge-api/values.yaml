@@ -1,0 +1,13 @@
+# Matrix Bridge API — version managed via Chart.AppVersion (CI/CD can bump image tag here)
+image:
+  repository: ghcr.io/ixoworld/matrix-bridge-api
+  pullPolicy: IfNotPresent
+  # tag defaults to Chart.AppVersion when not set in parent
+
+port: 3100
+
+resources: {}
+
+# Set in parent overrides when enabled: BRIDGE_API_KEY, MATRIX_BASE_URL, MATRIX_HOMESERVER_NAME,
+# MATRIX_ORACLE_ADMIN_ACCESS_TOKEN, MATRIX_ORACLE_ADMIN_USER_ID, etc.
+env: []

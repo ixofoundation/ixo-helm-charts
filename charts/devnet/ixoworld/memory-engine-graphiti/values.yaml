@@ -111,7 +111,21 @@ tolerations: []
 affinity: {}
 
 persistentVolume:
+  # Mount path for shared storage (used for MATRIX_BOT_STORE_PATH on main containers and MATRIX_STORE_PATH on bridge sidecar)
+  mountPath: /storage/matrix_bot_store
   size: 40Gi
   accessModes:
     - ReadWriteOnce
   storageClass: vultr-block-storage-hdd
+
+# Matrix Bridge API sidecar — subchart version managed separately (Chart.AppVersion in charts/matrix-bridge-api/Chart.yaml)
+# Internal only; Graphiti calls it via MATRIX_BRIDGE_URL (http://localhost:3100). No ingress.
+matrix-bridge-api:
+  enabled: false
+  image:
+    repository: ghcr.io/ixoworld/matrix-bridge-api
+    pullPolicy: IfNotPresent
+    # tag defaults to matrix-bridge-api subchart Chart.AppVersion
+  port: 3100
+  env: []
+  resources: {}
