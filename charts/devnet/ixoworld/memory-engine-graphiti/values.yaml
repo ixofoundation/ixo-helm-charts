@@ -111,8 +111,10 @@ tolerations: []
 affinity: {}
 
 persistentVolume:
-  # Mount path for shared storage (used for MATRIX_BOT_STORE_PATH on main containers and MATRIX_STORE_PATH on bridge sidecar)
+  # Mount path for main containers (MATRIX_BOT_STORE_PATH). Bridge uses a subfolder via bridgeSubPath.
   mountPath: /storage/matrix_bot_store
+  # Subfolder under the PVC used only by the Matrix Bridge sidecar (mountPath/bridgeSubPath)
+  bridgeSubPath: bridge-storage
   size: 40Gi
   accessModes:
     - ReadWriteOnce
