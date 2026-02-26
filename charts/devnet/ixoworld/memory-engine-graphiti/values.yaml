@@ -125,7 +125,7 @@ persistentVolume:
 matrix-bridge-api:
   enabled: false
   image:
-    repository: ghcr.io/ixoworld/matrix-bridge-api
+    repository: ghcr.io/ixoworld/memory-engine-graphiti #Todo refactor to ixoworld/memory-engine-graphiti/matrix-bridge-api
     pullPolicy: IfNotPresent
     # tag defaults to matrix-bridge-api subchart Chart.AppVersion
   port: 3100
