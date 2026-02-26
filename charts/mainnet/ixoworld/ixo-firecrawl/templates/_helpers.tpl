@@ -53,46 +53,6 @@ app.kubernetes.io/part-of: ixo
 {{- end }}
 
 {{/*
-Selector labels for API deployment (used by API Service)
-*/}}
-{{- define "ixo-firecrawler.apiSelectorLabels" -}}
-{{ include "ixo-firecrawler.selectorLabels" . }}
-app.kubernetes.io/component: api
-{{- end }}
-
-{{/*
-Selector labels for MCP deployment (used by MCP Service)
-*/}}
-{{- define "ixo-firecrawler.mcpSelectorLabels" -}}
-{{ include "ixo-firecrawler.selectorLabels" . }}
-app.kubernetes.io/component: mcp-server
-{{- end }}
-
-{{/*
-Selector labels for Playwright deployment (used by Playwright Service)
-*/}}
-{{- define "ixo-firecrawler.playwrightSelectorLabels" -}}
-{{ include "ixo-firecrawler.selectorLabels" . }}
-app.kubernetes.io/component: playwright-service
-{{- end }}
-
-{{/*
-Playwright Service URL for in-cluster API → Playwright.
-Uses K8s FQDN: <service>.<namespace>.svc.cluster.local so it works in any namespace.
-*/}}
-{{- define "ixo-firecrawler.playwrightServiceURL" -}}
-http://{{ include "ixo-firecrawler.fullname" . }}-playwright.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.playwrightPort }}/scrape
-{{- end }}
-
-{{/*
-API Service URL for in-cluster MCP → API.
-Uses K8s FQDN: <service>.<namespace>.svc.cluster.local so it works in any namespace.
-*/}}
-{{- define "ixo-firecrawler.apiServiceURL" -}}
-http://{{ include "ixo-firecrawler.fullname" . }}-api.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.apiPort }}
-{{- end }}
-
-{{/*
 Create the name of the service account to use
 */}}
 {{- define "ixo-firecrawler.serviceAccountName" -}}

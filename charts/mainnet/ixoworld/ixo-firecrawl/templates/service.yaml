@@ -13,7 +13,7 @@ spec:
       protocol: TCP
       name: api
   selector:
-    {{- include "ixo-firecrawler.apiSelectorLabels" . | nindent 4 }}
+    {{- include "ixo-firecrawler.selectorLabels" . | nindent 4 }}
 ---
 apiVersion: v1
 kind: Service
@@ -34,7 +34,7 @@ spec:
       protocol: TCP
       name: mcp-admin
   selector:
-    {{- include "ixo-firecrawler.mcpSelectorLabels" . | nindent 4 }}
+    {{- include "ixo-firecrawler.selectorLabels" . | nindent 4 }}
 ---
 apiVersion: v1
 kind: Service
@@ -51,5 +51,5 @@ spec:
       protocol: TCP
       name: playwright
   selector:
-    {{- include "ixo-firecrawler.playwrightSelectorLabels" . | nindent 4 }}
+    {{- include "ixo-firecrawler.selectorLabels" . | nindent 4 }}
 
