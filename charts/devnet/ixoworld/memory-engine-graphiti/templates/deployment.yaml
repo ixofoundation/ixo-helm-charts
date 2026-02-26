@@ -121,7 +121,7 @@ spec:
         - name: matrix-bridge
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ index .Values "matrix-bridge-api" "image" "repository" }}:{{ index .Values "matrix-bridge-api" "image" "tag" | default (index .Subcharts "matrix-bridge-api").Chart.AppVersion | default .Chart.AppVersion }}"
+          image: "{{ index .Values "matrix-bridge-api" "image" "repository" }}:{{ index .Values "matrix-bridge-api" "image" "tag" | default (index .Subcharts "matrix-bridge-api").Chart.AppVersion }}"
           imagePullPolicy: {{ index .Values "matrix-bridge-api" "image" "pullPolicy" | default .Values.image.pullPolicy }}
           ports:
             - name: http
