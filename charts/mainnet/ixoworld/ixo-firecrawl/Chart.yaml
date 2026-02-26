@@ -6,7 +6,7 @@ version: 0.0.1
 appVersion: 1.0.0
 dependencies:
   - name: api-server
-    version: "0.0.2"
+    version: "0.0.1"
     repository: "file://./charts/api-server"
   - name: mcp-server
     version: "0.0.1"
