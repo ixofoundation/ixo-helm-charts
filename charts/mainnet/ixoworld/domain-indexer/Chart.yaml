@@ -3,7 +3,7 @@ name: domain-indexer
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.13
-appVersion: v1.10.0
+appVersion: v1.11.0
 annotations:
   artifacthub.io/changes: |
     - kind: changed
