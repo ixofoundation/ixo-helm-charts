@@ -42,8 +42,10 @@ api-server:
     #   value: "redis://redis:6379"
     # - name: REDIS_RATE_LIMIT_URL
     #   value: "redis://redis:6379"
+    # PLAYWRIGHT_MICROSERVICE_URL: if set here, that value is used; otherwise default is in-cluster
+    #   FQDN: http://<release>-playwright.<namespace>.svc.cluster.local:<port>/scrape
     # - name: PLAYWRIGHT_MICROSERVICE_URL
-    #   value: "http://localhost:3000/scrape"
+    #   value: "http://my-playwright:3000/scrape"
     # - name: NUQ_DATABASE_URL
     #   value: "postgres://postgres:postgres@nuq-postgres:5432/postgres"
     # - name: USE_DB_AUTHENTICATION
@@ -85,7 +87,9 @@ mcp-server:
     # - name: FIRECRAWL_API_KEY
     #   value: "no-auth-required"
     # - name: FIRECRAWL_API_URL
-    #   value: "http://localhost:3002"
+    # FIRECRAWL_API_URL: if set here, that value is used; otherwise default is in-cluster
+  #   FQDN: http://<release>-api.<namespace>.svc.cluster.local:<port>
+  #   value: "http://my-api:3002"
     # - name: HTTP_STREAMABLE_SERVER
     #   value: "true"
     # - name: HTTP_STREAMABLE_HOST
@@ -180,7 +184,7 @@ autoscaling:
 
 # PodDisruptionBudget to prevent descheduler (e.g. LowNodeUtilization) from evicting the pod
 pdb:
-  enabled: true
+  enabled: false
   # minAvailable: 1 ensures at least one pod stays running (use for single-replica or critical workloads)
   minAvailable: 1
   # maxUnavailable: use instead of minAvailable if you prefer "at most N pods down" (mutually exclusive with minAvailable)
@@ -188,11 +192,11 @@ pdb:
 
 nodeSelector: {}
 
-tolerations: # Requires a node with the taint "dedicated=bigmem:NoSchedule", kubectl taint nodes <node> dedicated=bigmem:NoSchedule
-  - key: "dedicated"
-    operator: "Equal"
-    value: "bigmem"
-    effect: "NoSchedule"
+# tolerations: # Requires a node with the taint "dedicated=bigmem:NoSchedule", kubectl taint nodes <node> dedicated=bigmem:NoSchedule
+#   - key: "dedicated"
+#     operator: "Equal"
+#     value: "bigmem"
+#     effect: "NoSchedule"
 
 affinity: {}
 

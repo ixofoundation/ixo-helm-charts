@@ -2,13 +2,48 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "ixo-firecrawler.fullname" . }}
+  name: {{ include "ixo-firecrawler.fullname" . }}-api
   labels:
     {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
 spec:
   selector:
     matchLabels:
-      {{- include "ixo-firecrawler.selectorLabels" . | nindent 6 }}
+      {{- include "ixo-firecrawler.apiSelectorLabels" . | nindent 6 }}
+  {{- if .Values.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.pdb.maxUnavailable }}
+  {{- else }}
+  minAvailable: {{ .Values.pdb.minAvailable | default 1 }}
+  {{- end }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "ixo-firecrawler.fullname" . }}-mcp
+  labels:
+    {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp-server
+spec:
+  selector:
+    matchLabels:
+      {{- include "ixo-firecrawler.mcpSelectorLabels" . | nindent 6 }}
+  {{- if .Values.pdb.maxUnavailable }}
+  maxUnavailable: {{ .Values.pdb.maxUnavailable }}
+  {{- else }}
+  minAvailable: {{ .Values.pdb.minAvailable | default 1 }}
+  {{- end }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "ixo-firecrawler.fullname" . }}-playwright
+  labels:
+    {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: playwright-service
+spec:
+  selector:
+    matchLabels:
+      {{- include "ixo-firecrawler.playwrightSelectorLabels" . | nindent 6 }}
   {{- if .Values.pdb.maxUnavailable }}
   maxUnavailable: {{ .Values.pdb.maxUnavailable }}
   {{- else }}

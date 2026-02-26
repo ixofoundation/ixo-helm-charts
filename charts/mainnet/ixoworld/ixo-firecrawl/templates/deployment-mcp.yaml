@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ixo-firecrawler.fullname" . }}-mcp
+  labels:
+    {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp-server
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ixo-firecrawler.mcpSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ixo-firecrawler.mcpSelectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ixo-firecrawler.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mcp-server
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ index .Values "mcp-server" "image" "repository" }}:{{ index .Values "mcp-server" "image" "tag" | default (index .Subcharts "mcp-server").Chart.AppVersion }}"
+          imagePullPolicy: {{ index .Values "mcp-server" "image" "pullPolicy" }}
+          env:
+            - name: FIRECRAWL_API_URL
+              value: {{ include "ixo-firecrawler.apiServiceURL" . | quote }}
+            {{- with (index .Values "mcp-server" "env") }}
+            {{- toYaml . | nindent 4 }}
+            {{- end }}
+          ports:
+            - name: mcp
+              containerPort: {{ .Values.service.mcpPort }}
+              protocol: TCP
+            - name: mcp-admin
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml (index .Values "mcp-server" "resources") | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
