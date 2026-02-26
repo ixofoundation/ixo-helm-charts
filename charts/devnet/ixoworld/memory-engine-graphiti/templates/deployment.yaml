@@ -32,8 +32,6 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- $storageMountPath := .Values.persistentVolume.mountPath | default "/storage/matrix_bot_store" }}
-      {{- $bridgeSubPath := .Values.persistentVolume.bridgeSubPath | default "bridge-storage" }}
-      {{- $bridgeMountPath := printf "%s/%s" $storageMountPath $bridgeSubPath }}
       {{- $bridgeEnabled := index .Values "matrix-bridge-api" "enabled" | default false }}
       containers:
         - name: worker
@@ -49,7 +47,7 @@ spec:
               value: {{ $storageMountPath | quote }}
             {{- if $bridgeEnabled }}
             - name: MATRIX_BRIDGE_URL
-              value: "http://localhost:3100"
+              value: "http://{{ include "memory-engine-graphiti.matrixBridgeFullname" . }}:{{ index .Values "matrix-bridge-api" "port" | default 3100 }}"
             {{- end }}
           resources:
             {{- toYaml .Values.containers.worker.resources | nindent 12 }}
@@ -66,7 +64,7 @@ spec:
               value: {{ $storageMountPath | quote }}
             {{- if $bridgeEnabled }}
             - name: MATRIX_BRIDGE_URL
-              value: "http://localhost:3100"
+              value: "http://{{ include "memory-engine-graphiti.matrixBridgeFullname" . }}:{{ index .Values "matrix-bridge-api" "port" | default 3100 }}"
             {{- end }}
           ports:
             - name: http
@@ -103,7 +101,7 @@ spec:
               value: {{ $storageMountPath | quote }}
             {{- if $bridgeEnabled }}
             - name: MATRIX_BRIDGE_URL
-              value: "http://localhost:3100"
+              value: "http://{{ include "memory-engine-graphiti.matrixBridgeFullname" . }}:{{ index .Values "matrix-bridge-api" "port" | default 3100 }}"
             {{- end }}
           ports:
             - name: mcp
@@ -117,41 +115,6 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-storage
               mountPath: {{ $storageMountPath }}
-        {{- if $bridgeEnabled }}
-        - name: matrix-bridge
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ index .Values "matrix-bridge-api" "image" "repository" }}:{{ index .Values "matrix-bridge-api" "image" "tag" | default (index .Subcharts "matrix-bridge-api").Chart.AppVersion }}"
-          imagePullPolicy: {{ index .Values "matrix-bridge-api" "image" "pullPolicy" | default .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ index .Values "matrix-bridge-api" "port" | default 3100 }}
-              protocol: TCP
-          env:
-            {{- if index .Values "matrix-bridge-api" "env" }}
-            {{- toYaml (index .Values "matrix-bridge-api" "env") | nindent 12 }}
-            {{- end }}
-            - name: MATRIX_STORE_PATH
-              value: {{ $bridgeMountPath | quote }}
-            - name: BRIDGE_PORT
-              value: {{ index .Values "matrix-bridge-api" "port" | default 3100 | quote }}
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 180
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: http
-            initialDelaySeconds: 180
-          resources:
-            {{- toYaml (index .Values "matrix-bridge-api" "resources") | nindent 12 }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-storage
-              mountPath: {{ $bridgeMountPath }}
-              subPath: {{ $bridgeSubPath }}
-        {{- end }}
       volumes:
         - name: {{ .Release.Name }}-storage
           persistentVolumeClaim:

@@ -1,0 +1,75 @@
+{{- if index .Values "matrix-bridge-api" "enabled" | default false }}
+{{- $bridgeMountPath := index .Values "matrix-bridge-api" "persistentVolume" "mountPath" | default "/storage/matrix_bot_store" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "memory-engine-graphiti.matrixBridgeFullname" . }}
+  labels:
+    {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+    app.kubernetes.io/component: matrix-bridge-api
+spec:
+  replicas: {{ index .Values "matrix-bridge-api" "replicaCount" | default 1 }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "memory-engine-graphiti.matrixBridgeSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "memory-engine-graphiti.matrixBridgeSelectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: matrix-bridge-api
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "memory-engine-graphiti.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: matrix-bridge
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ index .Values "matrix-bridge-api" "image" "repository" }}:{{ index .Values "matrix-bridge-api" "image" "tag" | default (index .Subcharts "matrix-bridge-api").Chart.AppVersion }}"
+          imagePullPolicy: {{ index .Values "matrix-bridge-api" "image" "pullPolicy" | default .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ index .Values "matrix-bridge-api" "port" | default 3100 }}
+              protocol: TCP
+          env:
+            {{- if index .Values "matrix-bridge-api" "env" }}
+            {{- toYaml (index .Values "matrix-bridge-api" "env") | nindent 12 }}
+            {{- end }}
+            - name: MATRIX_STORE_PATH
+              value: {{ $bridgeMountPath | quote }}
+            - name: BRIDGE_PORT
+              value: {{ index .Values "matrix-bridge-api" "port" | default 3100 | quote }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 180
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 180
+          resources:
+            {{- toYaml (index .Values "matrix-bridge-api" "resources") | nindent 12 }}
+          volumeMounts:
+            - name: matrix-bridge-storage
+              mountPath: {{ $bridgeMountPath }}
+      volumes:
+        - name: matrix-bridge-storage
+          persistentVolumeClaim:
+            claimName: {{ include "memory-engine-graphiti.matrixBridgePvcName" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

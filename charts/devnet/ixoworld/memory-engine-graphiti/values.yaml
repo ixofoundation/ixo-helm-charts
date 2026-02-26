@@ -111,19 +111,19 @@ tolerations: []
 affinity: {}
 
 persistentVolume:
-  # Mount path for main containers (MATRIX_BOT_STORE_PATH). Bridge uses a subfolder via bridgeSubPath.
+  # Mount path for main containers (MATRIX_BOT_STORE_PATH).
   mountPath: /storage/matrix_bot_store
-  # Subfolder under the PVC used only by the Matrix Bridge sidecar (mountPath/bridgeSubPath)
-  bridgeSubPath: bridge-storage
   size: 40Gi
   accessModes:
     - ReadWriteOnce
   storageClass: vultr-block-storage-hdd
 
-# Matrix Bridge API sidecar — subchart version managed separately (Chart.AppVersion in charts/matrix-bridge-api/Chart.yaml)
-# Internal only; Graphiti calls it via MATRIX_BRIDGE_URL (http://localhost:3100). No ingress.
+# Matrix Bridge API — runs as its own Deployment (not a sidecar). Has its own RWO PVC (main chart PVC is not shared).
+# Subchart version: Chart.AppVersion in charts/matrix-bridge-api/Chart.yaml.
+# Internal only; Graphiti calls it via MATRIX_BRIDGE_URL (ClusterIP service). No ingress.
 matrix-bridge-api:
   enabled: false
+  replicaCount: 1
   image:
     repository: ghcr.io/ixoworld/memory-engine-graphiti #Todo refactor to ixoworld/memory-engine-graphiti/matrix-bridge-api
     pullPolicy: IfNotPresent
@@ -131,3 +131,9 @@ matrix-bridge-api:
   port: 3100
   env: []
   resources: {}
+  persistentVolume:
+    mountPath: /storage/matrix_bridge_store
+    size: 40Gi
+    accessModes:
+      - ReadWriteOnce
+    storageClass: vultr-block-storage-hdd

@@ -1,0 +1,18 @@
+{{- if index .Values "matrix-bridge-api" "enabled" | default false }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "memory-engine-graphiti.matrixBridgeFullname" . }}
+  labels:
+    {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+    app.kubernetes.io/component: matrix-bridge-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ index .Values "matrix-bridge-api" "port" | default 3100 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "memory-engine-graphiti.matrixBridgeSelectorLabels" . | nindent 4 }}
+{{- end }}
