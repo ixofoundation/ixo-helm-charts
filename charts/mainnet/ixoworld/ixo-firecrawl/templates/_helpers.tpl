@@ -70,3 +70,10 @@ In-cluster URL for the Playwright microservice (used by API server)
 http://{{ include "ixo-firecrawler.fullname" . }}-playwright:{{ .Values.service.playwrightPort }}/scrape
 {{- end }}
 
+{{/*
+In-cluster URL for the Firecrawl API (used by Playwright service and MCP server)
+*/}}
+{{- define "ixo-firecrawler.firecrawlApiURL" -}}
+http://{{ include "ixo-firecrawler.fullname" . }}-api:{{ .Values.service.apiPort }}
+{{- end }}
+

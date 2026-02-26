@@ -36,7 +36,7 @@ spec:
       name: mcp-admin
   selector:
     {{- include "ixo-firecrawler.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: mcp-playwright
+    app.kubernetes.io/component: mcp
 ---
 apiVersion: v1
 kind: Service
@@ -54,5 +54,4 @@ spec:
       name: playwright
   selector:
     {{- include "ixo-firecrawler.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: mcp-playwright
-
+    app.kubernetes.io/component: playwright-service

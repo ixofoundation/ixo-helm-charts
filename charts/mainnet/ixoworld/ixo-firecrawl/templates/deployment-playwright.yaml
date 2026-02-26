@@ -1,14 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ixo-firecrawler.fullname" . }}
+  name: {{ include "ixo-firecrawler.fullname" . }}-playwright
   labels:
     {{- include "ixo-firecrawler.labels" . | nindent 4 }}
-    app.kubernetes.io/component: mcp
+    app.kubernetes.io/component: playwright-service
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: {{ index .Values "playwright-service" "replicaCount" | default .Values.replicaCount }}
   {{- with .Values.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}
@@ -16,7 +14,7 @@ spec:
   selector:
     matchLabels:
       {{- include "ixo-firecrawler.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: mcp
+      app.kubernetes.io/component: playwright-service
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -25,7 +23,7 @@ spec:
       {{- end }}
       labels:
         {{- include "ixo-firecrawler.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: mcp
+        app.kubernetes.io/component: playwright-service
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -35,27 +33,23 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        # MCP Server Container
-        - name: mcp-server
+        - name: playwright-service
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ index .Values "mcp-server" "image" "repository" }}:{{ index .Values "mcp-server" "image" "tag" | default (index .Subcharts "mcp-server").Chart.AppVersion }}"
-          imagePullPolicy: {{ index .Values "mcp-server" "image" "pullPolicy" }}
+          image: "{{ index .Values "playwright-service" "image" "repository" }}:{{ index .Values "playwright-service" "image" "tag" | default (index .Subcharts "playwright-service").Chart.AppVersion }}"
+          imagePullPolicy: {{ index .Values "playwright-service" "image" "pullPolicy" }}
           env:
             - name: FIRECRAWL_API_URL
               value: {{ include "ixo-firecrawler.firecrawlApiURL" . | quote }}
-            {{- with (index .Values "mcp-server" "env") }}
+            {{- with (index .Values "playwright-service" "env") }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           ports:
-            - name: mcp
-              containerPort: {{ .Values.service.mcpPort }}
-              protocol: TCP
-            - name: mcp-admin
-              containerPort: 8080
+            - name: playwright
+              containerPort: {{ .Values.service.playwrightPort }}
               protocol: TCP
           resources:
-            {{- toYaml (index .Values "mcp-server" "resources") | nindent 12 }}
+            {{- toYaml (index .Values "playwright-service" "resources") | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -68,4 +62,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-

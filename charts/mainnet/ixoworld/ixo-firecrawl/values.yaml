@@ -98,6 +98,7 @@ mcp-server:
     #   value: "3000"
 
 playwright-service:
+  replicaCount: 1  # override top-level replicaCount for Playwright deployment
   image:
     repository: ghcr.io/firecrawl/playwright-service
     pullPolicy: IfNotPresent
@@ -110,6 +111,7 @@ playwright-service:
     #   cpu: 500m
     #   memory: 1Gi
   env: []
+    # FIRECRAWL_API_URL is set automatically to the in-cluster API service URL; override here if needed
     # - name: PORT
     #   value: "3000"
     # - name: PROXY_SERVER
