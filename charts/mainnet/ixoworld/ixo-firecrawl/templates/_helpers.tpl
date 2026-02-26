@@ -63,3 +63,10 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{/*
+In-cluster URL for the Playwright microservice (used by API server)
+*/}}
+{{- define "ixo-firecrawler.playwrightMicroserviceURL" -}}
+http://{{ include "ixo-firecrawler.fullname" . }}-playwright:{{ .Values.service.playwrightPort }}/scrape
+{{- end }}
+

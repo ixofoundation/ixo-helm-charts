@@ -4,6 +4,7 @@ metadata:
   name: {{ include "ixo-firecrawler.fullname" . }}
   labels:
     {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mcp-playwright
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -15,6 +16,7 @@ spec:
   selector:
     matchLabels:
       {{- include "ixo-firecrawler.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mcp-playwright
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -23,6 +25,7 @@ spec:
       {{- end }}
       labels:
         {{- include "ixo-firecrawler.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mcp-playwright
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -32,23 +35,6 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        # API Server Container
-        - name: api
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ index .Values "api-server" "image" "repository" }}:{{ index .Values "api-server" "image" "tag" | default (index .Subcharts "api-server").Chart.AppVersion }}"
-          imagePullPolicy: {{ index .Values "api-server" "image" "pullPolicy" }}
-          {{- with (index .Values "api-server" "env") }}
-          env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          ports:
-            - name: api
-              containerPort: {{ .Values.service.apiPort }}
-              protocol: TCP
-          resources:
-            {{- toYaml (index .Values "api-server" "resources") | nindent 12 }}
-        
         # MCP Server Container
         - name: mcp-server
           securityContext:

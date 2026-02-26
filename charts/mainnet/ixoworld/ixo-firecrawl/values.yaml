@@ -12,6 +12,7 @@ strategy:
 # The deployment will use: {{ .Subcharts.CHARTNAME.Chart.AppVersion }} as the image tag
 
 api-server:
+  replicaCount: 1  # override top-level replicaCount for API deployment
   image:
     repository: ghcr.io/firecrawl/firecrawl
     pullPolicy: IfNotPresent
@@ -42,6 +43,7 @@ api-server:
     #   value: "redis://redis:6379"
     # - name: REDIS_RATE_LIMIT_URL
     #   value: "redis://redis:6379"
+    # PLAYWRIGHT_MICROSERVICE_URL is set automatically to the in-cluster playwright service URL; override here if needed
     # - name: PLAYWRIGHT_MICROSERVICE_URL
     #   value: "http://localhost:3000/scrape"
     # - name: NUQ_DATABASE_URL
