@@ -184,7 +184,7 @@ autoscaling:
 
 # PodDisruptionBudget to prevent descheduler (e.g. LowNodeUtilization) from evicting the pod
 pdb:
-  enabled: true
+  enabled: false
   # minAvailable: 1 ensures at least one pod stays running (use for single-replica or critical workloads)
   minAvailable: 1
   # maxUnavailable: use instead of minAvailable if you prefer "at most N pods down" (mutually exclusive with minAvailable)

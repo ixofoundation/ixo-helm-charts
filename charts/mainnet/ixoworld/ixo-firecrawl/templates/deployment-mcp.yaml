@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ixo-firecrawler.fullname" . }}
+  name: {{ include "ixo-firecrawler.fullname" . }}-mcp
   labels:
     {{- include "ixo-firecrawler.labels" . | nindent 4 }}
     app.kubernetes.io/component: mcp
@@ -68,4 +68,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-
