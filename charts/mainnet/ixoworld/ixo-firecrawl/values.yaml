@@ -154,7 +154,7 @@ service:
   # API Server port
   apiPort: 3002
   # MCP Server port
-  mcpPort: 3000
+  mcpPort: 8030
   # Playwright Service port (used internally by API)
   playwrightPort: 3000
 
