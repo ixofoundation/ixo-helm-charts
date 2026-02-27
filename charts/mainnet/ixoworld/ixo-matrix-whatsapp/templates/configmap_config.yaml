@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ixo-matrix-whatsapp.fullname" . }}-config
+  labels:
+    {{- include "ixo-matrix-whatsapp.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    # Generated from Helm values - mautrix-whatsapp
+    # See https://docs.mau.fi/bridges/go/whatsapp/
+
+    bridge:
+      command_prefix: "!wa"
+      permissions:
+        {{- toYaml .Values.permissions | nindent 8 }}
+
+    database:
+      type: {{ .Values.database.type }}
+      {{- if .Values.database.existingSecret }}
+      uri: "postgres://placeholder"  # overridden by BRIDGE_DATABASE__URI from secret
+      {{- else }}
+      uri: {{ .Values.database.uri | quote }}
+      {{- end }}
+      max_open_conns: {{ .Values.database.max_open_conns | default 5 }}
+      max_idle_conns: {{ .Values.database.max_idle_conns | default 1 }}
+
+    homeserver:
+      address: {{ .Values.homeserver.address | quote }}
+      domain: {{ .Values.homeserver.domain | quote }}
+      software: standard
+
+    appservice:
+      address: {{ .Values.appservice.address | quote }}
+      hostname: {{ .Values.appservice.hostname | quote }}
+      port: {{ .Values.appservice.port }}
+      id: whatsapp
+      bot:
+        username: whatsappbot
+        displayname: WhatsApp bridge bot
+        avatar: ""
+      ephemeral_events: true
+      as_token: "generate"
+      hs_token: "generate"
+      username_template: "wa_{{ `{{.}}` }}"
+
+    matrix:
+      message_error_notices: true
+      federate_rooms: true
+
+    encryption:
+      allow: {{ .Values.encryption.allow }}
+      default: {{ .Values.encryption.default }}
+      require: {{ .Values.encryption.require }}
+      pickle_key: {{ .Values.encryption.pickle_key | quote }}
+      allow_key_sharing: true
+
+    provisioning:
+      shared_secret: {{ .Values.provisioning.shared_secret | quote }}
+      allow_matrix_auth: {{ .Values.provisioning.allow_matrix_auth }}
+
+    # WhatsApp connector defaults
+    displayname_template: "{{ `{{or .BusinessName .PushName .Phone .RedactedPhone \"Unknown user\"}} (WA)` }}"
+    # Allow override via env (e.g. BRIDGE_DATABASE__URI from secret)
+    env_config_prefix: "BRIDGE_"
+
+    logging:
+      min_level: info
+      writers:
+        - type: stdout
+          format: pretty-colored

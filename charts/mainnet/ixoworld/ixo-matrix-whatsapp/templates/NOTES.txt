@@ -1,0 +1,15 @@
+1. Register the appservice with Synapse:
+   - After the first run, the bridge writes registration to its data volume.
+   - Copy registration from the bridge pod, e.g.:
+     kubectl exec -n {{ .Release.Namespace }} deployment/{{ include "ixo-matrix-whatsapp.fullname" . }} -- cat /data/registration.yaml
+   - Add that file to your Synapse config (app_service_config_files) and restart Synapse.
+
+2. Point Synapse at this bridge:
+   - Ensure homeserver.address in values is the URL Synapse is reachable at from the cluster.
+   - Ensure appservice.address is the URL this bridge is reachable at from Synapse (e.g. http://{{ include "ixo-matrix-whatsapp.fullname" . }}:8008 if in the same namespace).
+
+3. Link WhatsApp:
+   - In Matrix, open a DM with @whatsappbot:{{ .Values.homeserver.domain }}
+   - Send "help" then "login" and scan the QR code with WhatsApp (Linked Devices).
+
+For more: https://docs.mau.fi/bridges/go/whatsapp/

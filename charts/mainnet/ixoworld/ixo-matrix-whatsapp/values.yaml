@@ -1,0 +1,118 @@
+# Default values for ixo-matrix-whatsapp (mautrix-whatsapp bridge).
+# See https://docs.mau.fi/bridges/go/whatsapp/ and Linear IXO-636.
+
+replicaCount: 1
+
+strategy:
+  type: Recreate
+
+image:
+  repository: dock.mau.dev/mautrix/whatsapp
+  tag: ""  # default to appVersion; use e.g. "latest" or "v26.02"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Persistent storage for bridge data (config, registration, SQLite if used, media).
+persistentVolume:
+  size: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClass: ""  # use cluster default if empty
+
+# --- Bridge config (mautrix-whatsapp) ---
+# Homeserver the bridge connects to (internal URL; use service DNS in-cluster).
+homeserver:
+  address: "http://synapse:8008"   # Synapse Client-Server API URL
+  domain: "mx.ixo.earth"            # server_name / MXID domain
+
+# Appservice: URL Synapse uses to reach this bridge (must be reachable from Synapse).
+# In-cluster use Service name; if Synapse is outside cluster, use ingress or NodePort.
+appservice:
+  # Address in registration (must be reachable by Synapse)
+  address: "http://ixo-matrix-whatsapp:8008"
+  # Host/port the bridge listens on inside the container
+  hostname: "0.0.0.0"
+  port: 8008
+
+# Database. Use Postgres in production; SQLite is fine for single-user.
+database:
+  type: postgres
+  uri: "postgres://user:password@postgres:5432/mautrix_whatsapp?sslmode=disable"
+  # Optional: provide URI via existing secret (overrides uri above)
+  existingSecret: ""   # e.g. "mautrix-whatsapp-db"
+  uriSecretKey: "uri"
+  max_open_conns: 5
+  max_idle_conns: 1
+
+# Permissions: who can use the bridge. See https://docs.mau.fi/bridges/general/config.html
+# "*" = relay only; "domain" = user; "@admin:domain" = admin
+permissions:
+  "*": relay
+  "mx.ixo.earth": user
+  #"@admin:mx.ixo.earth": admin
+
+# End-to-bridge encryption (recommended)
+encryption:
+  allow: true
+  default: true
+  require: false
+  pickle_key: "generate"  # set to a fixed base64 key in production or leave generate
+
+# Optional: provisioning API shared secret (min 16 chars). "generate" = random; "disable" = off
+provisioning:
+  shared_secret: "generate"
+  allow_matrix_auth: true
+
+# --- Kubernetes resources ---
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  runAsUser: 1000
+  runAsNonRoot: true
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 8008
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: whatsapp-bridge.mx.ixo.earth
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

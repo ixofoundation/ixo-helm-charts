@@ -1,0 +1,13 @@
+apiVersion: v2
+name: ixo-matrix-whatsapp
+description: Helm chart for mautrix-whatsapp (Matrix-WhatsApp bridge) on Kubernetes
+type: application
+version: 0.1.0
+appVersion: "v26.02"
+keywords:
+  - matrix
+  - whatsapp
+  - bridge
+  - mautrix
+maintainers: []
+dependencies: []
