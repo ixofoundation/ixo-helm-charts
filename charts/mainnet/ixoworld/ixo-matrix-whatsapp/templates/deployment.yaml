@@ -37,6 +37,19 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.generateOnly }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mautrix-whatsapp -g -c /data/config.yaml -r /data/registration.yaml
+              echo ""
+              echo ">>> registration.yaml written to /data/registration.yaml"
+              echo ">>> kubectl exec into this pod and run: cat /data/registration.yaml"
+              echo ">>> Then set generateOnly: false and redeploy."
+              echo ""
+              sleep infinity
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.appservice.port }}
@@ -58,6 +71,7 @@ spec:
               mountPath: /data/config.yaml
               subPath: config.yaml
               readOnly: true
+          {{- if not .Values.generateOnly }}
           livenessProbe:
             httpGet:
               path: /
@@ -70,6 +84,7 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 5
+          {{- end }}
       volumes:
         - name: data
           persistentVolumeClaim:
