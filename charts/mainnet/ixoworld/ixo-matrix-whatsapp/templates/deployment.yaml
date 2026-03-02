@@ -78,7 +78,7 @@ spec:
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /_matrix/mau/ready
+              path: /_matrix/mau/live
               port: http
             initialDelaySeconds: 10
             periodSeconds: 5
