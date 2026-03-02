@@ -97,6 +97,9 @@ data:
     # Set to false to disable encryption support. Encrypted data will be
     # stored under dataPath.
     encryption: true
+
+    # The recovery key for restoring E2EE keys from server-side backup
+    recoveryKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_RECOVERY_KEY>'
     
     # -------------------------------------------------------------------------------------------------
     # DATABASE CONFIG
