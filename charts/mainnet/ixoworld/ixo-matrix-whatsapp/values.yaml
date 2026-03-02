@@ -36,6 +36,11 @@ appservice:
   # Host/port the bridge listens on inside the container
   hostname: "0.0.0.0"
   port: 8008
+  # Fixed tokens for stable Synapse registration across restarts.
+  # Set to fixed hex strings in production (e.g. openssl rand -hex 32).
+  # "generate" causes new tokens on every restart, breaking re-registration.
+  as_token: "generate"
+  hs_token: "generate"
 
 # Database. Use Postgres in production; SQLite is fine for single-user.
 database:

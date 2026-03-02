@@ -39,8 +39,8 @@ data:
         displayname: WhatsApp bridge bot
         avatar: ""
       ephemeral_events: true
-      as_token: "generate"
-      hs_token: "generate"
+      as_token: {{ .Values.appservice.as_token | quote }}
+      hs_token: {{ .Values.appservice.hs_token | quote }}
       username_template: "wa_{{ `{{.}}` }}"
 
     matrix:

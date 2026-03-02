@@ -31,27 +31,6 @@ spec:
       serviceAccountName: {{ include "ixo-matrix-whatsapp.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      initContainers:
-        # Copy Helm-managed config to /data only on first run (so bridge can generate registration and persist tokens)
-        - name: copy-config
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - /bin/sh
-            - -c
-            - |
-              if [ ! -f /data/config.yaml ]; then
-                echo "Initializing /data/config.yaml from Helm config"
-                cp /config/config.yaml /data/config.yaml
-              else
-                echo "Keeping existing /data/config.yaml"
-              fi
-          volumeMounts:
-            - name: config
-              mountPath: /config
-              readOnly: true
-            - name: data
-              mountPath: /data
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -76,7 +55,8 @@ spec:
             - name: data
               mountPath: /data
             - name: config
-              mountPath: /config
+              mountPath: /data/config.yaml
+              subPath: config.yaml
               readOnly: true
           livenessProbe:
             httpGet:
