@@ -81,7 +81,10 @@ podAnnotations: {}
 podSecurityContext:
   fsGroup: 1337
 
-securityContext: {}
+securityContext:
+  runAsUser: 1337
+  runAsGroup: 1337
+  runAsNonRoot: true
 
 service:
   type: ClusterIP

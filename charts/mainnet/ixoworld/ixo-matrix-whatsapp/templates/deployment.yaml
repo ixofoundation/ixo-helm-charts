@@ -37,6 +37,14 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Bypass docker-run.sh (which tries to chown read-only ConfigMap mounts).
+          # Run the bridge binary directly; config/registration are at /config/.
+          command:
+            - /usr/bin/mautrix-whatsapp
+            - -c
+            - /config/config.yaml
+            - -r
+            - /config/registration.yaml
           ports:
             - name: http
               containerPort: {{ .Values.appservice.port }}
@@ -55,11 +63,11 @@ spec:
             - name: data
               mountPath: /data
             - name: config
-              mountPath: /data/config.yaml
+              mountPath: /config/config.yaml
               subPath: config.yaml
               readOnly: true
             - name: registration
-              mountPath: /data/registration.yaml
+              mountPath: /config/registration.yaml
               subPath: registration.yaml
               readOnly: true
           livenessProbe:
