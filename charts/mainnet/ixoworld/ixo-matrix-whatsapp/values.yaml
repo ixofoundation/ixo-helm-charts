@@ -71,11 +71,6 @@ provisioning:
   shared_secret: "generate"
   allow_matrix_auth: true
 
-# Generate registration.yaml without starting the bridge.
-# When true: pod runs `mautrix-whatsapp -g` then sleeps indefinitely.
-# Exec in, grab /data/registration.yaml, give it to Synapse, then set false.
-generateOnly: false
-
 # --- Kubernetes resources ---
 serviceAccount:
   create: true
