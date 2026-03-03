@@ -1,6 +1,6 @@
 # companion
 
-![Version: 0.0.5](https://img.shields.io/badge/Version-0.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.2.12](https://img.shields.io/badge/AppVersion-1.2.12-informational?style=flat-square)
+![Version: 0.0.33](https://img.shields.io/badge/Version-0.0.33-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.2](https://img.shields.io/badge/AppVersion-1.3.2-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -27,10 +27,11 @@ A Helm chart for Kubernetes
 | ingress.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
-| persistentVolume.existingClaimName | string | `"ixofoundation-core-common-storage"` |  |
-| persistentVolume.mountPath | string | `"/srv/oracle-storage/companion"` |  |
-| persistentVolume.subPath | string | `"oracle-storage/companion"` |  |
-| persistentVolume.useExisting | bool | `true` |  |
+| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| persistentVolume.mountPath | string | `"/storage/companion"` |  |
+| persistentVolume.size | string | `"40Gi"` |  |
+| persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
+| persistentVolume.useExisting | bool | `false` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
