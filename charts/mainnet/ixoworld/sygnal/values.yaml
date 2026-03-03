@@ -135,6 +135,20 @@ apps: {}
 # proxy: "http://user:secret@proxy:8080"
 proxy: ""
 
+# Database (PostgreSQL). Omit or set to null to run without a database.
+database:
+  name: postgres
+  args:
+    host: ""       # e.g. postgres.example.svc.cluster.local
+    port: 5432
+    user: ""
+    password: ""   # or database.existingSecret
+    database: ""
+    sslmode: require   # require | disable | verify-full
+  # Optional
+  existingSecret: ""
+  existingSecretPasswordKey: password
+
 # Secret files to mount into the container (e.g. Firebase service account JSON, APNs key).
 # Each key becomes a filename in the Secret; values are AVP-substituted base64 strings.
 # Example:

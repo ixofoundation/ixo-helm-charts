@@ -29,6 +29,18 @@ data:
         address: {{ .Values.metrics.prometheus.address | quote }}
         port: {{ .Values.metrics.prometheus.port }}
 
+    {{- if and .Values.database (index .Values.database "args") (index .Values.database.args "host") }}
+    database:
+      name: {{ .Values.database.name | default "postgres" | quote }}
+      args:
+        host: {{ .Values.database.args.host | quote }}
+        port: {{ .Values.database.args.port | default 5432 }}
+        user: {{ .Values.database.args.user | quote }}
+        password: {{ .Values.database.args.password | quote }}
+        database: {{ .Values.database.args.database | quote }}
+        sslmode: {{ .Values.database.args.sslmode | default "require" | quote }}
+    {{- end }}
+
     apps:
       {{- if .Values.apps }}
       {{- toYaml .Values.apps | nindent 6 }}
