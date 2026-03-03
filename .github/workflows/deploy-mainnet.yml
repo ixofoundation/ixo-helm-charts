@@ -50,8 +50,8 @@ jobs:
           # ORG_TOKEN must have: read:org, read:packages
           github-token: ${{ secrets.ORG_TOKEN }}
           script: |
-            const org       = context.repo.owner;
-            const teamSlug  = 'mainnet-deployers';   // <-- change to your team slug
+            const org       = 'ixofoundation';
+            const teamSlug  = 'mainnet-devsecops';
             const actor     = context.actor;
 
             try {
