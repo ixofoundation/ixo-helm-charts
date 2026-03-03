@@ -150,11 +150,12 @@ database:
   existingSecretPasswordKey: password
 
 # Secret files to mount into the container (e.g. Firebase service account JSON, APNs key).
-# Each key becomes a filename in the Secret; values are AVP-substituted base64 strings.
+# Each key becomes a filename in the Secret. Values are plain text (no base64 needed);
+# Vault/AVP can inject directly, e.g. <path:secret/data/sygnal#SERVICE_ACCOUNT_JSON>
 # Example:
 # secretFiles:
 #   service_account.json: <path:secret/data/sygnal#SERVICE_ACCOUNT_JSON>
-#   apns_key.p8: <path:secret/data/sygnal#APNS_KEY>
+#   AuthKey_xxx.p8: <path:secret/data/sygnal#APNS_KEY>
 secretFiles: {}
 
 # Extra volumes to append to the pod spec (beyond the configmap and secretFiles volumes).
