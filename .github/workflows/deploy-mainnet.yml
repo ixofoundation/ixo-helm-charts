@@ -94,6 +94,10 @@ jobs:
             | awk '{print $2}')
           echo "repository=$REPO" >> "$GITHUB_OUTPUT"
 
+          # Org that owns the GHCR package (e.g. ghcr.io/ixoworld/...  →  ixoworld)
+          PACKAGE_ORG=$(echo "$REPO" | sed -n 's|ghcr\.io/\([^/]*\)/.*|\1|p')
+          echo "package_org=$PACKAGE_ORG" >> "$GITHUB_OUTPUT"
+
           # Strip leading ghcr.io/<org>/ to get the bare package name.
           # e.g. ghcr.io/ixoworld/companion/app  →  companion/app
           PACKAGE=$(echo "$REPO" | sed 's|ghcr\.io/[^/]*/||')
@@ -108,7 +112,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const org         = context.repo.owner;
+            const org         = '${{ steps.image.outputs.package_org }}';
             const packageName = '${{ steps.image.outputs.package }}';
             // Octokit URL-encodes path params automatically, so '/' → '%2F' is handled.
 
