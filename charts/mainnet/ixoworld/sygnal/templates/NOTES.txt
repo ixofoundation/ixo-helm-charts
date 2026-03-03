@@ -24,4 +24,4 @@
 2. Configure your Matrix homeserver to use Sygnal as a push gateway at:
    http(s)://<sygnal-host>/_matrix/push/v1/notify
 
-3. Health check endpoint: /_health
+3. Health check endpoint: /health
