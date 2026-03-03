@@ -1,0 +1,6 @@
+apiVersion: v2
+name: sygnal
+description: Sygnal - Reference Push Gateway for Matrix
+type: application
+version: 0.1.0
+appVersion: "v0.15.0"

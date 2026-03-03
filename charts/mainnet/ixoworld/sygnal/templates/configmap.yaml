@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sygnal.fullname" . }}-config
+  labels:
+    {{- include "sygnal.labels" . | nindent 4 }}
+data:
+  sygnal.yaml: |
+    # Generated from Helm values - Sygnal Push Gateway
+    # See https://github.com/element-hq/sygnal
+
+    http:
+      bind_addresses: {{ toJson .Values.http.bind_addresses }}
+      port: {{ .Values.http.port }}
+
+    {{- if .Values.proxy }}
+    proxy: {{ .Values.proxy | quote }}
+    {{- end }}
+
+    log:
+      setup:
+        {{- toYaml .Values.log.setup | nindent 8 }}
+      access:
+        x_forwarded_for: {{ .Values.log.access.x_forwarded_for }}
+
+    metrics:
+      prometheus:
+        enabled: {{ .Values.metrics.prometheus.enabled }}
+        address: {{ .Values.metrics.prometheus.address | quote }}
+        port: {{ .Values.metrics.prometheus.port }}
+
+    apps:
+      {{- if .Values.apps }}
+      {{- toYaml .Values.apps | nindent 6 }}
+      {{- else }}
+      {}
+      {{- end }}
