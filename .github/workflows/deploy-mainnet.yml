@@ -68,7 +68,10 @@ jobs:
               }
             } catch (err) {
               if (err.status === 403) {
-                core.setFailed('❌ Team check failed: token lacks read:org. Ensure ORG_TOKEN secret is a PAT with read:org scope.');
+                const msg = err.message && err.message.includes('forbids access via a personal access tokens')
+                  ? '❌ Team check failed (403): This org only allows classic PATs with expiry ≤90 days. Create a new token with Expiration set to 90 days (or less) and read:org.'
+                  : '❌ Team check failed (403): ORG_TOKEN must be a classic PAT with read:org and expiry ≤90 days. If the org uses SAML SSO, authorize the token for ixofoundation.';
+                core.setFailed(msg);
               } else {
                 core.setFailed(`❌ @${actor} is not a member of '${teamSlug}' — access denied`);
               }
