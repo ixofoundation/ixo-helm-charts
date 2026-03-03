@@ -44,11 +44,12 @@ jobs:
     steps:
       # ------------------------------------------------------------------ #
       # 1. Gate: only members of the allowed team may proceed               #
+      # ORG_TOKEN = PAT with read:org (GITHUB_TOKEN often cannot read org) #
       # ------------------------------------------------------------------ #
       - name: Verify team membership
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_TOKEN }}
           script: |
             const org       = 'ixofoundation';
             const teamSlug  = 'mainnet-devsecops';
@@ -65,8 +66,12 @@ jobs:
               } else {
                 core.info(`✅ @${actor} is authorized`);
               }
-            } catch {
-              core.setFailed(`❌ @${actor} is not a member of '${teamSlug}' — access denied`);
+            } catch (err) {
+              if (err.status === 403) {
+                core.setFailed('❌ Team check failed: token lacks read:org. Ensure ORG_TOKEN secret is a PAT with read:org scope.');
+              } else {
+                core.setFailed(`❌ @${actor} is not a member of '${teamSlug}' — access denied`);
+              }
             }
 
       # ------------------------------------------------------------------ #
