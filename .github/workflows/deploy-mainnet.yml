@@ -1,0 +1,159 @@
+name: Deploy to Mainnet
+
+on:
+  workflow_dispatch:
+    inputs:
+      chart:
+        description: "Chart to deploy"
+        required: true
+        type: choice
+        options:
+          - companion-app
+          - domain-creator-oracle-app
+          - domain-indexer
+          - ecs-oracle-app
+          - ixo-ai-oracles-giza
+          - ixo-ai-oracles-guru
+          - ixo-matrix-bids-bot
+          - ixo-matrix-claims-bot
+          - ixo-matrix-supamoto-bot
+          - ixo-matrix-supamoto-claims-bot
+          - ixo-registry-server
+          - ixo-supamoto-onboarding-server
+          - memory-engine
+          - memory-engine-graphiti
+          - minerva-app
+          - minerva-livekit
+          - observable-framework-builder
+          - subscriptions-oracle
+          - website-bot-oracle-app
+
+# Prevent concurrent runs — a push must complete before another deploy starts.
+concurrency:
+  group: mainnet-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: "Bump ${{ inputs.chart }} on mainnet"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # ------------------------------------------------------------------ #
+      # 1. Gate: only members of the allowed team may proceed               #
+      # ------------------------------------------------------------------ #
+      - name: Verify team membership
+        uses: actions/github-script@v7
+        with:
+          # ORG_TOKEN must have: read:org, read:packages
+          github-token: ${{ secrets.ORG_TOKEN }}
+          script: |
+            const org       = context.repo.owner;
+            const teamSlug  = 'mainnet-deployers';   // <-- change to your team slug
+            const actor     = context.actor;
+
+            try {
+              const { data } = await github.rest.teams.getMembershipForUserInOrg({
+                org,
+                team_slug: teamSlug,
+                username:  actor,
+              });
+              if (data.state !== 'active') {
+                core.setFailed(`❌ @${actor} is not an active member of '${teamSlug}'`);
+              } else {
+                core.info(`✅ @${actor} is authorized`);
+              }
+            } catch {
+              core.setFailed(`❌ @${actor} is not a member of '${teamSlug}' — access denied`);
+            }
+
+      # ------------------------------------------------------------------ #
+      # 2. Checkout                                                         #
+      # ------------------------------------------------------------------ #
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------------ #
+      # 3. Derive the GHCR package name from the chart's values.yaml       #
+      # ------------------------------------------------------------------ #
+      - name: Resolve package name
+        id: image
+        run: |
+          REPO=$(grep -m1 'repository:' \
+            "charts/mainnet/ixoworld/${{ inputs.chart }}/values.yaml" \
+            | awk '{print $2}')
+          echo "repository=$REPO" >> "$GITHUB_OUTPUT"
+
+          # Strip leading ghcr.io/<org>/ to get the bare package name.
+          # e.g. ghcr.io/ixoworld/companion/app  →  companion/app
+          PACKAGE=$(echo "$REPO" | sed 's|ghcr\.io/[^/]*/||')
+          echo "package=$PACKAGE" >> "$GITHUB_OUTPUT"
+
+      # ------------------------------------------------------------------ #
+      # 4. Fetch the latest meaningful tag from GHCR                       #
+      # ------------------------------------------------------------------ #
+      - name: Fetch latest GHCR tag
+        id: release
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_TOKEN }}
+          script: |
+            const org         = context.repo.owner;
+            const packageName = '${{ steps.image.outputs.package }}';
+            // Octokit URL-encodes path params automatically, so '/' → '%2F' is handled.
+
+            const { data: versions } =
+              await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+                org,
+                package_type: 'container',
+                package_name: packageName,
+                per_page:     20,
+                state:        'active',
+              });
+
+            for (const version of versions) {
+              const tags = version.metadata?.container?.tags ?? [];
+              // Skip meta-tags; prefer semver-like tags (v1.2.3, main-abc123, etc.)
+              const candidates = tags.filter(t => t !== 'latest' && !t.startsWith('sha-'));
+              if (candidates.length === 0) continue;
+
+              const tag = candidates.find(t => /^v?\d/.test(t)) ?? candidates[0];
+              core.info(`Latest tag for '${packageName}': ${tag}`);
+              core.setOutput('tag', tag);
+              return;
+            }
+
+            core.setFailed(`No meaningful tag found for GHCR package: ${packageName}`);
+
+      # ------------------------------------------------------------------ #
+      # 5. Update appVersion in Chart.yaml                                 #
+      # ------------------------------------------------------------------ #
+      - name: Update appVersion
+        run: |
+          CHART="charts/mainnet/ixoworld/${{ inputs.chart }}/Chart.yaml"
+          TAG="${{ steps.release.outputs.tag }}"
+
+          sed -i "s|^appVersion:.*|appVersion: \"${TAG}\"|" "$CHART"
+
+          echo "--- Updated Chart.yaml ---"
+          cat "$CHART"
+
+      # ------------------------------------------------------------------ #
+      # 6. Commit and push (no-op if already up-to-date)                   #
+      # ------------------------------------------------------------------ #
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add "charts/mainnet/ixoworld/${{ inputs.chart }}/Chart.yaml"
+
+          if git diff --staged --quiet; then
+            echo "appVersion is already ${{ steps.release.outputs.tag }} — nothing to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(mainnet): bump ${{ inputs.chart }} to ${{ steps.release.outputs.tag }}"
+          git push
