@@ -19,6 +19,9 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.secretFiles }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -64,10 +67,26 @@ spec:
               mountPath: /sygnal/sygnal.yaml
               subPath: sygnal.yaml
               readOnly: true
+            {{- if .Values.secretFiles }}
+            - name: secret-files
+              mountPath: /sygnal/secrets
+              readOnly: true
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
       volumes:
         - name: config
           configMap:
             name: {{ include "sygnal.fullname" . }}-config
+        {{- if .Values.secretFiles }}
+        - name: secret-files
+          secret:
+            secretName: {{ include "sygnal.fullname" . }}-files
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -134,3 +134,21 @@ apps: {}
 # Optional: outbound HTTPS proxy
 # proxy: "http://user:secret@proxy:8080"
 proxy: ""
+
+# Secret files to mount into the container (e.g. Firebase service account JSON, APNs key).
+# Each key becomes a filename in the Secret; values are AVP-substituted base64 strings.
+# Example:
+# secretFiles:
+#   service_account.json: <path:secret/data/sygnal#SERVICE_ACCOUNT_JSON>
+#   apns_key.p8: <path:secret/data/sygnal#APNS_KEY>
+secretFiles: {}
+
+# Extra volumes to append to the pod spec (beyond the configmap and secretFiles volumes).
+extraVolumes: []
+# - name: my-volume
+#   emptyDir: {}
+
+# Extra volume mounts to append to the sygnal container (beyond the configmap mount).
+extraVolumeMounts: []
+# - name: my-volume
+#   mountPath: /sygnal/extra
