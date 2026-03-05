@@ -278,8 +278,8 @@ spec:
                   send_slack_notification "⚠ Backup Completed with Failures" "$SUMMARY_MSG" "warning"
                 fi
                 
-                echo "Sleeping for 24 hours until next backup..."
-                sleep 86400 # 24 hours
+                echo "Sleeping for 7 days until next backup..."
+                sleep 604800 # 7 days
               done
           lifecycle:
             preStop:
