@@ -277,8 +277,8 @@ spec:
                   send_slack_notification "⚠ Backup Completed with Failures" "$SUMMARY_MSG" "warning"
                 fi
                 
-                echo "Sleeping for 24 hours until next backup..."
-                sleep 86400 # 24 hours
+                echo "Sleeping for 3.5 days until next backup..."
+                sleep 302400 # 3.5 days (semi-weekly)
               done
           volumeMounts:
             - name: gcp-service-account-key
