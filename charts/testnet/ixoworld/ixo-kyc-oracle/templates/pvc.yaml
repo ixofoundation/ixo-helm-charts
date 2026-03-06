@@ -1,0 +1,15 @@
+{{- if not .Values.persistentVolume.useExisting }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-storage
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}-storage
+spec:
+  accessModes:
+{{- .Values.persistentVolume.accessModes | toYaml | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolume.size }}
+  storageClassName: {{ .Values.persistentVolume.storageClass }}
+{{- end }}
