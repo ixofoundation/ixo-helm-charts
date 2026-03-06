@@ -1,0 +1,16 @@
+{{- if index .Values "matrix-bridge-api" "enabled" | default false }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "memory-engine-graphiti.matrixBridgePvcName" . }}
+  labels:
+    {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+    app.kubernetes.io/component: matrix-bridge-api
+spec:
+  accessModes:
+    {{- index .Values "matrix-bridge-api" "persistentVolume" "accessModes" | default (list "ReadWriteOnce") | toYaml | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ index .Values "matrix-bridge-api" "persistentVolume" "size" | default "10Gi" }}
+  storageClassName: {{ index .Values "matrix-bridge-api" "persistentVolume" "storageClass" | default .Values.persistentVolume.storageClass }}
+{{- end }}
