@@ -62,3 +62,26 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Fully qualified name for the matrix-bridge-api Deployment/Service (when enabled).
+*/}}
+{{- define "memory-engine-graphiti.matrixBridgeFullname" -}}
+{{- printf "%s-matrix-bridge" (include "memory-engine-graphiti.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Selector labels for matrix-bridge-api workload (used by Deployment and Service).
+*/}}
+{{- define "memory-engine-graphiti.matrixBridgeSelectorLabels" -}}
+app.kubernetes.io/name: {{ include "memory-engine-graphiti.name" . }}-matrix-bridge
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/part-of: ixo
+{{- end }}
+
+{{/*
+PVC name for matrix-bridge-api (its own RWO storage).
+*/}}
+{{- define "memory-engine-graphiti.matrixBridgePvcName" -}}
+{{- printf "%s-matrix-bridge-storage" (include "memory-engine-graphiti.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}

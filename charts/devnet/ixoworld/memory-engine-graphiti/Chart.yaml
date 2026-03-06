@@ -6,7 +6,7 @@ version: 0.0.22
 appVersion: main-223cf6b
 dependencies:
 - name: matrix-bridge-api
-  version: 0.0.2
+  version: 0.0.3
   repository: file://./charts/matrix-bridge-api
 annotations:
   artifacthub.io/changes: |
