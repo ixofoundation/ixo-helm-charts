@@ -1,6 +1,6 @@
 # ixo-kyc-oracle
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.78](https://img.shields.io/badge/AppVersion-1.1.78-informational?style=flat-square)
+![Version: 0.0.3](https://img.shields.io/badge/Version-0.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.79](https://img.shields.io/badge/AppVersion-1.1.79-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -16,7 +16,7 @@ A Helm chart for Kubernetes
 | env | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ghcr.io/ixoworld/kyc-oracle"` |  |
+| image.repository | string | `"ghcr.io/ixoworld/kyc-oracle/app"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
