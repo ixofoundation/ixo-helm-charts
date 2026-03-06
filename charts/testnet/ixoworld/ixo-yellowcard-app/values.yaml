@@ -8,7 +8,7 @@ strategy:
   type: Recreate
 
 image:
-  repository: ghcr.io/ixoworld/ixo-yellowcard
+  repository: ghcr.io/ixoworld/ixo-yellowcard/app
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
