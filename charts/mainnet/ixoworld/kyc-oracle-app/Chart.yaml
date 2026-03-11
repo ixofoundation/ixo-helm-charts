@@ -1,0 +1,10 @@
+apiVersion: v2
+name: ixo-kyc-oracle
+description: A Helm chart for Kubernetes
+type: application
+version: 0.0.2
+appVersion: 1.1.78
+annotations:
+  artifacthub.io/changes: |
+    - kind: changed
+      description: Update ixoworld/kyc-oracle-app app version from main to 1.1.78
