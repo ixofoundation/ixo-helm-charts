@@ -2,9 +2,9 @@ apiVersion: v2
 name: api-server
 description: Firecrawler API Server component
 type: application
-version: 0.0.2
-appVersion: develop-17aba47
+version: 0.0.3
+appVersion: main-70d62d8
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update api-server app version from latest to develop-17aba47
+      description: Update api-server app version from develop-17aba47 to main-70d62d8
