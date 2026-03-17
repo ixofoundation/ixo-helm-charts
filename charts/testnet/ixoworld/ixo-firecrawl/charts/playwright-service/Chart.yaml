@@ -1,0 +1,7 @@
+apiVersion: v2
+name: playwright-service
+description: Firecrawler Playwright Service component
+type: application
+version: 0.0.1
+appVersion: latest
+

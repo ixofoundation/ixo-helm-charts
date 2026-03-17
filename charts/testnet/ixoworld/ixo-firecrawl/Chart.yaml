@@ -1,0 +1,17 @@
+apiVersion: v2
+name: ixo-firecrawler
+description: A Helm chart for Firecrawler with API, MCP Server, and Playwright Service
+type: application
+version: 0.0.1
+appVersion: 1.0.0
+dependencies:
+  - name: api-server
+    version: "0.0.1"
+    repository: "file://./charts/api-server"
+  - name: mcp-server
+    version: "0.0.1"
+    repository: "file://./charts/mcp-server"
+  - name: playwright-service
+    version: "0.0.1"
+    repository: "file://./charts/playwright-service"
+
