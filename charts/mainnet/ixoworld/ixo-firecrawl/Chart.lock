@@ -1,12 +1,12 @@
 dependencies:
 - name: api-server
   repository: file://./charts/api-server
-  version: 0.0.3
+  version: 0.0.4
 - name: mcp-server
   repository: file://./charts/mcp-server
   version: 0.0.1
 - name: playwright-service
   repository: file://./charts/playwright-service
   version: 0.0.1
-digest: sha256:7fc05f13dd722bf4dd5ec251cbfdbf3526321c8681dd4f7b7e4b85ba552af12a
-generated: "2026-03-17T15:56:37.170214+02:00"
+digest: sha256:5278d1394a575da02c1f7b32585b5d64ac3a147797b95dd57cca79934bd320dd
+generated: "2026-03-17T18:06:09.01579+02:00"
