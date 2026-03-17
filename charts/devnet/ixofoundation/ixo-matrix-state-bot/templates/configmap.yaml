@@ -35,6 +35,10 @@ data:
     network: "devnet"
 
     # REST API config
+    ucan:
+      mnemonic: "<path:ixo_core/data/matrix#MATRIX_STATE_BOT_DID_MNEMONIC>"
+      hostname: "state.bot.devmx.ixo.earth"
+
     restApi:
       # Set to true to enable the REST API
       enabled: true

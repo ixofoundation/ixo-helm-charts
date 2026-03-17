@@ -33,6 +33,10 @@ data:
       registrationToken: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_USER_CREATION_REGISTRATION_TOKEN>"
 
     # REST API config
+    ucan:
+      mnemonic: "<path:ixo_core/data/matrix#MATRIX_ROOMS_BOT_DID_MNEMONIC>"
+      hostname: "rooms.bot.devmx.ixo.earth"
+
     restApi:
       # Set to true to enable the REST API
       enabled: true
