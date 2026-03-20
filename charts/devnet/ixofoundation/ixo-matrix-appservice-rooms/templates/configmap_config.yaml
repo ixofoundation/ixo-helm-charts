@@ -32,11 +32,15 @@ data:
     userCreation:
       registrationToken: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_USER_CREATION_REGISTRATION_TOKEN>"
 
-    # REST API config
+    # Recovery key for restoring encryption keys from server backup
+    # Format: Base58 with spaces (e.g., "EsTc LW2K ...")
+    recoveryKey: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_RECOVERY_KEY>"
+
     ucan:
       mnemonic: "<path:ixo_core/data/matrix#MATRIX_ROOMS_BOT_DID_MNEMONIC>"
       hostname: "rooms.bot.devmx.ixo.earth"
 
+    # REST API config
     restApi:
       # Set to true to enable the REST API
       enabled: true
