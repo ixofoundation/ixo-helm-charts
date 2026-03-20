@@ -43,7 +43,7 @@ data:
 
     # This is where the homeserver can reach your appservice at. The bot-sdk will automatically expose a webserver
     # at the configured port to handle this traffic and turn it into useful events.
-    url: "http://ixo-matrix-appservice-rooms.core.svc.cluster.local:9000"
+    url: "http://ixo-matrix-appservice-rooms.matrix-synapse.svc.cluster.local:9000"
 
     # If you need ephemeral events (for crypto or other reasons), set this to true. Defaults to false to avoid flooding
     # the appservice wtih traffic.
