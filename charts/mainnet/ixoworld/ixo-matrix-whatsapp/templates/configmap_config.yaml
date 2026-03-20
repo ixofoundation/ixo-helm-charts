@@ -61,6 +61,9 @@ data:
 
     # WhatsApp connector defaults
     displayname_template: "{{ `{{or .BusinessName .PushName .Phone .RedactedPhone \"Unknown user\"}} (WA)` }}"
+    history_sync:
+      max_initial_conversations: 10
+      request_full_sync: false
     # Allow override via env (e.g. BRIDGE_DATABASE__URI from secret)
     env_config_prefix: "BRIDGE_"
 

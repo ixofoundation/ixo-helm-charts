@@ -91,15 +91,20 @@ service:
   port: 8008
 
 ingress:
-  enabled: false
-  className: ""
-  annotations: {}
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    acme.cert-manager.io/http01-edit-in-place: "true"
   hosts:
-    - host: whatsapp-bridge.mx.ixo.earth
+    - host: whatsapp.bridge.mx.ixo.earth
       paths:
-        - path: /
+        - path: /_matrix/provision
           pathType: Prefix
-  tls: []
+  tls:
+    - hosts:
+        - whatsapp.bridge.mx.ixo.earth
+      secretName: whatsapp-bridge-tls
 
 resources: {}
   # limits:
