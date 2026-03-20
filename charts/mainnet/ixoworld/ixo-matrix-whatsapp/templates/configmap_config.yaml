@@ -51,7 +51,8 @@ data:
       allow: {{ .Values.encryption.allow }}
       default: {{ .Values.encryption.default }}
       require: {{ .Values.encryption.require }}
-      pickle_key: {{ .Values.encryption.pickle_key | quote }}
+      appservice: true
+      pickle_key: "<path:ixo_core/data/matrix#MATRIX_WHATSAPP_BRIDGE_PICKLE_KEY>"
       allow_key_sharing: true
 
     provisioning:
