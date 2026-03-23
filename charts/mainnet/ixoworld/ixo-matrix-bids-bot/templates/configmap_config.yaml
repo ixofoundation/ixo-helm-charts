@@ -36,6 +36,10 @@ data:
     network: "mainnet"
 
     # REST API config
+    ucan:
+      mnemonic: "<path:ixo_core/data/matrix#MATRIX_BIDS_BOT_DID_MNEMONIC>"
+      hostname: "bid.bot.mx.ixo.earth"
+
     restApi:
       # Set to true to enable the REST API
       enabled: true
