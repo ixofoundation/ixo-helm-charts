@@ -1,8 +1,14 @@
 # matrix-bridge-api
 
-![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.0-develop.2](https://img.shields.io/badge/AppVersion-v1.1.0--develop.2-informational?style=flat-square)
+![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.0-develop.3](https://img.shields.io/badge/AppVersion-v1.1.0--develop.3-informational?style=flat-square)
 
 Matrix Bridge API sidecar — Node.js/TypeScript HTTP service wrapping @ixo/matrix SDK for Graphiti memory engine
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.3 |
 
 ## Values
 
