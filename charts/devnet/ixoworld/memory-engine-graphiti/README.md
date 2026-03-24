@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.0.22](https://img.shields.io/badge/Version-0.0.22-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.1.0-develop.2](https://img.shields.io/badge/AppVersion-v1.1.0--develop.2-informational?style=flat-square)
+![Version: 0.0.23](https://img.shields.io/badge/Version-0.0.23-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-b6fbfb7](https://img.shields.io/badge/AppVersion-main--b6fbfb7-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -8,7 +8,7 @@ A Helm chart for Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.1 |
+| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.3 |
 
 ## Values
 
@@ -48,13 +48,17 @@ A Helm chart for Kubernetes
 | matrix-bridge-api.enabled | bool | `false` |  |
 | matrix-bridge-api.env | list | `[]` |  |
 | matrix-bridge-api.image.pullPolicy | string | `"IfNotPresent"` |  |
-| matrix-bridge-api.image.repository | string | `"ghcr.io/ixoworld/matrix-bridge-api"` |  |
+| matrix-bridge-api.image.repository | string | `"ghcr.io/ixoworld/memory-engine-graphiti"` |  |
+| matrix-bridge-api.persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
+| matrix-bridge-api.persistentVolume.mountPath | string | `"/storage/matrix_bridge_store"` |  |
+| matrix-bridge-api.persistentVolume.size | string | `"40Gi"` |  |
+| matrix-bridge-api.persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
 | matrix-bridge-api.port | int | `3100` |  |
+| matrix-bridge-api.replicaCount | int | `1` |  |
 | matrix-bridge-api.resources | object | `{}` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| persistentVolume.bridgeSubPath | string | `"bridge-storage"` |  |
 | persistentVolume.mountPath | string | `"/storage/matrix_bot_store"` |  |
 | persistentVolume.size | string | `"40Gi"` |  |
 | persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
