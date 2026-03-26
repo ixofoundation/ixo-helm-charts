@@ -1,0 +1,93 @@
+replicaCount: 1
+
+image:
+  repository: searxng/searxng
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+env: []
+  # - name: INSTANCE_NAME
+  #   value: "my-instance"
+  # - name: BASE_URL
+  #   value: "https://search.example.com/"
+  # - name: AUTOCOMPLETE
+  #   value: "false"
+
+service:
+  type: ClusterIP
+  port: 8080
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: search.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: searxng-tls
+  #    hosts:
+  #      - search.example.com
+
+# SearXNG settings.yml configuration
+# See https://docs.searxng.org/admin/settings/settings.html
+searxng:
+  config:
+    use_default_settings: true
+    server:
+      secret_key: "pleasechangeme"
+      # limiter: true
+    # ui:
+    #   static_use_hash: true
+    # redis:
+    #   url: redis://@searxng-redis:6379/0
+    # engines:
+    #   - name: google
+    #     disabled: false
+
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
