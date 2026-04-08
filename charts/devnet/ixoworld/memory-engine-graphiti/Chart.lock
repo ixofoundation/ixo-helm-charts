@@ -1,6 +1,6 @@
 dependencies:
 - name: matrix-bridge-api
   repository: file://./charts/matrix-bridge-api
-  version: 0.0.4
-digest: sha256:bde2ad4a8ef90bd086e3bcad19781801bf4cc2babdf1661e5c4ff95bea1bb105
-generated: "2026-03-24T14:06:23.336844+02:00"
+  version: 0.0.5
+digest: sha256:169632c7b9a2ff09f4cfc320ed1bc3f03f51f019b2196d7421fe384d434cd1c1
+generated: "2026-04-08T07:51:57.373136+02:00"
