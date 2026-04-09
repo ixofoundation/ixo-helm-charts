@@ -293,6 +293,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: NODE_ENV
+              value: "development"
+            - name: MATRIX_LOG
+              value: "matrix_sdk_crypto=info,matrix_sdk_sqlite=info"
           ports:
             - name: http
               containerPort: 9000
