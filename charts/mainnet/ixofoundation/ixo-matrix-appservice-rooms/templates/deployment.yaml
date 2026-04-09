@@ -294,8 +294,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: NODE_ENV
-              value: "development"
+            - name: LOG_LEVEL
+              value: "DEBUG"
             - name: MATRIX_LOG
               value: "matrix_sdk_crypto=info,matrix_sdk_sqlite=info"
           ports:
