@@ -88,6 +88,48 @@ tolerations: []
 
 affinity: {}
 
+# Override any registration.yaml config values. Unset keys fall back to built-in defaults.
+# registration:
+#   id: "ixoroomappservice"
+#   as_token: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_AS_TOKEN>"
+#   hs_token: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_HS_TOKEN>"
+#   rate_limited: false
+#   sender_localpart: "ixo-room-bot"
+#   url: "http://ixo-matrix-appservice-rooms.matrix-synapse.svc.cluster.local:9000"
+#   "de.sorunome.msc2409.push_ephemeral": true
+#   "org.matrix.msc3202": true
+#   namespaces:
+#     aliases:
+#       - exclusive: true
+#         regex: "#did-ixo-.*"
+#     users:
+#       - exclusive: true
+#         regex: "@test:localhost:8408"
+#     rooms: []
+
+# Override any production.yaml config values. Unset keys fall back to built-in defaults.
+# config:
+#   homeserverUrl: "http://matrix-synapse.matrix-synapse.svc.cluster.local:8008"
+#   homeserverName: "mx.ixo.earth"
+#   autoJoin: true
+#   dataPath: "./ixo-rooms-bot-storage"
+#   blockchainRpcUri: "https://impacthub.ixo.world/rpc/"
+#   blocksyncUri: "https://blocksync-graphql.ixo.earth/"
+#   network: "mainnet"
+#   ecies:
+#     mnemonic: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_ECIES_MNEMONIC>"
+#   userCreation:
+#     registrationToken: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_USER_CREATION_REGISTRATION_TOKEN>"
+#   recoveryKey: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_RECOVERY_KEY>"
+#   ucan:
+#     mnemonic: "<path:ixo_core/data/matrix#MATRIX_ROOMS_BOT_DID_MNEMONIC>"
+#     hostname: "rooms.bot.mx.ixo.earth"
+#   restApi:
+#     enabled: true
+#     port: 8081
+#     trustProxy: 1
+#     accessToken: "<path:ixo_core/data/matrix#MATRIX_APPSERVICE_ROOMS_ACCESS_TOKEN>"
+
 backup:
   restartPolicy: Always
   resources:
