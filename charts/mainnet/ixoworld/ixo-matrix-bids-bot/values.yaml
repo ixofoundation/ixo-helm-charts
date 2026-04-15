@@ -88,6 +88,28 @@ tolerations: []
 
 affinity: {}
 
+# Override any production.yaml config values. Unset keys fall back to built-in defaults.
+# config:
+#   homeserverUrl: "http://matrix-synapse.matrix-synapse.svc.cluster.local:8008"
+#   homeserverName: "mx.ixo.earth"
+#   accessToken: "<path:ixo_core/data/matrix#MATRIX_BIDS_BOT_ACCESS_TOKEN>"
+#   graphqlUrl: "https://blocksync-graphql.ixo.earth/graphql"
+#   rpcUrl: "https://impactHub.ixo.world/rpc/"
+#   autoJoin: true
+#   dataPath: "./ixo-bids-bot-storage"
+#   encryption: true
+#   recoveryKey: "<path:ixo_core/data/matrix#MATRIX_BID_BOT_RECOVERY_KEY>"
+#   blockchainRpcUri: "https://impactHub.ixo.world/rpc/"
+#   blocksyncUri: "https://blocksync-graphql.ixo.earth/"
+#   network: "mainnet"
+#   ucan:
+#     mnemonic: "<path:ixo_core/data/matrix#MATRIX_BIDS_BOT_DID_MNEMONIC>"
+#     hostname: "bid.bot.mx.ixo.earth"
+#   restApi:
+#     enabled: true
+#     port: 8083
+#     trustProxy: 1
+
 backup:
   restartPolicy: Always
   resources:
