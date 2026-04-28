@@ -12,6 +12,7 @@ on:
           - domain-creator-oracle-app
           - domain-indexer
           - ecs-oracle-app
+          - flow-manager-oracle-app
           - ixo-ai-oracles-giza
           - ixo-ai-oracles-guru
           - ixo-matrix-bids-bot
