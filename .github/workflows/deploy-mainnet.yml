@@ -21,6 +21,7 @@ on:
           - ixo-matrix-supamoto-claims-bot
           - ixo-registry-server
           - ixo-supamoto-onboarding-server
+          - ixo-kyc-server
           - memory-engine
           - memory-engine-graphiti
           - minerva-app
@@ -90,9 +91,20 @@ jobs:
       - name: Resolve package name
         id: image
         run: |
-          REPO=$(grep -m1 'repository:' \
-            "charts/mainnet/ixoworld/${{ inputs.chart }}/values.yaml" \
-            | awk '{print $2}')
+          CHART_DIR="${{ inputs.chart }}"
+          REPO=""
+
+          # Backward-compatible alias: deploy ixo-kyc-server using existing chart folder.
+          if [ "${{ inputs.chart }}" = "ixo-kyc-server" ]; then
+            CHART_DIR="kyc-oracle-app"
+            REPO="ghcr.io/ixofoundation/ixo-kyc-server"
+          else
+            REPO=$(grep -m1 'repository:' \
+              "charts/mainnet/ixoworld/${CHART_DIR}/values.yaml" \
+              | awk '{print $2}')
+          fi
+
+          echo "chart_dir=$CHART_DIR" >> "$GITHUB_OUTPUT"
           echo "repository=$REPO" >> "$GITHUB_OUTPUT"
 
           # Org that owns the GHCR package (e.g. ghcr.io/ixoworld/...  →  ixoworld)
@@ -145,7 +157,7 @@ jobs:
       # ------------------------------------------------------------------ #
       - name: Update appVersion
         run: |
-          CHART="charts/mainnet/ixoworld/${{ inputs.chart }}/Chart.yaml"
+          CHART="charts/mainnet/ixoworld/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
           TAG="${{ steps.release.outputs.tag }}"
 
           sed -i "s|^appVersion:.*|appVersion: \"${TAG}\"|" "$CHART"
@@ -161,7 +173,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add "charts/mainnet/ixoworld/${{ inputs.chart }}/Chart.yaml"
+          git add "charts/mainnet/ixoworld/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
 
           if git diff --staged --quiet; then
             echo "appVersion is already ${{ steps.release.outputs.tag }} — nothing to commit."
