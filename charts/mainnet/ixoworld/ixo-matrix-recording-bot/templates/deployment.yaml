@@ -68,6 +68,9 @@ spec:
               {{- if .Values.persistentVolume.subPath }}
               subPath: {{ .Values.persistentVolume.subPath }}
               {{- end }}
+            - name: config
+              mountPath: /bot/config
+              readOnly: true
             - name: dshm          # chromium shared memory
               mountPath: /dev/shm
       volumes:
@@ -78,6 +81,9 @@ spec:
             {{- else }}
             claimName: {{ include "ixo-matrix-recording-bot.fullname" . }}-storage
             {{- end }}
+        - name: config
+          configMap:
+            name: {{ include "ixo-matrix-recording-bot.fullname" . }}-config
         - name: dshm          # chromium shared memory
           emptyDir:
             medium: Memory
