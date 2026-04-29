@@ -45,8 +45,6 @@ data:
       port: 8087
       # express trust proxy config for if you are using a reverse proxy
       trustProxy: 1
-      # An access token for access to server rest endpoints.
-      accessToken: "<path:ixo_core/data/matrix#MATRIX_RECORDING_BOT_ACCESS_TOKEN>"
 
     # Recordings config
     recordings:
