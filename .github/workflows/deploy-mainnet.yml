@@ -22,6 +22,7 @@ on:
           - ixo-registry-server
           - ixo-supamoto-onboarding-server
           - ixo-kyc-server
+          - kyc-oracle-app
           - memory-engine
           - memory-engine-graphiti
           - minerva-app
@@ -91,19 +92,20 @@ jobs:
       - name: Resolve package name
         id: image
         run: |
+          CHART_NAMESPACE="ixoworld"
           CHART_DIR="${{ inputs.chart }}"
-          REPO=""
+          CHART_BASE_PATH="charts/mainnet"
 
-          # Backward-compatible alias: deploy ixo-kyc-server using existing chart folder.
+          # Resolve chart location for non-ixoworld charts.
           if [ "${{ inputs.chart }}" = "ixo-kyc-server" ]; then
-            CHART_DIR="kyc-oracle-app"
-            REPO="ghcr.io/ixofoundation/ixo-kyc-server"
-          else
-            REPO=$(grep -m1 'repository:' \
-              "charts/mainnet/ixoworld/${CHART_DIR}/values.yaml" \
-              | awk '{print $2}')
+            CHART_NAMESPACE="ixofoundation"
           fi
 
+          REPO=$(grep -m1 'repository:' \
+            "${CHART_BASE_PATH}/${CHART_NAMESPACE}/${CHART_DIR}/values.yaml" \
+            | awk '{print $2}')
+
+          echo "chart_namespace=$CHART_NAMESPACE" >> "$GITHUB_OUTPUT"
           echo "chart_dir=$CHART_DIR" >> "$GITHUB_OUTPUT"
           echo "repository=$REPO" >> "$GITHUB_OUTPUT"
 
@@ -157,7 +159,7 @@ jobs:
       # ------------------------------------------------------------------ #
       - name: Update appVersion
         run: |
-          CHART="charts/mainnet/ixoworld/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
+          CHART="charts/mainnet/${{ steps.image.outputs.chart_namespace }}/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
           TAG="${{ steps.release.outputs.tag }}"
 
           sed -i "s|^appVersion:.*|appVersion: \"${TAG}\"|" "$CHART"
@@ -173,7 +175,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add "charts/mainnet/ixoworld/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
+          git add "charts/mainnet/${{ steps.image.outputs.chart_namespace }}/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
 
           if git diff --staged --quiet; then
             echo "appVersion is already ${{ steps.release.outputs.tag }} — nothing to commit."
