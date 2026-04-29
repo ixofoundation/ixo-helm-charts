@@ -68,6 +68,8 @@ spec:
               {{- if .Values.persistentVolume.subPath }}
               subPath: {{ .Values.persistentVolume.subPath }}
               {{- end }}
+            - name: dshm          # chromium shared memory
+              mountPath: /dev/shm
       volumes:
         - name: storage
           persistentVolumeClaim:
@@ -76,6 +78,10 @@ spec:
             {{- else }}
             claimName: {{ include "ixo-matrix-recording-bot.fullname" . }}-storage
             {{- end }}
+        - name: dshm          # chromium shared memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
