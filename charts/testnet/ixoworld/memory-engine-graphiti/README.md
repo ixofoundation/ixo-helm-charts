@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.0.18](https://img.shields.io/badge/Version-0.0.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-ee6f7c2](https://img.shields.io/badge/AppVersion-main--ee6f7c2-informational?style=flat-square)
+![Version: 0.0.19](https://img.shields.io/badge/Version-0.0.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-92a1e3e](https://img.shields.io/badge/AppVersion-main--92a1e3e-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -8,7 +8,7 @@ A Helm chart for Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.3 |
+| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.4 |
 
 ## Values
 
