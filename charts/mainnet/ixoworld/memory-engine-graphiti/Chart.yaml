@@ -3,7 +3,7 @@ name: memory-engine-graphiti
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.13
-appVersion: "v1.2.1"
+appVersion: "main-44fd24d"
 dependencies:
 - name: matrix-bridge-api
   version: 0.0.4
@@ -11,4 +11,4 @@ dependencies:
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/memory-engine-graphiti app version from main-5e2c8ca to main-ee6f7c2
+      description: Update ixoworld/memory-engine-graphiti app version from v1.2.1 to main-44fd24d
