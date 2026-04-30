@@ -3,7 +3,7 @@ name: memory-engine-graphiti
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.13
-appVersion: main-ee6f7c2
+appVersion: "v1.2.1"
 dependencies:
 - name: matrix-bridge-api
   version: 0.0.4
