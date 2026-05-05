@@ -11,7 +11,7 @@ data:
     # -------------------------------------------------------------------------------------------------
     # Where the homeserver's Client-Server API is located. Typically this
     # is where clients would be connecting to in order to send messages.
-    homeserverUrl: 'https://mx.ixo.earth'
+    homeserverUrl: 'https://matrix.supamoto.global'
 
     # An access token for the bot to use. Learn how to get an access token
     # at https://t2bot.io/docs/access_tokens
@@ -19,7 +19,7 @@ data:
 
     # The id of the only room the bot must join - all other invites will be
     # ignored.
-    roomId: '!XUXqEEmIhStjNZsjUq:mx.ixo.earth'
+    roomId: '!VAOsdfmGwOEuLKCDot:matrix.supamoto.global'
 
     # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
