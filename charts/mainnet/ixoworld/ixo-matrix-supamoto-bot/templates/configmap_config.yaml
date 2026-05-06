@@ -62,7 +62,7 @@ data:
     databaseUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_DATABASE_URL>'
 
     # Whether to use SSL for the database connection
-    databaseUseSsl: true
+    databaseUseSsl: false
 
     # Whether to migrate the database programmatically
     migrateDbProgrammatically: true
