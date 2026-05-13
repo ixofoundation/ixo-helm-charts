@@ -30,6 +30,7 @@ on:
           - observable-framework-builder
           - subscriptions-oracle
           - website-bot-oracle-app
+          - ixo-matrix-recording-bot
 
 # Prevent concurrent runs — a push must complete before another deploy starts.
 concurrency:
