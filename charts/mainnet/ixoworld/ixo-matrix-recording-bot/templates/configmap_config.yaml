@@ -51,7 +51,7 @@ data:
       # Location on disk for where to store recordings.
       outputPath: "./ixo-matrix-recording-bot-storage/recordings"
       # Whether to remove local files after uploading to R2.
-      removeLocalFiles: false
+      removeLocalFiles: true
 
     # XAI config
     xai:
