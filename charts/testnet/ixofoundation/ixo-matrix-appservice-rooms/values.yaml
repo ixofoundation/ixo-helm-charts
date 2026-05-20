@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+strategy:
+  type: Recreate
+
 image:
   repository: ghcr.io/ixofoundation/ixo-matrix-appservice-rooms
   pullPolicy: IfNotPresent
