@@ -115,4 +115,6 @@ data:
       port: 8083
       # express trust proxy config for if you are using a reverse proxy
       trustProxy: 1
+      # An access token for access to server rest endpoints.
+      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_API_KEY>'
     
