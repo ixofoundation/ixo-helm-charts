@@ -93,7 +93,7 @@ persistentVolume:
   # Subdirectory of the PVC to mount (useful for shared PVCs)
   #subPath: "oracle-storage/companion"
   # Configuration for creating a new PVC (only used when useExisting is false)
-  size: 40Gi
+  size: 10Gi
   accessModes:
     - ReadWriteOnce
-  storageClass: vultr-block-storage-hdd
+  storageClass: vultr-block-storage
