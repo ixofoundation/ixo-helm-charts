@@ -56,12 +56,12 @@ spec:
             httpGet:
               path: /
               port: http
-            periodSeconds: 30
+            initialDelaySeconds: 60
           readinessProbe:
             httpGet:
               path: /
               port: http
-            periodSeconds: 30
+            initialDelaySeconds: 60
           volumeMounts:
             - name: {{ .Release.Name }}-storage
               mountPath: {{ .Values.persistentVolume.mountPath }}
