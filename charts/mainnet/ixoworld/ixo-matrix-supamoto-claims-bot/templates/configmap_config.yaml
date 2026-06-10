@@ -76,7 +76,7 @@ data:
     # UCAN CONFIG
     # -------------------------------------------------------------------------------------------------
     ucan:
-      hostname: 'claim.bot.matrix.supamoto.global'
+      hostname: 'submission.claim.bot.matrix.supamoto.global'
       mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_CLAIMS_BOT_UCAN_MNEMONIC>'
     # -------------------------------------------------------------------------------------------------
     # REST API CONFIG
