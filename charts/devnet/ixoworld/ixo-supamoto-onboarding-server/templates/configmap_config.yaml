@@ -75,6 +75,24 @@ data:
     # The URL of the remote contexts to use
     remoteContexts:
       - 'https://w3id.org/ixo/context/v1'
+
+    # -------------------------------------------------------------------------------------------------
+    # ONBOARDING DEED SUPA INDEXING CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # On-chain address of the central onboarding deed that holds SUPA for customers
+    # not yet attached to a household (the sms/mint worker's MINT_CENTRAL_ADDRESS).
+    # Leave blank to disable the DeedTokenObserver.
+    onboardingDeedAddress: ''
+
+    # On-chain token-class name to index in the deed. Empty indexes every token the
+    # deed holds; set to the SUPA token name to mirror only SUPA.
+    supaTokenName: 'SUPA'
+
+    # IPFS gateway used to dereference token metadata by CID.
+    ipfsGatewayUrl: 'https://ipfs.gateway.ixo.world/'
+
+    # How often (ms) to poll the deed's holdings from blocksync.
+    deedTokenPollIntervalMs: 1500
     
     # -------------------------------------------------------------------------------------------------
     # CREDENTIALS CONFIG
@@ -84,6 +102,20 @@ data:
     
     # The DID that will be used as the issuer for all credentials
     issuerDid: 'did:ixo:entity:54bede0aced5282b2401c58a048a731a'
+
+    # -------------------------------------------------------------------------------------------------
+    # HOUSEHOLD CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The household service account owns and signs all household (deed/subscription)
+    # entities, and its Matrix account posts household credentials into the entity rooms.
+    # The account is provisioned externally; secrets are pulled from Vault.
+    household:
+      # The mnemonic of the household service account (signs entity transactions)
+      mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_MNEMONIC>'
+      # The Matrix login password of the household service account
+      matrixPassword: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_MATRIX_PASSWORD>'
+      # The Matrix 4S recovery passphrase of the household service account
+      recoveryPassphrase: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_RECOVERY_PASSPHRASE>'
     
     # -------------------------------------------------------------------------------------------------
     # BOT CONFIG
