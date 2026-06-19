@@ -186,3 +186,9 @@ data:
     # -------------------------------------------------------------------------------------------------
     cronjob:
       schedule: '*/10 * * * *'
+
+    # -------------------------------------------------------------------------------------------------
+    # NOTIFICATIONS CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # Slack incoming webhook URL used to post server notifications.
+    slackWebhookUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_SLACK_WEBHOOK_URL>'
