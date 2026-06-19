@@ -20,7 +20,11 @@ data:
     # The id of the only room the bot must join - all other invites will be
     # ignored.
     roomId: '!tqfJZcXzJuRwAniyrd:devmx.ixo.earth'
-    
+
+    # The id of the onboarding deed room the bot must join - any other invites will be
+    # ignored.
+    onboardingDeedRoomId: '!FPAELCyHYVHicGDzgx:devmx.ixo.earth'
+
     # The URL of the room bot to use for matrix account registration and room management
     roomBotUrl: 'https://rooms.bot.devmx.ixo.earth'
     
