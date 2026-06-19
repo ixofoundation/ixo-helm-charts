@@ -116,6 +116,28 @@ data:
       matrixPassword: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_MATRIX_PASSWORD>'
       # The Matrix 4S recovery passphrase of the household service account
       recoveryPassphrase: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_RECOVERY_PASSPHRASE>'
+
+    # -------------------------------------------------------------------------------------------------
+    # FEE PAYMENTS CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The submitFeeClaims flow saves each fee claim's data via the claims bot and then
+    # submits it on-chain itself. This mnemonic signs those claim transactions (and the
+    # claim VCs); it must be an authorized claim agent on the fee collections.
+    feePayments:
+      contributorMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_CONTRIBUTOR_MNEMONIC>'
+      # Access token used to authenticate saving the claim data via the claims bot
+      # (used instead of claimsBot.accessToken for these payment claims).
+      accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_ACCESS_TOKEN>'
+
+    # -------------------------------------------------------------------------------------------------
+    # ONBOARDING DEED CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The evaluateFeeClaims flow approves the submitted fee claims on-chain. This
+    # mnemonic signs the MsgEvaluateClaim transactions; it MUST differ from
+    # feePayments.contributorMnemonic (the chain rejects self-evaluation) and hold an
+    # EvaluateClaimAuthorization grant on the fee collections.
+    onboardingDeed:
+      evaluatorMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_ONBOARDING_DEED_EVALUATOR_MNEMONIC>'
     
     # -------------------------------------------------------------------------------------------------
     # BOT CONFIG
