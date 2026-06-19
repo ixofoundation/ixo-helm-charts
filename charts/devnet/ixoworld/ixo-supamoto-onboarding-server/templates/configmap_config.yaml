@@ -122,13 +122,19 @@ data:
     # FEE PAYMENTS CONFIG
     # -------------------------------------------------------------------------------------------------
     # The submitFeeClaims flow saves each fee claim's data via the claims bot and then
-    # submits it on-chain itself. This mnemonic signs those claim transactions (and the
-    # claim VCs); it must be an authorized claim agent on the fee collections.
+    # submits it on-chain itself. This mnemonic signs those claim transactions; it must
+    # be an authorized claim agent on the fee collections. The claim VCs are signed
+    # separately with the contributor's ed25519 signing mnemonic (see matrixPin).
     feePayments:
       contributorMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_CONTRIBUTOR_MNEMONIC>'
       # Access token used to authenticate saving the claim data via the claims bot
-      # (used instead of claimsBot.accessToken for these payment claims).
+      # (used instead of claimsBot.accessToken for these payment claims) and to read
+      # the contributor's Matrix room state.
       accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_ACCESS_TOKEN>'
+      # The contributor account's 6-digit Matrix PIN, used to decrypt its ed25519
+      # signing mnemonic (stored PIN-encrypted in its Matrix room by ixo-auth). That
+      # ed25519 key signs the claim VCs.
+      matrixPin: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_MATRIX_PIN>'
 
     # -------------------------------------------------------------------------------------------------
     # ONBOARDING DEED CONFIG
