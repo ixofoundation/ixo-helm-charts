@@ -206,8 +206,7 @@ data:
     # Agent bid auto-approval (POST /agents/approve-bid). Grants a bidding agent on-chain
     # authorization to submit one claim, then marks their bid approved on the bids bot.
     supaAgentBidApproval:
-      # secp256k1 mnemonic of the granter/approver account (collection admin or a delegate
-      # holding a CreateClaimAuthorization meta-grant for the collection).
+      # secp256k1 mnemonic of the granter/approver account (collection admin or a delegate holding a CreateClaimAuthorization meta-grant for the collection).
       granterMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_GRANTER_MNEMONIC>'
       # Matrix access token of the same granter account (mints OpenID tokens for the bids bot).
       matrixAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_BID_ACCESS_TOKEN>'
