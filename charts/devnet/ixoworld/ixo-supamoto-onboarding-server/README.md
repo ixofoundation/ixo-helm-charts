@@ -1,6 +1,6 @@
 # ixo-supamoto-onboarding-server
 
-![Version: 0.0.102](https://img.shields.io/badge/Version-0.0.102-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.12.0-develop.19](https://img.shields.io/badge/AppVersion-v1.12.0--develop.19-informational?style=flat-square)
+![Version: 0.0.103](https://img.shields.io/badge/Version-0.0.103-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.12.0-develop.20](https://img.shields.io/badge/AppVersion-v1.12.0--develop.20-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
