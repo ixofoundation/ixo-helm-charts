@@ -1,6 +1,6 @@
 # ixo-matrix-appservice-rooms
 
-![Version: 0.0.41](https://img.shields.io/badge/Version-0.0.41-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.0-develop.35](https://img.shields.io/badge/AppVersion-v0.1.0--develop.35-informational?style=flat-square)
+![Version: 0.0.42](https://img.shields.io/badge/Version-0.0.42-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.0-develop.37](https://img.shields.io/badge/AppVersion-v0.1.0--develop.37-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -49,6 +49,7 @@ A Helm chart for Kubernetes
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
+| strategy.type | string | `"Recreate"` |  |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------
