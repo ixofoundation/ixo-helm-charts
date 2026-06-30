@@ -12,28 +12,28 @@ data:
     # Where the homeserver's Client-Server API is located. Typically this
     # is where clients would be connecting to in order to send messages.
     homeserverUrl: 'https://devmx.ixo.earth'
-    
+
     # An access token for the bot to use. Learn how to get an access token
     # at https://t2bot.io/docs/access_tokens
     accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_ACCESS_TOKEN>'
-    
+
     # The id of the only room the bot must join - all other invites will be
     # ignored.
     roomId: '!tqfJZcXzJuRwAniyrd:devmx.ixo.earth'
-    
+
     # The URL of the room bot to use for matrix account registration and room management
     roomBotUrl: 'https://rooms.bot.devmx.ixo.earth'
-    
+
     # The URL of the state bot to use for state management
     stateBotUrl: 'https://state.bot.devmx.ixo.earth'
-    
+
     # The claims bot used for claim fetching
     claimsBot:
       # The base URL of the claims bot
       url: 'https://claim.bot.devmx.ixo.earth'
       # The access token used to authenticate with the claims bot
       accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CLAIMS_BOT_ACCESS_TOKEN>'
-    
+
     # -------------------------------------------------------------------------------------------------
     # CLAIM COLLECTION ID CONFIG
     # -------------------------------------------------------------------------------------------------
@@ -51,56 +51,38 @@ data:
     fuelPurchaseCollectionId: '419'
     # The id for the bag & stove collection claim collection
     bagStoveCollectionId: '415'
-    
+
     # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
     # -------------------------------------------------------------------------------------------------
     # The RPC URL of the chain to query for the claim collection details etc
     rpcUrl: 'https://devnet.ixo.earth/rpc/'
-    
+
     # The URL of the block sync graphql endpoint
     blockSyncGraphqlUrl: 'https://devnet-blocksync-graphql.ixo.earth/graphql'
-    
+
     # The DID of the entity that owns the claim collections
     entityDid: 'did:ixo:entity:b5a329141a39a277189b9ba7d5e12902'
-    
+
     # The network to use for the ixo blockchain
     chainNetwork: 'devnet'
-    
+
     # The URL of the feegrant service to use
     feegrantServiceUrl: 'https://feegrant.devnet.ixo.earth'
-    
+
     # The API key to use for the feegrant service
     feegrantServiceApiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_FEEGRANT_API_KEY>'
-    
+
     # The URL of the remote contexts to use
     remoteContexts:
       - 'https://w3id.org/ixo/context/v1'
 
     # -------------------------------------------------------------------------------------------------
-    # ONBOARDING DEED SUPA INDEXING CONFIG
-    # -------------------------------------------------------------------------------------------------
-    # On-chain address of the central onboarding deed that holds SUPA for customers
-    # not yet attached to a household (the sms/mint worker's MINT_CENTRAL_ADDRESS).
-    # Leave blank to disable the DeedTokenObserver.
-    onboardingDeedAddress: ''
-
-    # On-chain token-class name to index in the deed. Empty indexes every token the
-    # deed holds; set to the SUPA token name to mirror only SUPA.
-    supaTokenName: 'SUPA'
-
-    # IPFS gateway used to dereference token metadata by CID.
-    ipfsGatewayUrl: 'https://ipfs.gateway.ixo.world/'
-
-    # How often (ms) to poll the deed's holdings from blocksync.
-    deedTokenPollIntervalMs: 1500
-    
-    # -------------------------------------------------------------------------------------------------
     # CREDENTIALS CONFIG
     # -------------------------------------------------------------------------------------------------
     # The mnemonic phrase for generating credential signing keys
     credentialsMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CREDENTIALS_MNEMONIC>'
-    
+
     # The DID that will be used as the issuer for all credentials
     issuerDid: 'did:ixo:entity:54bede0aced5282b2401c58a048a731a'
 
@@ -110,7 +92,7 @@ data:
     # The household service account owns and signs all household (deed/subscription)
     # entities, and its Matrix account posts household credentials into the entity rooms.
     # The account is provisioned externally; secrets are pulled from Vault.
-    household:
+    householdController:
       # The mnemonic of the household service account (signs entity transactions)
       mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_MNEMONIC>'
       # The Matrix login password of the household service account
@@ -145,35 +127,35 @@ data:
     # EvaluateClaimAuthorization grant on the fee collections.
     onboardingDeed:
       evaluatorMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_ONBOARDING_DEED_EVALUATOR_MNEMONIC>'
-    
+
     # -------------------------------------------------------------------------------------------------
     # BOT CONFIG
     # -------------------------------------------------------------------------------------------------
     # Whether or not to autojoin rooms when invited.
     autoJoin: true
-    
+
     # Location on disk for where to store various bot information.
     dataPath: 'storage'
-    
+
     # Set to false to disable encryption support. Encrypted data will be
     # stored under dataPath.
     encryption: true
-    
+
     # -------------------------------------------------------------------------------------------------
     # DATABASE CONFIG
     # -------------------------------------------------------------------------------------------------
     # The encryption key for securing sensitive data
     encryptionKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_ENCRYPTION_KEY>'
-    
+
     # The URL of the database to store the claims and evaluations
     databaseUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_DATABASE_URL>'
-    
+
     # Whether to use SSL for the database connection
     databaseUseSsl: true
-    
+
     # Whether to migrate the database programmatically
     migrateDbProgrammatically: true
-    
+
     # -------------------------------------------------------------------------------------------------
     # REST API CONFIG
     # -------------------------------------------------------------------------------------------------
@@ -186,7 +168,7 @@ data:
       trustProxy: 1
       # An access token for access to server rest endpoints.
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_API_KEY>'
-    
+
     # -------------------------------------------------------------------------------------------------
     # CRON CONFIG
     # -------------------------------------------------------------------------------------------------
