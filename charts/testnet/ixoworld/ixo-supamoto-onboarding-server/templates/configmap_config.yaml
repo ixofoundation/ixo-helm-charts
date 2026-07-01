@@ -101,33 +101,25 @@ data:
       recoveryPassphrase: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_RECOVERY_PASSPHRASE>'
 
     # -------------------------------------------------------------------------------------------------
-    # FEE PAYMENTS CONFIG
-    # -------------------------------------------------------------------------------------------------
-    # The submitFeeClaims flow saves each fee claim's data via the claims bot and then
-    # submits it on-chain itself. This mnemonic signs those claim transactions; it must
-    # be an authorized claim agent on the fee collections. The claim VCs are signed
-    # separately with the contributor's ed25519 signing mnemonic (see matrixPin).
-    feePayments:
-      contributorMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_CONTRIBUTOR_MNEMONIC>'
-      # Access token used to authenticate saving the claim data via the claims bot
-      # (used instead of claimsBot.accessToken for these payment claims) and to read
-      # the contributor's Matrix room state.
-      accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_ACCESS_TOKEN>'
-      # The contributor account's 6-digit Matrix PIN, used to decrypt its ed25519
-      # signing mnemonic (stored PIN-encrypted in its Matrix room by ixo-auth). That
-      # ed25519 key signs the claim VCs.
-      matrixPin: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_MATRIX_PIN>'
-
-    # -------------------------------------------------------------------------------------------------
     # ONBOARDING DEED CONFIG
     # -------------------------------------------------------------------------------------------------
-    # The evaluateFeeClaims flow approves the submitted fee claims on-chain. This
-    # mnemonic signs the MsgEvaluateClaim transactions; it MUST differ from
-    # feePayments.contributorMnemonic (the chain rejects self-evaluation) and hold an
-    # EvaluateClaimAuthorization grant on the fee collections.
+    # evaluator.mnemonic signs the MsgEvaluateClaim (fee-claim approval) transactions in the
+    # evaluateFeeClaims flow; it MUST differ from contributor.mnemonic (the chain rejects
+    # self-evaluation) and hold an EvaluateClaimAuthorization grant on the fee collections.
+    #
+    # contributor.mnemonic signs the on-chain fee-claim submission transactions (submitFeeClaims
+    # flow); it must be an authorized claim agent on the fee collections. The claim VCs are signed
+    # separately with the contributor's ed25519 signing mnemonic, decrypted via contributor.matrixPin
+    # (6-digit, stored PIN-encrypted in its Matrix room by ixo-auth). contributor.accessToken
+    # authenticates saving the claim data via the claims bot (used instead of claimsBot.accessToken
+    # for these payment claims) and reading the contributor's Matrix room state.
     onboardingDeed:
-      evaluatorMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_ONBOARDING_DEED_EVALUATOR_MNEMONIC>'
-
+      evaluator:
+        mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_ONBOARDING_DEED_EVALUATOR_MNEMONIC>'
+      contributor:
+        mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_CONTRIBUTOR_MNEMONIC>'
+        accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_ACCESS_TOKEN>'
+        matrixPin: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_MATRIX_PIN>'
 
     # -------------------------------------------------------------------------------------------------
     # BOT CONFIG
