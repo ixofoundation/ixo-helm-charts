@@ -187,3 +187,10 @@ data:
       matrixAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_BID_ACCESS_TOKEN>'
       # Claims-submission quota granted to the approved agent.
       agentQuota: 1
+
+    # -------------------------------------------------------------------------------------------------
+    # UNL Config
+    # -------------------------------------------------------------------------------------------------
+    unl:
+      apiBaseUrl: 'https://api.unl.global'
+      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_UNL_API_KEY>'
