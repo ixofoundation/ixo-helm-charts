@@ -177,13 +177,3 @@ data:
     # The URL of the bids bot (ixo-matrix-bids-bot) — used to query an agent's bids and
     # mark a bid approved when auto-approving agent registration.
     bidBotUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_BID_BOT_URL>'
-
-    # Agent bid auto-approval (POST /agents/approve-bid). Grants a bidding agent on-chain
-    # authorization to submit one claim, then marks their bid approved on the bids bot.
-    supaAgentBidApproval:
-      # secp256k1 mnemonic of the granter/approver account (collection admin or a delegate holding a CreateClaimAuthorization meta-grant for the collection).
-      granterMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_GRANTER_MNEMONIC>'
-      # Matrix access token of the same granter account (mints OpenID tokens for the bids bot).
-      matrixAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_BID_ACCESS_TOKEN>'
-      # Claims-submission quota granted to the approved agent.
-      agentQuota: 1
