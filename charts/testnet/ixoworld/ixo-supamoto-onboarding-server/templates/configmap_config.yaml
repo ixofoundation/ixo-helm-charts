@@ -92,7 +92,7 @@ data:
     # The household service account owns and signs all household (deed/subscription)
     # entities, and its Matrix account posts household credentials into the entity rooms.
     # The account is provisioned externally; secrets are pulled from Vault.
-    household:
+    householdController:
       # The mnemonic of the household service account (signs entity transactions)
       mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_MNEMONIC>'
       # The Matrix login password of the household service account
