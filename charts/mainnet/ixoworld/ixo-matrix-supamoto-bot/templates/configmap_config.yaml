@@ -27,7 +27,7 @@ data:
     # The did-related access token to use for the claims bot
     claimsBotAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CLAIMS_BOT_ACCESS_TOKEN>'
 
-    onboardingDeedRoomId: !xvalHXGQWPXSwnPYUy:matrix.supamoto.global
+    onboardingDeedRoomId: '!xvalHXGQWPXSwnPYUy:matrix.supamoto.global'
 
     # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
