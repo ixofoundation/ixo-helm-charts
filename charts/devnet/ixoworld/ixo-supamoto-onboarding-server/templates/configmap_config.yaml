@@ -194,3 +194,27 @@ data:
     unl:
       apiBaseUrl: 'https://api.unl.global'
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_UNL_API_KEY>'
+
+    # -------------------------------------------------------------------------------------------------
+    # SUPA PARTNER CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The supa partner service account (mirror of householdController for supa partner
+    # operations): partner-to-partner token transfers, customer-sale payment claims, and
+    # agent bid auto-approval (it must hold a CreateClaimAuthorization meta-grant from the
+    # registration collection's admin).
+    supaPartnerController:
+      # secp256k1 mnemonic of the service account (must hold a CreateClaimAuthorization
+      # meta-grant from the registration collection's admin for bid approval).
+      mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_PARTNER_MNEMONIC>'
+      # Matrix access token of the same account (bids bot, claims bot, ed-key room state).
+      accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_PARTNER_ACCESS_TOKEN>'
+      # 6-digit PIN decrypting the account's ed25519 signing mnemonic (signs claim VCs).
+      matrixPin: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_PARTNER_MATRIX_PIN>'
+
+    # The external supa-minting-worker. Pellet minting is NOT done by this server: validated
+    # batch requests are handed off to the worker, which uploads metadata and mints on-chain.
+    mintingWorker:
+      # Base URL of the supa-minting-worker mint tasks are handed off to
+      url: 'https://devnet.supa.minting.worker.emerging.eco'
+      # Bearer key authenticating this server's calls to the minting worker
+      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_MINTING_WORKER_API_KEY>'
