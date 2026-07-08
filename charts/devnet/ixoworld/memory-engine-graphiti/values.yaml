@@ -6,9 +6,9 @@ replicaCount: 1
 strategy:
   type: Recreate
 image:
-  repository: ghcr.io/ixoworld/memory-engine-graphiti
+  repository: ghcr.io/ixoworld/memory-engine-graphiti-api-server
   pullPolicy: IfNotPresent
-  tag: "v1.2.4-develop.2"
+  tag: "main-be3e7e8"
 containers:
   worker:
     image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
