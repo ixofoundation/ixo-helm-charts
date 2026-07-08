@@ -8,7 +8,7 @@ strategy:
 image:
   repository: ghcr.io/ixoworld/flow-manager-oracle/app
   pullPolicy: IfNotPresent
-  tag: 2.4.0-develop.149
+  tag: 2.4.1-develop.167
 imagePullSecrets: []
 env: []
 nameOverride: ""
