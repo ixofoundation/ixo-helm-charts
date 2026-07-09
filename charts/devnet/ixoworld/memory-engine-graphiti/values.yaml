@@ -8,7 +8,7 @@ strategy:
 image:
   repository: ghcr.io/ixoworld/memory-engine-graphiti-api-server
   pullPolicy: IfNotPresent
-  tag: "main-be3e7e8"
+  tag: "main-d6448a2"
 containers:
   worker:
     image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
