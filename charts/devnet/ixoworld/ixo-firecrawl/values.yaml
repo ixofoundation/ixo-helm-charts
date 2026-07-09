@@ -178,6 +178,30 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# VerticalPodAutoscaler (VPA) support.
+# Requires the VPA CRDs/controller installed in the cluster:
+# https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
+# Disabled by default. When enabled with updateMode "Off" (the default), the VPA
+# only produces resource recommendations (visible via `kubectl describe vpa`) and
+# never mutates or evicts running pods.
+# The pod has three containers (api, mcp-server, playwright-service); VPA produces
+# a recommendation for each container automatically unless resourcePolicy narrows it.
+verticalPodAutoscaler:
+  enabled: false
+  # "Off" = recommendations only (safe default). Other options: "Initial", "Recreate", "Auto".
+  updateMode: "Off"
+  # Optional per-container resource policies, e.g.:
+  # resourcePolicy:
+  #   containerPolicies:
+  #     - containerName: 'api'
+  #       minAllowed:
+  #         cpu: 100m
+  #         memory: 128Mi
+  #       maxAllowed:
+  #         cpu: 2
+  #         memory: 4Gi
+  resourcePolicy: {}
+
 nodeSelector: {}
 
 tolerations: []
