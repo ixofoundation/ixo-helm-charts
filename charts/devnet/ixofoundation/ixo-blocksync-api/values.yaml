@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixofoundation/ixo-blocksync-api
   pullPolicy: IfNotPresent
-  tag: v0.0.1
+  tag: v1.0.1-develop.1
 imagePullSecrets: []
 env: []
 nameOverride: ""
