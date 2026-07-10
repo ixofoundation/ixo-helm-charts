@@ -15,6 +15,7 @@ on:
           - flow-manager-oracle-app
           - ixo-ai-oracles-giza
           - ixo-ai-oracles-guru
+          - ixo-blocksync-api
           - ixo-matrix-bids-bot
           - ixo-matrix-claims-bot
           - ixo-matrix-supamoto-bot
@@ -98,7 +99,7 @@ jobs:
           CHART_BASE_PATH="charts/mainnet"
 
           # Resolve chart location for non-ixoworld charts.
-          if [ "${{ inputs.chart }}" = "ixo-kyc-server" ]; then
+          if [ "${{ inputs.chart }}" = "ixo-kyc-server" ] || [ "${{ inputs.chart }}" = "ixo-blocksync-api" ]; then
             CHART_NAMESPACE="ixofoundation"
           fi
 
