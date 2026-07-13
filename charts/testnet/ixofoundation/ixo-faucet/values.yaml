@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixofoundation/ixo-faucet
   pullPolicy: IfNotPresent
-  tag: v0.0.2
+  tag: v1.0.0-develop.6
 imagePullSecrets: []
 env: []
 nameOverride: ""
