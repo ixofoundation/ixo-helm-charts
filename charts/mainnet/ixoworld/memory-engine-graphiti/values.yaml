@@ -8,7 +8,7 @@ strategy:
   type: Recreate
 
 image:
-  repository: ghcr.io/ixoworld/memory-engine-graphiti
+  repository: ghcr.io/ixoworld/memory-engine-graphiti-api-server
   pullPolicy: IfNotPresent
   tag: ""
 
