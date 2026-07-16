@@ -22,7 +22,7 @@ data:
     roomId: '!VAOsdfmGwOEuLKCDot:matrix.supamoto.global'
 
     # The URL of the claims bot to use for claim fetching
-    claimsBotUrl: 'https://claims.bot.matrix.supamoto.global'
+    claimsBotUrl: 'https://claim.bot.matrix.supamoto.global'
 
     # The did-related access token to use for the claims bot
     claimsBotAccessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_BOT_CLAIMS_BOT_ACCESS_TOKEN>'
