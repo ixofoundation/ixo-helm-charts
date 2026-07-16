@@ -101,3 +101,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Sync a whole Vault KV path into a Secret (via external-secrets-operator) and
+# expose every key as an env var through envFrom. Explicit env entries win on
+# key collisions. Requires the "vault" ClusterSecretStore and reloader.
+externalSecret:
+  enabled: false
+  vaultPath: ""
+  refreshInterval: 1m
+  storeName: vault
