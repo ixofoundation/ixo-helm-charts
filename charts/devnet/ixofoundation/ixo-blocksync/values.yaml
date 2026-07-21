@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixofoundation/ixo-blocksync
   pullPolicy: IfNotPresent
-  tag: v2.5.0-develop.14
+  tag: v2.5.0-develop.15
 cosmos:
   exporter:
     enabled: false
