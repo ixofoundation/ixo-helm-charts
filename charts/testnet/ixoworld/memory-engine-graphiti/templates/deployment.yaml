@@ -4,6 +4,10 @@ metadata:
   name: {{ include "memory-engine-graphiti.fullname" . }}
   labels:
     {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+  {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -39,6 +43,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.containers.worker.image }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ include "memory-engine-graphiti.fullname" . }}-env
+          {{- end }}
           env:
             {{- if .Values.env }}
             {{- toYaml .Values.env | nindent 12 }}
@@ -56,6 +65,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.containers.apiServer.image }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ include "memory-engine-graphiti.fullname" . }}-env
+          {{- end }}
           env:
             {{- if .Values.env }}
             {{- toYaml .Values.env | nindent 12 }}
@@ -93,6 +107,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.containers.mcpServer.image }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ include "memory-engine-graphiti.fullname" . }}-env
+          {{- end }}
           env:
             {{- if .Values.env }}
             {{- toYaml .Values.env | nindent 12 }}
