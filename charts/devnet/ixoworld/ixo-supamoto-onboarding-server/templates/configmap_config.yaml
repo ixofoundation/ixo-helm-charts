@@ -161,6 +161,9 @@ data:
       trustProxy: 1
       # An access token for access to server rest endpoints.
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_API_KEY>'
+      # Dedicated bearer token for the USSD service endpoints (/api/v1/customers/pin*).
+      # Kept SEPARATE from apiKey so the GraphQL/data key can't drive customer-PIN flows.
+      ussdApiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_USSD_API_KEY>'
 
     # -------------------------------------------------------------------------------------------------
     # CRON CONFIG
