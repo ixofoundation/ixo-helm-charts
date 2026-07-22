@@ -246,6 +246,6 @@ data:
       # Airtel account/customer id
       customerId: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_CUSTOMER_ID>'
       # The SMS sender header shown to recipients
-      senderId: 'SMS HEADER'
+      senderId: 'SUPAMOTO'
       # Airtel sub-account id (sent in metaData)
       subAccountId: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_SUB_ACCOUNT_ID>'
