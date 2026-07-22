@@ -4,6 +4,10 @@ metadata:
   name: {{ include "searxng.fullname" . }}
   labels:
     {{- include "searxng.labels" . | nindent 4 }}
+  {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -34,6 +38,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ include "searxng.fullname" . }}-env
+          {{- end }}
           {{- with .Values.env }}
           env:
             {{- toYaml . | nindent 12 }}

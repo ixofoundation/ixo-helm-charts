@@ -4,6 +4,10 @@ metadata:
   name: {{ include "ixo-subscriptions-oracle.fullname" . }}
   labels:
     {{- include "ixo-subscriptions-oracle.labels" . | nindent 4 }}
+  {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -33,6 +37,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ include "ixo-subscriptions-oracle.fullname" . }}-env
+          {{- end }}
           env:
             {{- toYaml .Values.env | nindent 12 }}
           ports:
