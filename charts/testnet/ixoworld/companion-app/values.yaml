@@ -8,7 +8,7 @@ strategy:
 image:
   repository: ghcr.io/ixoworld/companion/app
   pullPolicy: IfNotPresent
-  tag: 2.2.6
+  tag: 2.2.7
 imagePullSecrets: []
 env: []
 nameOverride: ""
