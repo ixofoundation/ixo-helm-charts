@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixoworld/ixo-matrix-bids-bot
   pullPolicy: IfNotPresent
-  tag: v1.0.0-develop.16
+  tag: v1.0.0-develop.17
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
