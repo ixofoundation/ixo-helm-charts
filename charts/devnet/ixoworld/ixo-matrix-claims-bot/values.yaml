@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixoworld/ixo-matrix-claims-bot
   pullPolicy: IfNotPresent
-  tag: v1.0.0-develop.24
+  tag: v1.0.0-develop.25
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
