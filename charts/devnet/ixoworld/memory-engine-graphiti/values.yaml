@@ -8,7 +8,7 @@ strategy:
 image:
   repository: ghcr.io/ixoworld/memory-engine-graphiti-api-server
   pullPolicy: IfNotPresent
-  tag: "main-d6448a2"
+  tag: "main-4460b43"
 containers:
   worker:
     image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
@@ -95,7 +95,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
 # VerticalPodAutoscaler (VPA) support for the main Deployment (worker/api-server/mcp-server containers).
 # Requires the VPA CRDs/controller installed in the cluster:
 # https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
@@ -117,7 +116,6 @@ verticalPodAutoscaler:
   #         cpu: 2
   #         memory: 4Gi
   resourcePolicy: {}
-
 nodeSelector: {}
 tolerations: []
 affinity: {}
