@@ -8,7 +8,7 @@ strategy:
 image:
   repository: ghcr.io/ixoworld/diagnostic-oracle
   pullPolicy: IfNotPresent
-  tag: 0.0.1
+  tag: v1.0.1
 imagePullSecrets: []
 env: []
 nameOverride: ""
