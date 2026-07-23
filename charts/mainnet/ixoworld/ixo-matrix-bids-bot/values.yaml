@@ -7,6 +7,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixoworld/ixo-matrix-bids-bot
   pullPolicy: IfNotPresent
+  tag: v1.8.0
 
 imagePullSecrets: []
 nameOverride: ""
@@ -37,11 +38,11 @@ podSecurityContext:
 securityContext:
   runAsUser: 0
 #  allowPrivilegeEscalation: true
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
+# capabilities:
+#   drop:
+#   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
 
 service:
   type: ClusterIP
@@ -127,15 +128,15 @@ backup:
     enabled: true
     # Chunk size in MB (used when enabled: true)
     # Streaming zip is memory-efficient: ~100-150Mi per 1GB chunk
-    # 
+    #
     # Target chunk size in MB - creates ACCURATE size-based chunks
     # Each chunk will be close to this size (±10% depending on file boundaries)
-    # 
+    #
     # Recommended sizes for 23GB / 167k files:
     # - 1024MB (1GB): ~23 chunks, safe for 512Mi memory (RECOMMENDED)
     # - 2048MB (2GB): ~12 chunks, safe for 512Mi memory
     # - 5120MB (5GB): ~5 chunks, needs 1Gi memory for safety
-    # 
+    #
     # Larger chunks = fewer files to manage, but need more memory
     # Default when disabled: 1024MB (1GB chunks)
     chunkSizeMB: 5120
