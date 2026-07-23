@@ -9,7 +9,7 @@ on:
         type: choice
         options:
           - companion-app
-          - diagnostic-oracle
+          - diagnostic-oracle-app
           - domain-creator-oracle-app
           - domain-indexer
           - ecs-oracle-app
