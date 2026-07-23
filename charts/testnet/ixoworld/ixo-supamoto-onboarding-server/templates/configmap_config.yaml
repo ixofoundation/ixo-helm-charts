@@ -141,7 +141,7 @@ data:
 
     # The URL of the bids bot (ixo-matrix-bids-bot) — used to query an agent's bids and
     # mark a bid approved when auto-approving agent registration.
-    bidBotUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_BID_BOT_URL>'
+    bidBotUrl: 'https://bid.bot.testmx.ixo.earth/'
 
     # -------------------------------------------------------------------------------------------------
     # UNL Config
