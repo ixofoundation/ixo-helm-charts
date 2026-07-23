@@ -193,3 +193,9 @@ data:
       senderId: 'SUPAMOTO'
       # Airtel sub-account id (sent in metaData)
       subAccountId: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_SUB_ACCOUNT_ID>'
+
+    # HERE Geocoding & Search API key — the reverse-geocode FALLBACK used only when UNL is
+    # unavailable (circuit breaker open, unconfigured, or a live call just failed). Leave
+    # blank to disable the fallback (UNL-only behavior).
+    here:
+      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HERE_API_KEY>'
