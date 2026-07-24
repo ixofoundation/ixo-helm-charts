@@ -100,27 +100,6 @@ data:
       recoveryPassphrase: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HOUSEHOLD_RECOVERY_PASSPHRASE>'
 
     # -------------------------------------------------------------------------------------------------
-    # ONBOARDING DEED CONFIG
-    # -------------------------------------------------------------------------------------------------
-    # evaluator.mnemonic signs the MsgEvaluateClaim (fee-claim approval) transactions in the
-    # evaluateFeeClaims flow; it MUST differ from contributor.mnemonic (the chain rejects
-    # self-evaluation) and hold an EvaluateClaimAuthorization grant on the fee collections.
-    #
-    # contributor.mnemonic signs the on-chain fee-claim submission transactions (submitFeeClaims
-    # flow); it must be an authorized claim agent on the fee collections. The claim VCs are signed
-    # separately with the contributor's ed25519 signing mnemonic, decrypted via contributor.matrixPin
-    # (6-digit, stored PIN-encrypted in its Matrix room by ixo-auth). contributor.accessToken
-    # authenticates saving the claim data via the claims bot (used instead of claimsBot.accessToken
-    # for these payment claims) and reading the contributor's Matrix room state.
-    onboardingDeed:
-      evaluator:
-        mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_ONBOARDING_DEED_EVALUATOR_MNEMONIC>'
-      contributor:
-        mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_CONTRIBUTOR_MNEMONIC>'
-        accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_ACCESS_TOKEN>'
-        matrixPin: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_FEE_PAYMENTS_MATRIX_PIN>'
-
-    # -------------------------------------------------------------------------------------------------
     # DATABASE CONFIG
     # -------------------------------------------------------------------------------------------------
     # The encryption key for securing sensitive data
@@ -165,7 +144,7 @@ data:
 
     # The URL of the bids bot (ixo-matrix-bids-bot) — used to query an agent's bids and
     # mark a bid approved when auto-approving agent registration.
-    bidBotUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_BID_BOT_URL>'
+    bidBotUrl: 'https://bid.bot.matrix.supamoto.global'
 
     # -------------------------------------------------------------------------------------------------
     # UNL Config
@@ -173,3 +152,53 @@ data:
     unl:
       apiBaseUrl: 'https://api.unl.global'
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_UNL_API_KEY>'
+
+    # -------------------------------------------------------------------------------------------------
+    # SUPA PARTNER CONFIG
+    # -------------------------------------------------------------------------------------------------
+    # The supa partner service account (mirror of householdController for supa partner
+    # operations): partner-to-partner token transfers, customer-sale payment claims, and
+    # agent bid auto-approval (it must hold a CreateClaimAuthorization meta-grant from the
+    # registration collection's admin).
+    supaOperatorController:
+      # secp256k1 mnemonic of the service account (must hold a CreateClaimAuthorization
+      # meta-grant from the registration collection's admin for bid approval).
+      mnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_PARTNER_MNEMONIC>'
+      # Matrix access token of the same account (bids bot, claims bot, ed-key room state).
+      accessToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_PARTNER_ACCESS_TOKEN>'
+      # 6-digit PIN decrypting the account's ed25519 signing mnemonic (signs claim VCs).
+      matrixPin: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_PARTNER_MATRIX_PIN>'
+
+    supamotoBotUrl: 'https://bot.matrix.supamoto.global'
+
+    ucan:
+      # Mnemonic deriving the server's ed25519 UCAN signer
+      serverMnemonic: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_UCAN_MNEMONIC>'
+      # Public hostname of this server -> did:web:<hostname> identity, DID document served
+      # at /.well-known/did.json. Blank falls back to the bare did:key identity.
+      serviceHostname: 'onboarding.matrix.supamoto.global'
+
+    supamotoWorker:
+      # Base URL of the supamoto-worker (its UCAN audience is did:web:<this host>)
+      url: 'supamoto-worker-mainnet.ixo-api.workers.dev'
+      # TEMPORARY shared bearer key (the worker's API_KEY secret) while the worker's UCAN
+      # middleware is parked; calls switch to `ucan`-identity invocations when it returns
+      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_WORKER_API_KEY>'
+
+    airtelSms:
+      # Gateway endpoint, e.g. https://www.airtel.co.zm/gateway/v1/sendDefaultSms
+      url: 'https://www.airtel.co.zm/gateway/v1/sendDefaultSms'
+      # The base64 basic-auth credential (the part after 'Basic ')
+      authToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_AUTH_TOKEN>'
+      # Airtel account/customer id
+      customerId: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_CUSTOMER_ID>'
+      # The SMS sender header shown to recipients
+      senderId: 'SUPAMOTO'
+      # Airtel sub-account id (sent in metaData)
+      subAccountId: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_SUB_ACCOUNT_ID>'
+
+    # HERE Geocoding & Search API key — the reverse-geocode FALLBACK used only when UNL is
+    # unavailable (circuit breaker open, unconfigured, or a live call just failed). Leave
+    # blank to disable the fallback (UNL-only behavior).
+    here:
+      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HERE_API_KEY>'
