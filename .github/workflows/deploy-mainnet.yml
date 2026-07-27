@@ -10,6 +10,7 @@ on:
         options:
           - companion-app
           - diagnostic-oracle-app
+          - xero-oracle-app
           - domain-creator-oracle-app
           - domain-indexer
           - ecs-oracle-app
