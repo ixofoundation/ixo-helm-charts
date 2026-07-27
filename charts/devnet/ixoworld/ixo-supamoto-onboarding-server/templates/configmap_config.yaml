@@ -182,18 +182,6 @@ data:
       # middleware is parked; calls switch to `ucan`-identity invocations when it returns
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_WORKER_API_KEY>'
 
-    airtelSms:
-      # Gateway endpoint, e.g. https://www.airtel.co.zm/gateway/v1/sendDefaultSms
-      url: 'https://www.airtel.co.zm/gateway/v1/sendDefaultSms'
-      # The base64 basic-auth credential (the part after 'Basic ')
-      authToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_AUTH_TOKEN>'
-      # Airtel account/customer id
-      customerId: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_CUSTOMER_ID>'
-      # The SMS sender header shown to recipients
-      senderId: 'SUPAMOTO'
-      # Airtel sub-account id (sent in metaData)
-      subAccountId: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_SUB_ACCOUNT_ID>'
-
     # HERE Geocoding & Search API key — the reverse-geocode FALLBACK used only when UNL is
     # unavailable (circuit breaker open, unconfigured, or a live call just failed). Leave
     # blank to disable the fallback (UNL-only behavior).
