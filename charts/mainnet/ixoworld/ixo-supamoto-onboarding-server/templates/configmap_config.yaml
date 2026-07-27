@@ -202,3 +202,6 @@ data:
     # blank to disable the fallback (UNL-only behavior).
     here:
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HERE_API_KEY>'
+
+    additionalTrustedHomeserverUrls:
+      - 'https://mx.ixo.earth'
