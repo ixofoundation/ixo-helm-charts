@@ -159,17 +159,45 @@ jobs:
             core.setFailed(`No meaningful tag found for GHCR package: ${packageName}`);
 
       # ------------------------------------------------------------------ #
-      # 5. Update appVersion in Chart.yaml                                 #
+      # 5. Update image.tag in terraform.tfvars if set, else appVersion    #
       # ------------------------------------------------------------------ #
-      - name: Update appVersion
+      - name: Update version
+        id: update
         run: |
-          CHART="charts/mainnet/${{ steps.image.outputs.chart_namespace }}/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
+          CHART_DIR_PATH="charts/mainnet/${{ steps.image.outputs.chart_namespace }}/${{ steps.image.outputs.chart_dir }}"
+          TFVARS="${CHART_DIR_PATH}/terraform.tfvars"
+          CHART="${CHART_DIR_PATH}/Chart.yaml"
           TAG="${{ steps.release.outputs.tag }}"
 
-          sed -i "s|^appVersion:.*|appVersion: \"${TAG}\"|" "$CHART"
+          # Look for an existing, non-blank `tag:` under the `image:` block in terraform.tfvars
+          CURRENT_TAG=""
+          if [ -f "$TFVARS" ]; then
+            CURRENT_TAG=$(awk '
+              /^image:/ { in_image=1; next }
+              in_image && /^[^[:space:]]/ { in_image=0 }
+              in_image && /^[[:space:]]+tag:/ {
+                sub(/^[[:space:]]+tag:[[:space:]]*/, "")
+                print
+                exit
+              }
+            ' "$TFVARS" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'\$//")
+          fi
 
-          echo "--- Updated Chart.yaml ---"
-          cat "$CHART"
+          if [ -n "$CURRENT_TAG" ]; then
+            echo "Found image.tag (${CURRENT_TAG}) in terraform.tfvars — updating that instead of Chart.yaml"
+            sed -i "s|^\([[:space:]]*tag:\).*|\1 ${TAG}|" "$TFVARS"
+            echo "updated_file=${TFVARS}" >> "$GITHUB_OUTPUT"
+
+            echo "--- Updated terraform.tfvars ---"
+            cat "$TFVARS"
+          else
+            echo "No image.tag set in terraform.tfvars — falling back to Chart.yaml appVersion"
+            sed -i "s|^appVersion:.*|appVersion: \"${TAG}\"|" "$CHART"
+            echo "updated_file=${CHART}" >> "$GITHUB_OUTPUT"
+
+            echo "--- Updated Chart.yaml ---"
+            cat "$CHART"
+          fi
 
       # ------------------------------------------------------------------ #
       # 6. Commit and push (no-op if already up-to-date)                   #
@@ -179,10 +207,10 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add "charts/mainnet/${{ steps.image.outputs.chart_namespace }}/${{ steps.image.outputs.chart_dir }}/Chart.yaml"
+          git add "${{ steps.update.outputs.updated_file }}"
 
           if git diff --staged --quiet; then
-            echo "appVersion is already ${{ steps.release.outputs.tag }} — nothing to commit."
+            echo "Version is already ${{ steps.release.outputs.tag }} — nothing to commit."
             exit 0
           fi
 
