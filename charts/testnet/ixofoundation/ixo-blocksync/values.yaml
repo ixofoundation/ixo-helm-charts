@@ -6,7 +6,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixofoundation/ixo-blocksync
   pullPolicy: IfNotPresent
-  tag: v2.12.1
+  tag: v2.13.0
 cosmos:
   exporter:
     enabled: false
@@ -99,7 +99,6 @@ verticalPodAutoscaler:
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
 # Sync a whole Vault KV path into a Secret (via external-secrets-operator) and
 # expose every key as an env var through envFrom. Explicit env entries win on
 # key collisions. Requires the "vault" ClusterSecretStore and reloader.
