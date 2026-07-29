@@ -187,7 +187,7 @@ data:
 
     airtelSms:
       # Gateway endpoint, e.g. https://www.airtel.co.zm/gateway/v1/sendDefaultSms
-      url: 'https://www.airtel.co.zm/gateway/v1/sendDefaultSms'
+      url: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_URL>'
       # The base64 basic-auth credential (the part after 'Basic ')
       authToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_AIRTEL_SMS_AUTH_TOKEN>'
       # Airtel account/customer id
