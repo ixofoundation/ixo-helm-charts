@@ -8,7 +8,7 @@ strategy:
 image:
   repository: ghcr.io/ixoworld/xero-oracle
   pullPolicy: IfNotPresent
-  tag: v1.1.1
+  tag: v1.1.3
 imagePullSecrets: []
 env: []
 nameOverride: ""
