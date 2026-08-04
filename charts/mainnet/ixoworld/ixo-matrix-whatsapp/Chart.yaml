@@ -1,4 +1,6 @@
 apiVersion: v2
+# NOTE: WhatsApp expires the client version baked into mautrix-whatsapp after
+# ~6 months; bump appVersion at least every 3-4 months or logins fail with 405.
 name: ixo-matrix-whatsapp
 description: Helm chart for mautrix-whatsapp (Matrix-WhatsApp bridge) on Kubernetes
 type: application
