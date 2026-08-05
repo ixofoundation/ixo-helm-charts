@@ -8,7 +8,7 @@ strategy:
 image:
   repository: ghcr.io/ixoworld/ixo-supamoto-onboarding-server
   pullPolicy: IfNotPresent
-  tag: v1.12.0-develop.104
+  tag: v1.12.0-develop.105
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
