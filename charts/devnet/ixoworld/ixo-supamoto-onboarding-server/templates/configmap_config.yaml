@@ -144,13 +144,6 @@ data:
     bidBotUrl: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_BID_BOT_URL>'
 
     # -------------------------------------------------------------------------------------------------
-    # UNL Config
-    # -------------------------------------------------------------------------------------------------
-    unl:
-      apiBaseUrl: 'https://api.unl.global'
-      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_UNL_API_KEY>'
-
-    # -------------------------------------------------------------------------------------------------
     # SUPA PARTNER CONFIG
     # -------------------------------------------------------------------------------------------------
     # The supa partner service account (mirror of householdController for supa partner
