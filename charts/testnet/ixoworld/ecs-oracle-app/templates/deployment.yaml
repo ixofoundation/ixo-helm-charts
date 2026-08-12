@@ -61,6 +61,15 @@ spec:
               hostPort: {{ .Values.hostPort }}
               {{- end }}
               protocol: TCP
+          # The app boots slowly (Matrix init + session-history backlog can
+          # exceed 60s on mainnet); without a startup budget the zero-delay
+          # liveness probe kills every attempt at ~30s and the pod crash-loops.
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
           livenessProbe:
             httpGet:
               path: /
