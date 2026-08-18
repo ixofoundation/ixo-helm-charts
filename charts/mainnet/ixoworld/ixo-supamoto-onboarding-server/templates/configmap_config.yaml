@@ -123,7 +123,7 @@ data:
       # Port to listen on for the REST API, default is 8080
       port: 8083
       # express trust proxy config for if you are using a reverse proxy
-      trustProxy: 1
+      trustProxy: 2
       # An access token for access to server rest endpoints.
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_API_KEY>'
       # Dedicated bearer token for the USSD service endpoints (/api/v1/customers/pin*).
