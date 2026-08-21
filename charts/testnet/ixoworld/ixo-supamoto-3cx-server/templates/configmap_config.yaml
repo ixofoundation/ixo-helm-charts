@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ixo-supamoto-3cx-server.fullname" . }}-config
+  labels:
+    {{- include "ixo-supamoto-3cx-server.labels" . | nindent 4 }}
+data:
+  production.yaml: |-
+    # -------------------------------------------------------------------------------------------------
+    # 3CX REST API CONFIG
+    # -------------------------------------------------------------------------------------------------
+    threecx:
+      baseUrl: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_BASE_URL>'
+      oauthTokenUrl: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_OAUTH_TOKEN_URL>'
+      clientId: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_CLIENT_ID>'
+      clientSecret: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_CLIENT_SECRET>'
+      pageSize: 100
+
+    # -------------------------------------------------------------------------------------------------
+    # INGESTION CONFIG
+    # -------------------------------------------------------------------------------------------------
+    ingestion:
+      # Cron expression for the CDR-polling job (UTC). Default: every 10 minutes.
+      cronSchedule: '*/10 * * * *'
+      # When true, the cron job ticks but skips 3CX polling.
+      skipPollCdrs: false
+      overlapSeconds: 86400
+
+    # -------------------------------------------------------------------------------------------------
+    # CHAIN CONFIG
+    # -------------------------------------------------------------------------------------------------
+    resolverUrl: 'https://resolver.testnet.ixo.earth/1.0/identifiers/'
+    rpcUrl: 'https://testnet.ixo.earth/rpc/'
+    remoteContexts:
+      - 'https://w3id.org/ixo/context/v1'
+
+    # -------------------------------------------------------------------------------------------------
+    # CLAIM SUBMISSION CONFIG
+    # -------------------------------------------------------------------------------------------------
+    claimCollectionId: '3928'
+
+    # -------------------------------------------------------------------------------------------------
+    # CREDENTIALS CONFIG
+    # -------------------------------------------------------------------------------------------------
+    contributorMnemonic: '<path:ixo_core/data/ixo-supamoto-3cx-server#CONTRIBUTOR_MNEMONIC>' # <- sensitive
+    contributorDid: 'did:ixo:ixo1kven5pars7nrugtz74zq5ndvqtxy3p32urhacp'
+    evaluatorMnemonic: '<path:ixo_core/data/ixo-supamoto-3cx-server#EVALUATOR_MNEMONIC>' # <- sensitive
+    evaluatorDid: 'did:ixo:ixo1krgkvj5k70dhqmf7ze3yfvt73vs4ssy8g99uhc'
+
+    # -------------------------------------------------------------------------------------------------
+    # CLAIMS BOT CONFIG (matrix-supamoto-bot REST API — POST /action)
+    # -------------------------------------------------------------------------------------------------
+    claimsBot:
+      url: 'https://supamoto.bot.testmx.ixo.earth/'
+      accessToken: '<path:ixo_core/data/ixo-supamoto-3cx-server#CLAIMS_BOT_ACCESS_TOKEN>' # <- sensitive
+
+    # -------------------------------------------------------------------------------------------------
+    # DATABASE CONFIG
+    # -------------------------------------------------------------------------------------------------
+    databaseUrl: '<path:ixo_core/data/ixo-supamoto-3cx-server#DATABASE_URL>'
+    databaseUseSsl: true
+    migrateDbProgrammatically: true
+
+    # -------------------------------------------------------------------------------------------------
+    # REST API CONFIG
+    # -------------------------------------------------------------------------------------------------
+    restApi:
+      enabled: true
+      port: 8080
+      trustProxy: 1
+      adminToken: '<path:ixo_core/data/ixo-supamoto-3cx-server#REST_ADMIN_TOKEN>' # <- sensitive
+
