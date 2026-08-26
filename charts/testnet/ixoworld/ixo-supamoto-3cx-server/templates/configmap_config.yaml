@@ -10,11 +10,11 @@ data:
     # 3CX REST API CONFIG
     # -------------------------------------------------------------------------------------------------
     threecx:
-      baseUrl: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_BASE_URL>'
-      oauthTokenUrl: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_OAUTH_TOKEN_URL>'
+      pbxUrl: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_BASE_URL>'
       clientId: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_CLIENT_ID>'
       clientSecret: '<path:ixo_core/data/ixo-supamoto-3cx-server#3CX_CLIENT_SECRET>'
       pageSize: 100
+      maxRetries: 4
 
     # -------------------------------------------------------------------------------------------------
     # INGESTION CONFIG
@@ -29,8 +29,10 @@ data:
     # -------------------------------------------------------------------------------------------------
     # CHAIN CONFIG
     # -------------------------------------------------------------------------------------------------
-    resolverUrl: 'https://resolver.testnet.ixo.earth/1.0/identifiers/'
-    rpcUrl: 'https://testnet.ixo.earth/rpc/'
+    resolver:
+      url: 'https://resolver.testnet.ixo.earth/1.0/identifiers/'
+    rpc:
+      url: 'https://testnet.ixo.earth/rpc/'
     remoteContexts:
       - 'https://w3id.org/ixo/context/v1'
 
@@ -42,16 +44,21 @@ data:
     # -------------------------------------------------------------------------------------------------
     # CREDENTIALS CONFIG
     # -------------------------------------------------------------------------------------------------
-    contributorMnemonic: '<path:ixo_core/data/ixo-supamoto-3cx-server#CONTRIBUTOR_MNEMONIC>' # <- sensitive
-    contributorDid: 'did:ixo:ixo1kven5pars7nrugtz74zq5ndvqtxy3p32urhacp'
-    evaluatorMnemonic: '<path:ixo_core/data/ixo-supamoto-3cx-server#EVALUATOR_MNEMONIC>' # <- sensitive
-    evaluatorDid: 'did:ixo:ixo1krgkvj5k70dhqmf7ze3yfvt73vs4ssy8g99uhc'
+    contributor:
+      mnemonic: '<path:ixo_core/data/ixo-supamoto-3cx-server#CONTRIBUTOR_MNEMONIC>' # <- sensitive
+      did: 'did:ixo:ixo1p333qt6lc2qs7h3wyadskupq0t3v2uht8suf3g'
+      # Ed25519 signer mnemonic (VC signing) — paste the ed signer linked to the
+      # contributor account; empty falls back to deriving from `mnemonic`.
+      edMnemonic: '<path:ixo_core/data/ixo-supamoto-3cx-server#CONTRIBUTOR_ED_MNEMONIC>'
+    evaluator:
+      mnemonic: '<path:ixo_core/data/ixo-supamoto-3cx-server#EVALUATOR_MNEMONIC>' # <- sensitive
+      did: 'did:ixo:ixo1pshkr26kml70cut5zkvjmsmenyv8r9rk6ur3yj'
 
     # -------------------------------------------------------------------------------------------------
     # CLAIMS BOT CONFIG (matrix-supamoto-bot REST API — POST /action)
     # -------------------------------------------------------------------------------------------------
     claimsBot:
-      url: 'https://supamoto.bot.testmx.ixo.earth/'
+      url: 'https://claim.bot.testmx.ixo.earth/'
       accessToken: '<path:ixo_core/data/ixo-supamoto-3cx-server#CLAIMS_BOT_ACCESS_TOKEN>' # <- sensitive
 
     # -------------------------------------------------------------------------------------------------
