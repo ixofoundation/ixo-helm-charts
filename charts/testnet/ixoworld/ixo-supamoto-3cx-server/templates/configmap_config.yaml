@@ -64,9 +64,10 @@ data:
     # -------------------------------------------------------------------------------------------------
     # DATABASE CONFIG
     # -------------------------------------------------------------------------------------------------
-    databaseUrl: '<path:ixo_core/data/ixo-supamoto-3cx-server#DATABASE_URL>'
-    databaseUseSsl: true
-    migrateDbProgrammatically: true
+    database:
+      url: '<path:ixo_core/data/ixo-supamoto-3cx-server#DATABASE_URL>'
+      useSsl: true
+      migrateProgrammatically: true
 
     # -------------------------------------------------------------------------------------------------
     # REST API CONFIG
