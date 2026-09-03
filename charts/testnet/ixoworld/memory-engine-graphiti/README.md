@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.0.23](https://img.shields.io/badge/Version-0.0.23-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-4460b43](https://img.shields.io/badge/AppVersion-main--4460b43-informational?style=flat-square)
+![Version: 0.0.24](https://img.shields.io/badge/Version-0.0.24-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-f0477db](https://img.shields.io/badge/AppVersion-main--f0477db-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -8,7 +8,7 @@ A Helm chart for Kubernetes
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.4 |
+| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.8 |
 
 ## Values
 
@@ -26,6 +26,10 @@ A Helm chart for Kubernetes
 | containers.worker.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-community-worker"` |  |
 | containers.worker.resources | object | `{}` |  |
 | env | list | `[]` |  |
+| externalSecret.enabled | bool | `false` |  |
+| externalSecret.refreshInterval | string | `"1m"` |  |
+| externalSecret.storeName | string | `"vault"` |  |
+| externalSecret.vaultPath | string | `""` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixoworld/memory-engine-graphiti"` |  |
