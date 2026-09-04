@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.0.25](https://img.shields.io/badge/Version-0.0.25-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-29f8d49](https://img.shields.io/badge/AppVersion-main--29f8d49-informational?style=flat-square)
+![Version: 0.0.26](https://img.shields.io/badge/Version-0.0.26-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-59136db](https://img.shields.io/badge/AppVersion-main--59136db-informational?style=flat-square)
 
 A Helm chart for Kubernetes
 
@@ -33,7 +33,7 @@ A Helm chart for Kubernetes
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"ghcr.io/ixoworld/memory-engine-graphiti-api-server"` |  |
-| image.tag | string | `"main-29f8d49"` |  |
+| image.tag | string | `"main-59136db"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
