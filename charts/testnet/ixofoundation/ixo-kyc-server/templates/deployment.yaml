@@ -35,7 +35,10 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          # Deliberately ignores .Values.image.tag: argocd-image-updater keeps
+          # writing the stray GHCR tag v1.0.0 (an ancient build that sorts above
+          # every real release and predates CORS). Releases bump appVersion.
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
           envFrom:
