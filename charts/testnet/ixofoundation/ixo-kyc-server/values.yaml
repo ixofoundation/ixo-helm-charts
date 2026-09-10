@@ -6,6 +6,7 @@ replicaCount: 1
 image:
   repository: ghcr.io/ixofoundation/ixo-kyc-server
   pullPolicy: IfNotPresent
+  tag: v1.0.0
 imagePullSecrets: []
 env: []
 nameOverride: ""
@@ -69,7 +70,6 @@ autoscaling:
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
 # Sync a whole Vault KV path into a Secret (via external-secrets-operator) and
 # expose every key as an env var through envFrom. Explicit env entries win on
 # key collisions. Requires the "vault" ClusterSecretStore and reloader.
