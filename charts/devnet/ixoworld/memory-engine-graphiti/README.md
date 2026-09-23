@@ -1,90 +1,36 @@
 # memory-engine-graphiti
 
-![Version: 0.0.26](https://img.shields.io/badge/Version-0.0.26-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: main-59136db](https://img.shields.io/badge/AppVersion-main--59136db-informational?style=flat-square)
+Deploys **memory-engine-ts** (`ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts`):
+one container serving REST and MCP (`/mcp`) on a single port, with its own PVC
+mounted at `/data` (`DATA_DIR=/data/spaces`, `MATRIX_STORE_PATH=/data/matrix-store`).
 
-A Helm chart for Kubernetes
+The image tag defaults to `appVersion`, which the memory-engine-ts CI bumps on
+`develop` pushes. Leave `image.tag` empty unless you need to pin.
 
-## Requirements
+## Resources
 
-| Repository | Name | Version |
-|------------|------|---------|
-| file://./charts/matrix-bridge-api | matrix-bridge-api | 0.0.7 |
+| Resource | Name | Notes |
+|---|---|---|
+| Deployment | `<fullname>-ts` | 1 replica, `Recreate` (kuzu/SQLite are single-writer) |
+| PVC | `<fullname>-ts-storage` | `persistentVolume.*` |
+| Service | `<fullname>` | `service.port` and `service.portMcp` both target the container port |
+| Ingress | `<fullname>`, `mcp-<fullname>` | unchanged; now route to memory-engine-ts |
 
-## Values
+No HPA is rendered: the engine must run as a single replica.
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| affinity | object | `{}` |  |
-| autoscaling.enabled | bool | `false` |  |
-| autoscaling.maxReplicas | int | `100` |  |
-| autoscaling.minReplicas | int | `1` |  |
-| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| containers.apiServer.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-api-server"` |  |
-| containers.apiServer.resources | object | `{}` |  |
-| containers.mcpServer.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-mcp-server"` |  |
-| containers.mcpServer.resources | object | `{}` |  |
-| containers.worker.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-community-worker"` |  |
-| containers.worker.resources | object | `{}` |  |
-| env | list | `[]` |  |
-| externalSecret.enabled | bool | `false` |  |
-| externalSecret.refreshInterval | string | `"1m"` |  |
-| externalSecret.storeName | string | `"vault"` |  |
-| externalSecret.vaultPath | string | `""` |  |
-| fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ghcr.io/ixoworld/memory-engine-graphiti-api-server"` |  |
-| image.tag | string | `"main-59136db"` |  |
-| imagePullSecrets | list | `[]` |  |
-| ingress.annotations | object | `{}` |  |
-| ingress.className | string | `""` |  |
-| ingress.enabled | bool | `false` |  |
-| ingress.hosts[0].host | string | `"chart-example.local"` |  |
-| ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| ingress.tls | list | `[]` |  |
-| ingressMcp.annotations | object | `{}` |  |
-| ingressMcp.className | string | `""` |  |
-| ingressMcp.enabled | bool | `false` |  |
-| ingressMcp.hosts[0].host | string | `"chart-example.local"` |  |
-| ingressMcp.hosts[0].paths[0].path | string | `"/"` |  |
-| ingressMcp.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| ingressMcp.tls | list | `[]` |  |
-| matrix-bridge-api.enabled | bool | `false` |  |
-| matrix-bridge-api.env | list | `[]` |  |
-| matrix-bridge-api.image.pullPolicy | string | `"IfNotPresent"` |  |
-| matrix-bridge-api.image.repository | string | `"ghcr.io/ixoworld/memory-engine-graphiti"` |  |
-| matrix-bridge-api.persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| matrix-bridge-api.persistentVolume.mountPath | string | `"/storage/matrix_bridge_store"` |  |
-| matrix-bridge-api.persistentVolume.size | string | `"40Gi"` |  |
-| matrix-bridge-api.persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
-| matrix-bridge-api.port | int | `3100` |  |
-| matrix-bridge-api.replicaCount | int | `1` |  |
-| matrix-bridge-api.resources | object | `{}` |  |
-| matrix-bridge-api.verticalPodAutoscaler.enabled | bool | `false` |  |
-| matrix-bridge-api.verticalPodAutoscaler.resourcePolicy | object | `{}` |  |
-| matrix-bridge-api.verticalPodAutoscaler.updateMode | string | `"Off"` |  |
-| nameOverride | string | `""` |  |
-| nodeSelector | object | `{}` |  |
-| persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| persistentVolume.mountPath | string | `"/storage/matrix_bot_store"` |  |
-| persistentVolume.size | string | `"40Gi"` |  |
-| persistentVolume.storageClass | string | `"vultr-block-storage-hdd"` |  |
-| podAnnotations | object | `{}` |  |
-| podSecurityContext | object | `{}` |  |
-| replicaCount | int | `1` |  |
-| resources | object | `{}` |  |
-| securityContext | object | `{}` |  |
-| service.port | int | `80` |  |
-| service.portMcp | int | `8080` |  |
-| service.type | string | `"ClusterIP"` |  |
-| serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.create | bool | `true` |  |
-| serviceAccount.name | string | `""` |  |
-| strategy.type | string | `"Recreate"` |  |
-| tolerations | list | `[]` |  |
-| verticalPodAutoscaler.enabled | bool | `false` |  |
-| verticalPodAutoscaler.resourcePolicy | object | `{}` |  |
-| verticalPodAutoscaler.updateMode | string | `"Off"` |  |
+## Legacy stack (migration)
 
-----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
+While `legacy.enabled: true` the old python Deployment (`<fullname>`: worker,
+api-server, mcp-server) and the matrix-bridge-api Deployment stay rendered at
+**0 replicas**, so their PVCs stay bound for migrating data into
+`<fullname>-ts-storage`:
+
+- `<fullname>-storage` — python stack (`/storage/matrix_bot_store`)
+- `<fullname>-matrix-bridge-storage` — matrix-bridge-api (`/storage/matrix_bridge_store`)
+
+Both legacy PVCs are annotated `argocd.argoproj.io/sync-options: Prune=false`,
+so they are **not** deleted when `legacy.enabled` is set to `false`; delete them
+by hand once the migration is verified.
+
+Rollback: set `legacy.replicaCount: 1` and `matrix-bridge-api.replicaCount: 1`,
+and point the Service back at the legacy pods (it now selects memory-engine-ts).

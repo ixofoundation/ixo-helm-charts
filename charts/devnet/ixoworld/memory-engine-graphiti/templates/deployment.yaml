@@ -1,24 +1,25 @@
+{{- $mountPath := .Values.persistentVolume.mountPath | default "/data" }}
+{{- $chartEnv := list "PORT" "DATA_DIR" "MATRIX_STORE_PATH" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "memory-engine-graphiti.fullname" . }}
+  name: {{ include "memory-engine-graphiti.memoryEngineFullname" . }}
   labels:
     {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memory-engine
   {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
   annotations:
     reloader.stakater.com/auto: "true"
   {{- end }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   {{- with .Values.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "memory-engine-graphiti.selectorLabels" . | nindent 6 }}
+      {{- include "memory-engine-graphiti.memoryEngineSelectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -26,7 +27,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "memory-engine-graphiti.selectorLabels" . | nindent 8 }}
+        {{- include "memory-engine-graphiti.memoryEngineSelectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: memory-engine
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -35,13 +37,12 @@ spec:
       serviceAccountName: {{ include "memory-engine-graphiti.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- $storageMountPath := .Values.persistentVolume.mountPath | default "/storage/matrix_bot_store" }}
-      {{- $bridgeEnabled := index .Values "matrix-bridge-api" "enabled" | default false }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       containers:
-        - name: worker
+        - name: memory-engine
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.containers.worker.image }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
           envFrom:
@@ -49,95 +50,48 @@ spec:
                 name: {{ include "memory-engine-graphiti.fullname" . }}-env
           {{- end }}
           env:
-            {{- if .Values.env }}
-            {{- toYaml .Values.env | nindent 12 }}
+            {{- range .Values.env }}
+            {{- if not (has .name $chartEnv) }}
+            - {{ toYaml . | nindent 14 | trim }}
             {{- end }}
-            - name: MATRIX_BOT_STORE_PATH
-              value: {{ $storageMountPath | quote }}
-            {{- if $bridgeEnabled }}
-            - name: MATRIX_BRIDGE_URL
-              value: "http://{{ include "memory-engine-graphiti.matrixBridgeFullname" . }}:{{ index .Values "matrix-bridge-api" "port" | default 3100 }}"
             {{- end }}
-          resources:
-            {{- toYaml .Values.containers.worker.resources | nindent 12 }}
-        - name: api-server
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.containers.apiServer.image }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
-          envFrom:
-            - secretRef:
-                name: {{ include "memory-engine-graphiti.fullname" . }}-env
-          {{- end }}
-          env:
-            {{- if .Values.env }}
-            {{- toYaml .Values.env | nindent 12 }}
-            {{- end }}
-            - name: MATRIX_BOT_STORE_PATH
-              value: {{ $storageMountPath | quote }}
-            {{- if $bridgeEnabled }}
-            - name: MATRIX_BRIDGE_URL
-              value: "http://{{ include "memory-engine-graphiti.matrixBridgeFullname" . }}:{{ index .Values "matrix-bridge-api" "port" | default 3100 }}"
-            {{- end }}
+            - name: PORT
+              value: {{ .Values.service.port | quote }}
+            - name: DATA_DIR
+              value: {{ printf "%s/spaces" $mountPath | quote }}
+            - name: MATRIX_STORE_PATH
+              value: {{ printf "%s/matrix-store" $mountPath | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
-              {{- if .Values.hostPort }}
-              hostPort: {{ .Values.hostPort }}
-              {{- end }}
               protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
           livenessProbe:
             httpGet:
               path: /healthcheck
               port: http
-            initialDelaySeconds: 240
+            periodSeconds: 30
+            timeoutSeconds: 10
           readinessProbe:
             httpGet:
               path: /healthcheck
               port: http
-            initialDelaySeconds: 240
+            periodSeconds: 10
+            timeoutSeconds: 5
           resources:
-            {{- toYaml .Values.containers.apiServer.resources | nindent 12 }}
+            {{- toYaml .Values.containers.memoryEngine.resources | nindent 12 }}
           volumeMounts:
-            - name: {{ .Release.Name }}-storage
-              mountPath: {{ $storageMountPath }}
-        - name: mcp-server
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.containers.mcpServer.image }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
-          envFrom:
-            - secretRef:
-                name: {{ include "memory-engine-graphiti.fullname" . }}-env
-          {{- end }}
-          env:
-            {{- if .Values.env }}
-            {{- toYaml .Values.env | nindent 12 }}
-            {{- end }}
-            - name: MATRIX_BOT_STORE_PATH
-              value: {{ $storageMountPath | quote }}
-            {{- if $bridgeEnabled }}
-            - name: MATRIX_BRIDGE_URL
-              value: "http://{{ include "memory-engine-graphiti.matrixBridgeFullname" . }}:{{ index .Values "matrix-bridge-api" "port" | default 3100 }}"
-            {{- end }}
-          ports:
-            - name: mcp
-              containerPort: {{ .Values.service.portMcp }}
-              {{- if .Values.hostPortMcp }}
-              hostPort: {{ .Values.hostPortMcp }}
-              {{- end }}
-              protocol: TCP
-          resources:
-            {{- toYaml .Values.containers.mcpServer.resources | nindent 12 }}
-          volumeMounts:
-            - name: {{ .Release.Name }}-storage
-              mountPath: {{ $storageMountPath }}
+            - name: storage
+              mountPath: {{ $mountPath }}
       volumes:
-        - name: {{ .Release.Name }}-storage
+        - name: storage
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-storage
+            claimName: {{ include "memory-engine-graphiti.memoryEngineFullname" . }}-storage
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

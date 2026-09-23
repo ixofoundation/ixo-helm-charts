@@ -1,15 +1,26 @@
-# Default values for ixo-cellnode.
+# Default values for memory-engine-graphiti (memory-engine-ts).
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# memory-engine-ts keeps kuzu/SQLite files on its PVC, which are single-writer:
+# run exactly one replica with the Recreate strategy.
 replicaCount: 1
 strategy:
   type: Recreate
 image:
-  repository: ghcr.io/ixoworld/memory-engine-graphiti-api-server
+  repository: ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts
   pullPolicy: IfNotPresent
-  tag: "main-2ad8596"
+  # tag defaults to Chart.AppVersion (bumped by the memory-engine-ts CI on develop).
+  tag: "feat-cognee-ts-service-29b5c98" # set manually for now.
 containers:
+  memoryEngine:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 1Gi
+      limits:
+        memory: 3Gi
+  # Legacy python containers — only used by the legacy Deployment (see `legacy` below).
   worker:
     image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
     resources: {}
@@ -20,6 +31,9 @@ containers:
     image: ghcr.io/ixoworld/memory-engine-graphiti-mcp-server
     resources: {}
 imagePullSecrets: []
+# PORT, DATA_DIR and MATRIX_STORE_PATH are set by the chart (from service.port and
+# persistentVolume.mountPath); entries with those names here are ignored by the
+# memory-engine-ts container.
 env: []
 nameOverride: ""
 fullnameOverride: ""
@@ -43,9 +57,14 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 
+# Graceful shutdown flushes pending VFS owner copies (up to 45s).
+terminationGracePeriodSeconds: 60
 service:
   type: ClusterIP
-  port: 80
+  # REST and MCP (/mcp) are served on this single container port.
+  port: 3200
+  # Extra service port kept for the MCP ingress / existing in-cluster callers;
+  # it targets the same container port as `port`.
   portMcp: 8080
 ingress:
   enabled: false
@@ -77,25 +96,7 @@ ingressMcp:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-resources: {}
-# We usually recommend not to specify default resources and to leave this as a conscious
-# choice for the user. This also increases chances charts run on environments with little
-# resources, such as Minikube. If you do want to specify resources, uncomment the following
-# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-# limits:
-#   cpu: 100m
-#   memory: 128Mi
-# requests:
-#   cpu: 100m
-#   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-# VerticalPodAutoscaler (VPA) support for the main Deployment (worker/api-server/mcp-server containers).
+# VerticalPodAutoscaler (VPA) support for the memory-engine-ts Deployment.
 # Requires the VPA CRDs/controller installed in the cluster:
 # https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler
 # Disabled by default. When enabled with updateMode "Off" (the default), the VPA
@@ -108,7 +109,7 @@ verticalPodAutoscaler:
   # Optional per-container resource policies, e.g.:
   # resourcePolicy:
   #   containerPolicies:
-  #     - containerName: 'api-server'
+  #     - containerName: 'memory-engine'
   #       minAllowed:
   #         cpu: 100m
   #         memory: 128Mi
@@ -119,23 +120,40 @@ verticalPodAutoscaler:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+# memory-engine-ts storage (its own PVC, separate from the legacy ones).
+# DATA_DIR=<mountPath>/spaces, MATRIX_STORE_PATH=<mountPath>/matrix-store.
 persistentVolume:
-  # Mount path for main containers (MATRIX_BOT_STORE_PATH).
-  mountPath: /storage/matrix_bot_store
+  mountPath: /data
   size: 40Gi
   accessModes:
   - ReadWriteOnce
   storageClass: vultr-block-storage-hdd
-# Matrix Bridge API — runs as its own Deployment (not a sidecar). Has its own RWO PVC (main chart PVC is not shared).
-# Subchart version: Chart.AppVersion in charts/matrix-bridge-api/Chart.yaml.
-# Internal only; Graphiti calls it via MATRIX_BRIDGE_URL (ClusterIP service). No ingress.
+# Legacy python stack (worker/api-server/mcp-server Deployment) and matrix-bridge-api,
+# kept rendered at 0 replicas so their PVCs stay bound and data can be migrated
+# into the memory-engine-ts PVC. Both legacy PVCs carry Prune=false, so they
+# survive `legacy.enabled: false` and have to be deleted by hand once migrated.
+legacy:
+  enabled: true
+  # Set to 1 to roll back to the python stack (and matrix-bridge-api.replicaCount).
+  replicaCount: 0
+  image:
+    tag: "main-2ad8596"
+  persistentVolume:
+    # Mount path for main containers (MATRIX_BOT_STORE_PATH).
+    mountPath: /storage/matrix_bot_store
+    size: 40Gi
+    accessModes:
+    - ReadWriteOnce
+    storageClass: vultr-block-storage-hdd
+# Legacy Matrix Bridge API — rendered only when legacy.enabled and enabled here.
+# Replaced by memory-engine-ts (Matrix logging and UCAN are native there).
 matrix-bridge-api:
   enabled: false
-  replicaCount: 1
+  replicaCount: 0
   image:
-    repository: ghcr.io/ixoworld/memory-engine-graphiti #Todo refactor to ixoworld/memory-engine-graphiti/matrix-bridge-api
+    repository: ghcr.io/ixoworld/memory-engine-graphiti
     pullPolicy: IfNotPresent
-    # tag defaults to matrix-bridge-api subchart Chart.AppVersion
+    tag: v1.3.1
   port: 3100
   env: []
   resources: {}
@@ -145,8 +163,6 @@ matrix-bridge-api:
     accessModes:
     - ReadWriteOnce
     storageClass: vultr-block-storage-hdd
-  # VerticalPodAutoscaler (VPA) support for the matrix-bridge-api Deployment.
-  # Disabled by default; "Off" updateMode only produces recommendations, never mutates pods.
   verticalPodAutoscaler:
     enabled: false
     updateMode: "Off"

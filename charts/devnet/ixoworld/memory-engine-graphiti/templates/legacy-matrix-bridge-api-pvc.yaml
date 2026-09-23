@@ -1,4 +1,4 @@
-{{- if index .Values "matrix-bridge-api" "enabled" | default false }}
+{{- if and .Values.legacy.enabled (index .Values "matrix-bridge-api" "enabled" | default false) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -6,11 +6,15 @@ metadata:
   labels:
     {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
     app.kubernetes.io/component: matrix-bridge-api
+  annotations:
+    # Keep the legacy data around for migration even after legacy.enabled=false.
+    argocd.argoproj.io/sync-options: Prune=false
+    helm.sh/resource-policy: keep
 spec:
   accessModes:
     {{- index .Values "matrix-bridge-api" "persistentVolume" "accessModes" | default (list "ReadWriteOnce") | toYaml | nindent 4 }}
   resources:
     requests:
       storage: {{ index .Values "matrix-bridge-api" "persistentVolume" "size" | default "10Gi" }}
-  storageClassName: {{ index .Values "matrix-bridge-api" "persistentVolume" "storageClass" | default .Values.persistentVolume.storageClass }}
+  storageClassName: {{ index .Values "matrix-bridge-api" "persistentVolume" "storageClass" | default .Values.legacy.persistentVolume.storageClass }}
 {{- end }}

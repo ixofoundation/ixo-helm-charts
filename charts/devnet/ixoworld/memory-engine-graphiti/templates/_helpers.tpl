@@ -85,3 +85,21 @@ PVC name for matrix-bridge-api (its own RWO storage).
 {{- define "memory-engine-graphiti.matrixBridgePvcName" -}}
 {{- printf "%s-matrix-bridge-storage" (include "memory-engine-graphiti.fullname" .) | trunc 63 | trimSuffix "-" }}
 {{- end }}
+
+{{/*
+Fully qualified name for the memory-engine-ts Deployment (and its PVC prefix).
+Distinct from the legacy python Deployment, which keeps the plain fullname.
+*/}}
+{{- define "memory-engine-graphiti.memoryEngineFullname" -}}
+{{- printf "%s-ts" (include "memory-engine-graphiti.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Selector labels for the memory-engine-ts workload (used by Deployment and Service).
+Must not overlap the legacy Deployment's selector.
+*/}}
+{{- define "memory-engine-graphiti.memoryEngineSelectorLabels" -}}
+app.kubernetes.io/name: {{ include "memory-engine-graphiti.name" . }}-ts
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/part-of: ixo
+{{- end }}
