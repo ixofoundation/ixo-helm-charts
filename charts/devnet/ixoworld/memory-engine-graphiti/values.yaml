@@ -11,7 +11,7 @@ image:
   repository: ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts
   pullPolicy: IfNotPresent
   # tag defaults to Chart.AppVersion (bumped by the memory-engine-ts CI on develop).
-  tag: "feat-cognee-ts-service-88eac7b" # set manually for now.
+  tag: "feat-cognee-ts-service-144579e" # set manually for now.
 containers:
   memoryEngine:
     resources:
