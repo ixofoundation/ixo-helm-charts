@@ -3,7 +3,7 @@ name: memory-engine-graphiti
 description: Memory engine (memory-engine-ts) — single service serving REST + MCP on one port
 type: application
 version: 0.1.0
-appVersion: feat-cognee-ts-service-558c0d3
+appVersion: feat-cognee-ts-service-88eac7b
 annotations:
   artifacthub.io/changes: |
     - kind: changed
