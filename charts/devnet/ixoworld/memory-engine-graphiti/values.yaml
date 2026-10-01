@@ -11,7 +11,7 @@ image:
   repository: ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts
   pullPolicy: IfNotPresent
   # tag defaults to Chart.AppVersion (bumped by the memory-engine-ts CI on develop).
-  tag: "feat-space-self-heal-67bfdab" # set manually for now.
+  tag: "feat-incremental-cognify-9352553" # set manually for now.
 containers:
   memoryEngine:
     resources:
