@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Release.Name }}-storage
+  name: {{ include "memory-engine-graphiti.memoryEngineFullname" . }}-storage
   labels:
-    app.kubernetes.io/name: {{ .Release.Name }}-storage
+    {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+    app.kubernetes.io/component: memory-engine
 spec:
   accessModes:
-{{- .Values.persistentVolume.accessModes | toYaml | nindent 4 }}
+    {{- .Values.persistentVolume.accessModes | toYaml | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.persistentVolume.size }}

@@ -1,4 +1,4 @@
-{{- if index .Values "matrix-bridge-api" "enabled" | default false }}
+{{- if and .Values.legacy.enabled (index .Values "matrix-bridge-api" "enabled" | default false) }}
 apiVersion: v1
 kind: Service
 metadata:
