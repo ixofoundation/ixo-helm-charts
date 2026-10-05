@@ -1,14 +1,10 @@
 apiVersion: v2
 name: memory-engine-graphiti
-description: A Helm chart for Kubernetes
+description: Memory engine (memory-engine-ts) — single service serving REST + MCP on one port
 type: application
-version: 0.0.21
-appVersion: "main-2ad8596"
-dependencies:
-  - name: matrix-bridge-api
-    version: 0.0.6
-    repository: file://./charts/matrix-bridge-api
+version: 0.1.0
+appVersion: feat-memory-quality-bc06eca
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update ixoworld/memory-engine-graphiti app version from main-285dca2 to main-c9c4ade
+      description: Replace the python worker/api-server/mcp-server Deployment and the matrix-bridge-api with a single memory-engine-ts Deployment on its own PVC; legacy workloads scaled to 0 with their PVCs retained for data migration

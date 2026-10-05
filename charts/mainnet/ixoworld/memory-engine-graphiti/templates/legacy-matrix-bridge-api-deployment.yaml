@@ -1,4 +1,4 @@
-{{- if index .Values "matrix-bridge-api" "enabled" | default false }}
+{{- if and .Values.legacy.enabled (index .Values "matrix-bridge-api" "enabled" | default false) }}
 {{- $bridgeMountPath := index .Values "matrix-bridge-api" "persistentVolume" "mountPath" | default "/storage/matrix_bot_store" }}
 apiVersion: apps/v1
 kind: Deployment
@@ -8,7 +8,7 @@ metadata:
     {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
     app.kubernetes.io/component: matrix-bridge-api
 spec:
-  replicas: {{ index .Values "matrix-bridge-api" "replicaCount" | default 1 }}
+  replicas: {{ index .Values "matrix-bridge-api" "replicaCount" }}
   strategy:
     type: Recreate
   selector:
@@ -31,7 +31,7 @@ spec:
         - name: matrix-bridge
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ index .Values "matrix-bridge-api" "image" "repository" }}:{{ index .Values "matrix-bridge-api" "image" "tag" | default (index .Subcharts "matrix-bridge-api").Chart.AppVersion }}"
+          image: "{{ index .Values "matrix-bridge-api" "image" "repository" }}:{{ index .Values "matrix-bridge-api" "image" "tag" }}"
           imagePullPolicy: {{ index .Values "matrix-bridge-api" "image" "pullPolicy" | default .Values.image.pullPolicy }}
           ports:
             - name: http
