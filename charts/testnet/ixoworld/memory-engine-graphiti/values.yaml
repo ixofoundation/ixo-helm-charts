@@ -11,7 +11,7 @@ image:
   repository: ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts
   pullPolicy: IfNotPresent
   # tag defaults to Chart.AppVersion (bumped by the memory-engine-ts CI on main).
-  tag: "feat-memory-quality-bc06eca" # set manually for now.
+  tag: ""
 containers:
   memoryEngine:
     resources:
