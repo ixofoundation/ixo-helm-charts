@@ -182,3 +182,7 @@ data:
     # blank to disable the fallback (UNL-only behavior).
     here:
       apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_HERE_API_KEY>'
+
+    mintingWorker:
+      url: 'https://testnet.supa.minting.worker.emerging.eco'
+      voucherApiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_MINTING_WORKER_VOUCHER_API_KEY>'

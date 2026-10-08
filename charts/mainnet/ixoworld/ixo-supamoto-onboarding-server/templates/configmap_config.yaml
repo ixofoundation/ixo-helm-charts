@@ -192,3 +192,7 @@ data:
     smsWorker:
       url: 'https://ixo-supamoto-sms-worker.ixo-api.workers.dev'
       authToken: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_SMS_WORKER_AUTH_TOKEN>'
+
+    mintingWorker:
+      url: 'https://supa.minting.worker.emerging.eco/'
+      voucherApiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_MINTING_WORKER_VOUCHER_API_KEY>'
