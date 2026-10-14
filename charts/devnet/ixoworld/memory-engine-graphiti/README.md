@@ -4,6 +4,145 @@
 
 Memory engine (memory-engine-ts) — single service serving REST + MCP on one port
 
+## Operations
+
+### Runtime posture: one replica, `Recreate`
+
+The engine owns `/data/spaces` exclusively. kuzu, LanceDB and SQLite files are
+single-process: two processes on one space have torn the kuzu write-ahead log twice
+in production. So the chart renders exactly one replica with `strategy: Recreate`,
+no HPA and no PodDisruptionBudget (a PDB on a single replica would only block node
+drains). The cost is a conscious SLO: every rollout, node move or restart is an
+outage of up to `terminationGracePeriodSeconds` (200 s: stop ingest, let the
+in-flight cognify finish, write registries, flush owner copies) plus the RWO volume
+detach/attach plus startup. There is no canary. Callers retry; episodes already
+accepted are journaled on the volume, not held in memory.
+
+### Memory, QoS and the `MAX_OPEN_SPACES` knob
+
+`containers.memoryEngine.resources` is the single memory knob. Requests equal limits
+(3Gi on all three environments today) and the CPU request is 500m, with no CPU
+limit. A kill (container OOM or node-pressure eviction) is a SIGKILL, and a SIGKILL
+inside a commit can tear a space's kuzu WAL; with requests equal to the limit the pod
+is never over its request, which is what the kubelet ranks eviction on, and the
+scheduler reserves the whole budget. The QoS class is nevertheless **Burstable, not
+Guaranteed**: Guaranteed would also need a CPU limit, and that would throttle gzip,
+cognify post-processing and search ranking. Do not add one without measuring.
+
+`MAX_OPEN_SPACES` must be sized against that limit:
+
+    MAX_OPEN_SPACES <= (limit_MiB - 700) / 150
+
+(about 700 MB baseline, 100-150 MB per open space). At 3Gi the ceiling is 15; the
+chart sets 12, the value live on devnet, which leaves room for cold-open overshoot
+(the engine currently opens a space before it evicts) and for the largest space,
+which alone sits about 1.1 GB above baseline. Change the limit and `MAX_OPEN_SPACES`
+together. The engine default is 64, which is about 10 GB and larger than the limit.
+
+### Environment variables
+
+Set in `containers.memoryEngine.env` (explicit entries win over the Vault-backed
+secret on the same name, so these four values replace whatever Vault holds for them;
+check Vault before the first sync of testnet and mainnet):
+
+| Variable | Chart value | Meaning |
+|---|---|---|
+| `MAX_OPEN_SPACES` | `12` | Pooled open spaces; sized from the memory limit as above. |
+| `INGEST_CONCURRENCY` | `4` | Concurrent ingest (cognify) batches across spaces. |
+| `UV_THREADPOOL_SIZE` | `16` | libuv threadpool (fs, gzip, crypto); Node's default of 4 serialises snapshot and tar work. |
+| `LOG_LEVEL` | `info` | Log level. |
+
+Set by the chart from other values (entries with these names in `env` are ignored):
+
+| Variable | From | Value |
+|---|---|---|
+| `PORT` | `service.port` | `3200` (REST and MCP share it) |
+| `DATA_DIR` | `persistentVolume.mountPath` | `/data/spaces` |
+| `MATRIX_STORE_PATH` | `persistentVolume.mountPath` | `/data/matrix-store` |
+| `METRICS_PORT` | `metrics.port` | `9464` |
+
+`APP_VERSION` and `GIT_SHA` are baked into the image and deliberately not set here.
+Every other variable comes from the Vault-backed secret (`externalSecret`) or the
+engine's own defaults. The top-level `env` list is still appended to the engine's
+container (and is shared with the legacy Deployments); on a name clash the later
+entry wins.
+
+### Probes
+
+| Probe | Path | Period | Timeout | Failure threshold | Effect |
+|---|---|---|---|---|---|
+| startup | `/healthcheck` | 10 s | default | 30 (300 s) | Boot guard; unchanged. |
+| readiness | `/healthcheck/ready` | 10 s | 5 s | 3 | Engine-defined readiness (intended: 503 while shutting down or while the post-listen startup scan is unfinished); removes the pod from the Service, never restarts it. |
+| liveness | `/healthcheck` | 30 s | 10 s | 6 | Restarts only after about 3 minutes of a stuck event loop. |
+
+A restart is a SIGKILL risk for the kuzu WAL, which is why liveness stays trivial and
+tolerant while readiness carries the state. `/healthcheck/ready` must be served by the
+engine image (a memory-engine-ts change made alongside this chart); an image that
+does not have it answers 404, so the readiness probe fails and the pod never becomes
+Ready. **Roll the image and this chart together.**
+
+### Security context and filesystem
+
+The image runs as `USER node` (uid 1000, gid 1000). The pod sets `runAsNonRoot`,
+`runAsUser`/`runAsGroup` 1000, `fsGroup: 1000` with
+`fsGroupChangePolicy: OnRootMismatch`, and the container drops all capabilities,
+forbids privilege escalation and has a read-only root filesystem
+(`containers.memoryEngine.podSecurityContext` / `.securityContext`). Existing `/data`
+volumes hold root-owned files: on the first start the kubelet chowns the volume to gid
+1000 once (`OnRootMismatch` makes later starts skip it when the volume root is
+already right). On a large volume that first start spends time recursing before the
+container begins; the startup probe's 300 s starts counting only when the container
+runs.
+
+**The app writes only under `/data` (the PVC) and `/tmp`.** `/tmp` is an `emptyDir`
+(Node and tar/gzip need it); it is not size-limited, so it counts against the node's
+ephemeral storage. The legacy Deployments keep the shared top-level
+`podSecurityContext`/`securityContext` (empty), so the rollback path still runs as
+root.
+
+### Metrics
+
+The engine serves Prometheus metrics on `metrics.port` (9464, container port named
+`metrics`). The pod carries `prometheus.io/scrape: "true"` and
+`prometheus.io/port: "9464"`. There is no Service port and no ingress for it, so it is
+reachable inside the cluster only. Until the engine release that serves `/metrics`,
+a scraper sees a closed port.
+
+### Storage
+
+`persistentVolume.size` should satisfy
+`spaces x p50 space size x 1.5 + 2 x largest space x 1.5 + 20 %` (the second term is
+headroom for two concurrent owner-copy flushes of the largest space; quarantined
+copies share the volume). At 40Gi the byte ceiling is roughly 1,500-2,000 median
+spaces. The class is `vultr-block-storage-hdd` on all three environments; cold opens,
+the WAL and snapshot copies are disk-bound on it. **Open decision: storage class and
+size per environment** (the SSD class name is unverified here). `storageClassName`
+is immutable on a PVC, so a class change means a new volume and a data copy.
+Growing `size` in place needs `allowVolumeExpansion: true` on the class (verify).
+
+### VPA
+
+`verticalPodAutoscaler.updateMode` must stay `Off` (or `Initial`). `Auto` and
+`Recreate` evict the pod to apply recommendations, and an eviction is a SIGKILL.
+
+### Image tags
+
+The image tag is empty in `values.yaml` and comes from `Chart.appVersion`. Devnet
+tracks branch builds (`develop-<sha>`); testnet follows `main` builds and mainnet
+only ever receives a stable `MAJOR.MINOR.PATCH` release: the "Deploy to Mainnet"
+workflow refuses any other tag instead of falling back to the newest one.
+
+### Scaling further
+
+This chart serves one pod. Past the vertical limits of one node (the volume, the
+number of warm spaces that fit in memory, startup work that grows with the number of
+spaces) the next step is horizontal sharding: a StatefulSet with one PVC per shard,
+a space-to-shard map, routing or in-app forwarding of requests to the owning shard,
+and a decision on where the shared oracle spaces live. **That design is not
+implemented and not decided**; it is a decision for the owners. Every single-pod
+fix above (memory admission, probes, QoS, disk guard) carries over to each shard, and
+a PDB with `maxUnavailable: 1` would be added with it.
+
 ## Values
 
 | Key | Type | Default | Description |
@@ -13,9 +152,18 @@ Memory engine (memory-engine-ts) — single service serving REST + MCP on one po
 | containers.apiServer.resources | object | `{}` |  |
 | containers.mcpServer.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-mcp-server"` |  |
 | containers.mcpServer.resources | object | `{}` |  |
-| containers.memoryEngine.resources.limits.memory | string | `"3Gi"` |  |
-| containers.memoryEngine.resources.requests.cpu | string | `"50m"` |  |
-| containers.memoryEngine.resources.requests.memory | string | `"1Gi"` |  |
+| containers.memoryEngine.env | list | `[{"name":"MAX_OPEN_SPACES","value":"12"},{"name":"INGEST_CONCURRENCY","value":"4"},{"name":"UV_THREADPOOL_SIZE","value":"16"},{"name":"LOG_LEVEL","value":"info"}]` | Engine env; wins over the Vault secret. `MAX_OPEN_SPACES <= (limit_MiB - 700) / 150`. |
+| containers.memoryEngine.podSecurityContext.fsGroup | int | `1000` |  |
+| containers.memoryEngine.podSecurityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
+| containers.memoryEngine.podSecurityContext.runAsGroup | int | `1000` |  |
+| containers.memoryEngine.podSecurityContext.runAsNonRoot | bool | `true` |  |
+| containers.memoryEngine.podSecurityContext.runAsUser | int | `1000` |  |
+| containers.memoryEngine.resources.limits.memory | string | `"3Gi"` | The single memory knob; keep `requests.memory` equal and size `MAX_OPEN_SPACES` from it. |
+| containers.memoryEngine.resources.requests.cpu | string | `"500m"` |  |
+| containers.memoryEngine.resources.requests.memory | string | `"3Gi"` |  |
+| containers.memoryEngine.securityContext.allowPrivilegeEscalation | bool | `false` |  |
+| containers.memoryEngine.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| containers.memoryEngine.securityContext.readOnlyRootFilesystem | bool | `true` | The app writes only under `/data` and `/tmp`. |
 | containers.worker.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-community-worker"` |  |
 | containers.worker.resources | object | `{}` |  |
 | env | list | `[]` |  |
@@ -64,6 +212,7 @@ Memory engine (memory-engine-ts) — single service serving REST + MCP on one po
 | matrix-bridge-api.verticalPodAutoscaler.enabled | bool | `false` |  |
 | matrix-bridge-api.verticalPodAutoscaler.resourcePolicy | object | `{}` |  |
 | matrix-bridge-api.verticalPodAutoscaler.updateMode | string | `"Off"` |  |
+| metrics.port | int | `9464` | Metrics container port (`metrics`), scraped by pod annotation; no ingress. |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
