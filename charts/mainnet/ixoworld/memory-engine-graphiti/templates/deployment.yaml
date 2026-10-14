@@ -1,5 +1,5 @@
 {{- $mountPath := .Values.persistentVolume.mountPath | default "/data" }}
-{{- $chartEnv := list "PORT" "DATA_DIR" "MATRIX_STORE_PATH" }}
+{{- $chartEnv := list "PORT" "DATA_DIR" "MATRIX_STORE_PATH" "METRICS_PORT" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,10 +22,12 @@ spec:
       {{- include "memory-engine-graphiti.memoryEngineSelectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.metrics.port | quote }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "memory-engine-graphiti.memoryEngineSelectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: memory-engine
@@ -36,12 +38,53 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "memory-engine-graphiti.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.containers.memoryEngine.podSecurityContext | nindent 8 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if (.Values.containers.memoryEngine.fixVolumeOwnership | default dict).enabled }}
+      # Files the previous pod left behind as root (anything written after the
+      # volume was chowned to gid 1000) must be group-writable before the
+      # uid-1000 engine starts; the kubelet's OnRootMismatch pass skips a
+      # volume whose root already matches. Incremental: only mismatches change.
+      initContainers:
+        - name: fix-volume-ownership
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-ec"]
+          args:
+            - |
+              d={{ $mountPath | quote }}
+              find "$d" ! -group 1000 -exec chgrp 1000 {} +
+              find "$d" -type d ! -perm -070 -exec chmod g+rwx {} +
+              find "$d" -type d ! -perm -2000 -exec chmod g+s {} +
+              find "$d" -type f ! -perm -060 -exec chmod g+rw {} +
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - CHOWN
+              - FOWNER
+              - DAC_OVERRIDE
+              - DAC_READ_SEARCH
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: storage
+              mountPath: {{ $mountPath }}
+      {{- end }}
       containers:
         - name: memory-engine
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml .Values.containers.memoryEngine.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if and .Values.externalSecret .Values.externalSecret.enabled }}
@@ -50,6 +93,11 @@ spec:
                 name: {{ include "memory-engine-graphiti.fullname" . }}-env
           {{- end }}
           env:
+            {{- range .Values.containers.memoryEngine.env }}
+            {{- if not (has .name $chartEnv) }}
+            - {{ toYaml . | nindent 14 | trim }}
+            {{- end }}
+            {{- end }}
             {{- range .Values.env }}
             {{- if not (has .name $chartEnv) }}
             - {{ toYaml . | nindent 14 | trim }}
@@ -61,9 +109,15 @@ spec:
               value: {{ printf "%s/spaces" $mountPath | quote }}
             - name: MATRIX_STORE_PATH
               value: {{ printf "%s/matrix-store" $mountPath | quote }}
+            - name: METRICS_PORT
+              value: {{ .Values.metrics.port | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
+              protocol: TCP
+            # Metrics only: no Service port, no ingress.
+            - name: metrics
+              containerPort: {{ .Values.metrics.port }}
               protocol: TCP
           startupProbe:
             httpGet:
@@ -71,27 +125,53 @@ spec:
               port: http
             periodSeconds: 10
             failureThreshold: 30
+          # Liveness stays on the trivial /healthcheck: a restart is a SIGKILL
+          # risk for the kuzu WAL, so it only fires on a stuck event loop
+          # (6 x 30 s). Readiness reflects real state (shutting down, startup
+          # scan not finished, disk) and only removes the pod from the Service.
           livenessProbe:
             httpGet:
               path: /healthcheck
               port: http
             periodSeconds: 30
             timeoutSeconds: 10
+            failureThreshold: 6
           readinessProbe:
             httpGet:
+              # Step 1 keeps /healthcheck: the current image answers 401 on
+              # /healthcheck/ready. Step 2 moves it once the new image is live.
               path: /healthcheck
               port: http
             periodSeconds: 10
             timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.containers.memoryEngine.resources | nindent 12 }}
           volumeMounts:
             - name: storage
               mountPath: {{ $mountPath }}
+            # readOnlyRootFilesystem: Node and tar/gzip need a writable /tmp.
+            - name: tmp
+              mountPath: /tmp
+            # The Matrix client's logger (@ixo/logger via @ixo/matrix) opens
+            # logs/error.log and logs/combined.log relative to the working
+            # directory, /app. On a read-only root filesystem that mkdir fails
+            # and the Matrix client never initialises: memory events are then
+            # not logged to rooms. The files duplicate stdout; they are
+            # ephemeral on purpose.
+            - name: app-logs
+              mountPath: /app/logs
       volumes:
         - name: storage
           persistentVolumeClaim:
             claimName: {{ include "memory-engine-graphiti.memoryEngineFullname" . }}-storage
+        - name: tmp
+          emptyDir: {}
+        - name: app-logs
+          emptyDir:
+            # winston writes without rotation; the cap protects the node's
+            # ephemeral storage (the pod is evicted and restarted at the cap).
+            sizeLimit: 1Gi
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
