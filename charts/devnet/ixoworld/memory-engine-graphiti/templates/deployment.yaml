@@ -53,7 +53,19 @@ spec:
           args:
             - |
               d={{ $mountPath | quote }}
-              find "$d" ! -group 1000 -exec chgrp 1000 {} +
+              # Every start of the hardened engine runs as uid 1000 (USER node in
+              # the image, runAsUser in the chart) and its first boot creates
+              # $d/spaces/.engine-booted as that user. Once that file is owned by
+              # 1000, nothing has written to the volume as root since the
+              # handover, so the walk is skipped: cold, it costs ~100 inodes/s on
+              # HDD block storage (25 min for devnet's 141k entries). Set
+              # fixVolumeOwnership.force to walk anyway (files restored as root
+              # from outside the pod).
+              force={{ .Values.containers.memoryEngine.fixVolumeOwnership.force | default false | quote }}
+              if [ "$force" != "true" ] && [ "$(stat -c %u "$d/spaces/.engine-booted" 2>/dev/null)" = "1000" ]; then
+                echo "last engine start was uid 1000; nothing to fix"
+                exit 0
+              fi              find "$d" ! -group 1000 -exec chgrp 1000 {} +
               find "$d" -type d ! -perm -070 -exec chmod g+rwx {} +
               find "$d" -type d ! -perm -2000 -exec chmod g+s {} +
               find "$d" -type f ! -perm -060 -exec chmod g+rw {} +

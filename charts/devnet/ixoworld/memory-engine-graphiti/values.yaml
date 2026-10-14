@@ -90,7 +90,9 @@ containers:
     # finds over the volume; seconds on 150k files. Same as testnet/mainnet.
     fixVolumeOwnership:
       enabled: true
-  # Legacy python containers — only used by the legacy Deployment (see `legacy` below).
+      # true = walk the volume at every start even when the engine's boot marker
+      # is owned by uid 1000 (files restored as root from outside the pod).
+      force: false  # Legacy python containers — only used by the legacy Deployment (see `legacy` below).
   worker:
     image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
     resources: {}
