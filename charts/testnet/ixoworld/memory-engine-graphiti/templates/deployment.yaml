@@ -138,9 +138,9 @@ spec:
             failureThreshold: 6
           readinessProbe:
             httpGet:
-              # Step 1 keeps /healthcheck: the current image answers 401 on
-              # /healthcheck/ready. Step 2 moves it once the new image is live.
-              path: /healthcheck
+              # 503 until the startup scans are done and the volume lease is
+              # held (needs the hardened image; the old one answered 401 here).
+              path: /healthcheck/ready
               port: http
             periodSeconds: 10
             timeoutSeconds: 5
