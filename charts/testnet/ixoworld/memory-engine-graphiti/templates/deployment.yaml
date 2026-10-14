@@ -65,7 +65,8 @@ spec:
               if [ "$force" != "true" ] && [ "$(stat -c %u "$d/spaces/.engine-booted" 2>/dev/null)" = "1000" ]; then
                 echo "last engine start was uid 1000; nothing to fix"
                 exit 0
-              fi              find "$d" ! -group 1000 -exec chgrp 1000 {} +
+              fi
+              find "$d" ! -group 1000 -exec chgrp 1000 {} +
               find "$d" -type d ! -perm -070 -exec chmod g+rwx {} +
               find "$d" -type d ! -perm -2000 -exec chmod g+s {} +
               find "$d" -type f ! -perm -060 -exec chmod g+rw {} +
