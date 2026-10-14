@@ -83,6 +83,13 @@ containers:
         drop:
         - ALL
       readOnlyRootFilesystem: true
+    # Before every start, an init container (root, with only the CHOWN/FOWNER/
+    # DAC capabilities) makes whatever the previous pod left behind writable
+    # for gid 1000: files a root pod wrote after the volume was handed over,
+    # which the kubelet's OnRootMismatch pass no longer touches. Incremental
+    # finds over the volume; seconds on 150k files. Same as testnet/mainnet.
+    fixVolumeOwnership:
+      enabled: true
   # Legacy python containers — only used by the legacy Deployment (see `legacy` below).
   worker:
     image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
