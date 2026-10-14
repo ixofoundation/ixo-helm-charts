@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: develop-ea26b81](https://img.shields.io/badge/AppVersion-develop--ea26b81-informational?style=flat-square)
+![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0-develop.8](https://img.shields.io/badge/AppVersion-1.0.0--develop.8-informational?style=flat-square)
 
 Memory engine (memory-engine-ts) — single service serving REST + MCP on one port
 
@@ -165,6 +165,7 @@ a PDB with `maxUnavailable: 1` would be added with it.
 | containers.memoryEngine.env[3].name | string | `"LOG_LEVEL"` |  |
 | containers.memoryEngine.env[3].value | string | `"info"` |  |
 | containers.memoryEngine.fixVolumeOwnership.enabled | bool | `true` |  |
+| containers.memoryEngine.fixVolumeOwnership.force | bool | `false` |  |
 | containers.memoryEngine.podSecurityContext.fsGroup | int | `1000` |  |
 | containers.memoryEngine.podSecurityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
 | containers.memoryEngine.podSecurityContext.runAsGroup | int | `1000` |  |
