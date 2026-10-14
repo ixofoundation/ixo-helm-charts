@@ -40,6 +40,47 @@ spec:
       securityContext:
         {{- toYaml .Values.containers.memoryEngine.podSecurityContext | nindent 8 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if (.Values.containers.memoryEngine.fixVolumeOwnership | default dict).enabled }}
+      # Files the previous pod left behind as root (anything written after the
+      # volume was chowned to gid 1000) must be group-writable before the
+      # uid-1000 engine starts; the kubelet's OnRootMismatch pass skips a
+      # volume whose root already matches. Incremental: only mismatches change.
+      initContainers:
+        - name: fix-volume-ownership
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-ec"]
+          args:
+            - |
+              d={{ $mountPath | quote }}
+              find "$d" ! -group 1000 -exec chgrp 1000 {} +
+              find "$d" -type d ! -perm -070 -exec chmod g+rwx {} +
+              find "$d" -type d ! -perm -2000 -exec chmod g+s {} +
+              find "$d" -type f ! -perm -060 -exec chmod g+rw {} +
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
+              add:
+              - CHOWN
+              - FOWNER
+              - DAC_OVERRIDE
+              - DAC_READ_SEARCH
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: storage
+              mountPath: {{ $mountPath }}
+      {{- end }}
       containers:
         - name: memory-engine
           securityContext:
@@ -97,7 +138,9 @@ spec:
             failureThreshold: 6
           readinessProbe:
             httpGet:
-              path: /healthcheck/ready
+              # Step 1 keeps /healthcheck: the current image answers 401 on
+              # /healthcheck/ready. Step 2 moves it once the new image is live.
+              path: /healthcheck
               port: http
             periodSeconds: 10
             timeoutSeconds: 5
