@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0-develop.7](https://img.shields.io/badge/AppVersion-1.0.0--develop.7-informational?style=flat-square)
+![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: develop-ea26b81](https://img.shields.io/badge/AppVersion-develop--ea26b81-informational?style=flat-square)
 
 Memory engine (memory-engine-ts) — single service serving REST + MCP on one port
 
@@ -156,18 +156,26 @@ a PDB with `maxUnavailable: 1` would be added with it.
 | containers.apiServer.resources | object | `{}` |  |
 | containers.mcpServer.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-mcp-server"` |  |
 | containers.mcpServer.resources | object | `{}` |  |
-| containers.memoryEngine.env | list | `[{"name":"MAX_OPEN_SPACES","value":"12"},{"name":"INGEST_CONCURRENCY","value":"4"},{"name":"UV_THREADPOOL_SIZE","value":"16"},{"name":"LOG_LEVEL","value":"info"}]` | Engine env; wins over the Vault secret. `MAX_OPEN_SPACES <= (limit_MiB - 700) / 150`. |
+| containers.memoryEngine.env[0].name | string | `"MAX_OPEN_SPACES"` |  |
+| containers.memoryEngine.env[0].value | string | `"12"` |  |
+| containers.memoryEngine.env[1].name | string | `"INGEST_CONCURRENCY"` |  |
+| containers.memoryEngine.env[1].value | string | `"4"` |  |
+| containers.memoryEngine.env[2].name | string | `"UV_THREADPOOL_SIZE"` |  |
+| containers.memoryEngine.env[2].value | string | `"16"` |  |
+| containers.memoryEngine.env[3].name | string | `"LOG_LEVEL"` |  |
+| containers.memoryEngine.env[3].value | string | `"info"` |  |
+| containers.memoryEngine.fixVolumeOwnership.enabled | bool | `true` |  |
 | containers.memoryEngine.podSecurityContext.fsGroup | int | `1000` |  |
 | containers.memoryEngine.podSecurityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
 | containers.memoryEngine.podSecurityContext.runAsGroup | int | `1000` |  |
 | containers.memoryEngine.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | containers.memoryEngine.podSecurityContext.runAsUser | int | `1000` |  |
-| containers.memoryEngine.resources.limits.memory | string | `"3Gi"` | The single memory knob; keep `requests.memory` equal and size `MAX_OPEN_SPACES` from it. |
+| containers.memoryEngine.resources.limits.memory | string | `"3Gi"` |  |
 | containers.memoryEngine.resources.requests.cpu | string | `"500m"` |  |
 | containers.memoryEngine.resources.requests.memory | string | `"3Gi"` |  |
 | containers.memoryEngine.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | containers.memoryEngine.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| containers.memoryEngine.securityContext.readOnlyRootFilesystem | bool | `true` | The app writes only under `/data`, `/tmp` and `/app/logs`. |
+| containers.memoryEngine.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | containers.worker.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-community-worker"` |  |
 | containers.worker.resources | object | `{}` |  |
 | env | list | `[]` |  |
@@ -216,7 +224,7 @@ a PDB with `maxUnavailable: 1` would be added with it.
 | matrix-bridge-api.verticalPodAutoscaler.enabled | bool | `false` |  |
 | matrix-bridge-api.verticalPodAutoscaler.resourcePolicy | object | `{}` |  |
 | matrix-bridge-api.verticalPodAutoscaler.updateMode | string | `"Off"` |  |
-| metrics.port | int | `9464` | Metrics container port (`metrics`), scraped by pod annotation; no ingress. |
+| metrics.port | int | `9464` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | persistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
