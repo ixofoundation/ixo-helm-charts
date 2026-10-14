@@ -70,16 +70,23 @@ containers:
     # is already owned by 1000). Without it the non-root process cannot write the
     # existing spaces.
     #
-    # Rollout step 1 of 2 (this chart state): fsGroup + the ownership init
-    # container only; the process keeps running exactly as the current image
-    # does (root for 1.2.0). Step 2, after the uid-1000 image is live, adds
-    # runAsNonRoot/runAsUser/runAsGroup 1000, drops all capabilities and makes
-    # the root filesystem read-only (the app then writes only under /data,
-    # /tmp and /app/logs).
+    # Rollout step 2 of 2 (this chart state, after the uid-1000 image went
+    # live under step 1): runAsNonRoot/runAsUser/runAsGroup 1000, all
+    # capabilities dropped, read-only root filesystem. The app writes only
+    # under /data (the PVC), /tmp and /app/logs (emptyDirs, see the deployment
+    # template).
     podSecurityContext:
       fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
-    securityContext: {}
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
     # Before every start, an init container (root, with only the CHOWN/FOWNER/
     # DAC capabilities) makes whatever the previous pod left behind writable
     # for gid 1000: files a root pod wrote after the volume was handed over,
