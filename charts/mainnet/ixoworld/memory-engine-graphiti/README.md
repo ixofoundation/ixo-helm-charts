@@ -100,15 +100,15 @@ Ready. **Roll the image and this chart together.**
 ### Security context and filesystem
 
 The image runs as `USER node` (uid 1000, gid 1000). The rollout is two chart steps.
-**Step 1 (prep, this state):** the pod sets `fsGroup: 1000` with
+**Step 1 (prep):** the pod sets `fsGroup: 1000` with
 `fsGroupChangePolicy: OnRootMismatch` and runs an init container
 (`fixVolumeOwnership`) that makes files left behind by the earlier root pod
 group-writable; the process itself is unchanged and readiness stays on
 `/healthcheck`. Do the volume chown online first (from inside the running pod:
 `chown -R :1000 /data && chmod -R g+rwX /data && find /data -type d -exec chmod g+s {} +`),
 otherwise the kubelet's own pass runs at the next mount and blocks the start
-(28 minutes for 141k files on devnet, Oct 14 2026). **Step 2 (after the uid-1000
-image is live):** readiness moves to `/healthcheck/ready`, the pod sets `runAsNonRoot`,
+(28 minutes for 141k files on devnet, Oct 14 2026). **Step 2 (this state, after the
+uid-1000 image is live):** readiness moves to `/healthcheck/ready`, the pod sets `runAsNonRoot`,
 `runAsUser`/`runAsGroup` 1000, and the container drops all capabilities,
 forbids privilege escalation and has a read-only root filesystem
 (`containers.memoryEngine.podSecurityContext` / `.securityContext`). Existing `/data`
