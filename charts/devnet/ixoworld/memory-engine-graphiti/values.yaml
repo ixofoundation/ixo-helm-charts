@@ -75,8 +75,8 @@ containers:
       runAsNonRoot: true
       runAsUser: 1000
       runAsGroup: 1000
-    # The app writes only under /data (the PVC) and /tmp (an emptyDir, see the
-    # deployment template); everything else is read-only.
+    # The app writes only under /data (the PVC), /tmp and /app/logs (emptyDirs,
+    # see the deployment template); everything else is read-only.
     securityContext:
       allowPrivilegeEscalation: false
       capabilities:
