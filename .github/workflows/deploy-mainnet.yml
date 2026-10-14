@@ -144,19 +144,48 @@ jobs:
                 state:        'active',
               });
 
+            // Charts released by semantic-release with prerelease channels publish
+            // 1.2.0-develop.3 and develop-<sha> images to the SAME package as the
+            // stable 1.2.0. For those, mainnet must only ever receive a stable
+            // release (exactly MAJOR.MINOR.PATCH) with NO fallback to another tag:
+            // the first version used to be taken whatever it was tagged, so a
+            // develop push after the last main push reached mainnet (memory-engine,
+            // Oct 2026). Charts whose images are tagged v1.2.3 / main-<sha> keep the
+            // original rule; add a chart here once its pipeline publishes stable
+            // semver tags.
+            const STABLE_ONLY = new Set(['memory-engine-graphiti']);
+            const STABLE_SEMVER = /^\d+\.\d+\.\d+$/;
+            const strict = STABLE_ONLY.has('${{ inputs.chart }}');
+            const seen = [];
+
+            // `versions` is newest first: take the newest version that carries an acceptable tag.
             for (const version of versions) {
               const tags = version.metadata?.container?.tags ?? [];
+              seen.push(tags.length ? tags.join(',') : '(untagged)');
+              if (strict) {
+                const stable = tags.filter(t => STABLE_SEMVER.test(t));
+                if (stable.length === 0) continue;
+                core.info(`Latest stable tag for '${packageName}': ${stable[0]}`);
+                core.setOutput('tag', stable[0]);
+                return;
+              }
               // Skip meta-tags; prefer semver-like tags (v1.2.3, main-abc123, etc.)
               const candidates = tags.filter(t => t !== 'latest' && !t.startsWith('sha-'));
               if (candidates.length === 0) continue;
-
               const tag = candidates.find(t => /^v?\d/.test(t)) ?? candidates[0];
               core.info(`Latest tag for '${packageName}': ${tag}`);
               core.setOutput('tag', tag);
               return;
             }
 
-            core.setFailed(`No meaningful tag found for GHCR package: ${packageName}`);
+            core.setFailed(
+              strict
+                ? `No stable semver tag (MAJOR.MINOR.PATCH, e.g. 1.2.3) found among the ` +
+                  `${versions.length} newest versions of GHCR package '${packageName}'. ` +
+                  `Mainnet deploys only stable releases of this chart; refusing to fall back. ` +
+                  `Newest versions' tags: ${seen.join(' | ')}`
+                : `No meaningful tag found for GHCR package: ${packageName}`
+            );
 
       # ------------------------------------------------------------------ #
       # 5. Update image.tag in values.yaml if set, else appVersion         #

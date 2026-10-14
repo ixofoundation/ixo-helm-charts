@@ -16,12 +16,75 @@ image:
   tag: ""
 containers:
   memoryEngine:
+    # The single memory knob. requests == limits: a kill (container OOM or
+    # node-pressure eviction) is a SIGKILL, and a SIGKILL inside a commit tears
+    # the space's kuzu write-ahead log, so this pod must never be the first one
+    # the kubelet reclaims from. With request == limit the pod can never be over
+    # its request, which is what eviction ranks on.
+    # QoS is Burstable, not Guaranteed, on purpose: Guaranteed also needs a CPU
+    # limit, and a CPU limit would throttle gzip, cognify post-processing and
+    # search ranking (devnet pod sees 3 CPUs). If you ever add one, set it equal
+    # to the CPU request or the class stays Burstable.
+    #
+    # MAX_OPEN_SPACES (env below) is documented against THIS limit:
+    #   MAX_OPEN_SPACES <= (limit_MiB - 700) / 150
+    # ~700 MB baseline + ~150 MB per open space (README "Running it": 100-150 MB).
+    # At 3Gi: (3072 - 700) / 150 = 15.8, so the ceiling is 15; 12 is the live
+    # devnet value, which leaves room for cold-open overshoot (the engine evicts
+    # after opening) and for the biggest space (~1.1 GB above baseline).
+    # Change the limit and MAX_OPEN_SPACES together, never one alone.
     resources:
       requests:
-        cpu: 50m
-        memory: 1Gi
+        cpu: 500m
+        memory: 3Gi
       limits:
         memory: 3Gi
+    # Engine-only settings. They live here (not in the top-level `env`,
+    # `podSecurityContext` and `securityContext`) because the legacy python
+    # Deployments (rollback path, rendered at 0 replicas) read those top-level
+    # keys too, and must keep running as root with a writable root filesystem.
+    #
+    # PORT, DATA_DIR, MATRIX_STORE_PATH and METRICS_PORT are set by the chart (from
+    # service.port, persistentVolume.mountPath and metrics.port); entries with
+    # those names here are ignored. Explicit entries here WIN over the Vault-backed
+    # secret (externalSecret/envFrom) on the same name, so a value set here
+    # replaces whatever Vault holds for it. APP_VERSION and GIT_SHA are baked into
+    # the image and are deliberately not set here. The top-level `env` is still
+    # appended after this list for compatibility.
+    env:
+    # Pool size, sized against the memory limit above:
+    #   MAX_OPEN_SPACES <= (limit_MiB - 700) / 150   (3Gi -> ceiling 15, 12 used).
+    # The engine default is 64, which at ~150 MB per space is ~10 GB: more than the limit.
+    - name: MAX_OPEN_SPACES
+      value: "12"
+    # Concurrent ingest (cognify) batches across spaces.
+    - name: INGEST_CONCURRENCY
+      value: "4"
+    # libuv threadpool (fs, gzip, crypto): Node's default of 4 serialises snapshot
+    # and tar work behind each other.
+    - name: UV_THREADPOOL_SIZE
+      value: "16"
+    - name: LOG_LEVEL
+      value: info
+    # The image runs as USER node (uid 1000, gid 1000). /data is a PVC that today
+    # holds root-owned files, so fsGroup makes the kubelet chown it to gid 1000, and
+    # OnRootMismatch limits that to one recursive pass (skipped once the volume root
+    # is already owned by 1000). Without it the non-root process cannot write the
+    # existing spaces.
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+    # The app writes only under /data (the PVC) and /tmp (an emptyDir, see the
+    # deployment template); everything else is read-only.
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      readOnlyRootFilesystem: true
   # Legacy python containers — only used by the legacy Deployment (see `legacy` below).
   worker:
     image: ghcr.io/ixoworld/memory-engine-graphiti-community-worker
@@ -47,17 +110,20 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+# Prometheus scrape annotations (prometheus.io/scrape, prometheus.io/port) are
+# added to the memory-engine pod by its template from metrics.port; entries here
+# are merged after them (and also apply to the legacy Deployment).
 podAnnotations: {}
+# Shared with the legacy python Deployments: leave empty. The memory-engine
+# security context is containers.memoryEngine.podSecurityContext / .securityContext.
 podSecurityContext: {}
-# fsGroup: 2000
-
 securityContext: {}
-# capabilities:
-#   drop:
-#   - ALL
-# readOnlyRootFilesystem: true
-# runAsNonRoot: true
-# runAsUser: 1000
+# Metrics endpoint served by the engine on its own port (not the REST/MCP port).
+# Exposed as the named container port `metrics` and scraped by pod annotation;
+# no Service port and no ingress, so it is reachable inside the cluster only.
+# The same value is passed to the engine as METRICS_PORT.
+metrics:
+  port: 9464
 
 # Graceful shutdown: stop new ingest batches, close the listener (10s), let the
 # in-flight cognify finish (up to 120s — a 25-message batch measured 77s),
@@ -108,6 +174,9 @@ ingressMcp:
 # Disabled by default. When enabled with updateMode "Off" (the default), the VPA
 # only produces resource recommendations (visible via `kubectl describe vpa`) and
 # never mutates or evicts running pods.
+# MUST stay "Off" (or "Initial"). Auto/Recreate evict the pod to apply
+# recommendations, and an eviction is a SIGKILL that can tear a space's kuzu WAL.
+# Also note that VPA would fight the requests == limits setting above.
 verticalPodAutoscaler:
   enabled: false
   # "Off" = recommendations only (safe default). Other options: "Initial", "Recreate", "Auto".
@@ -128,6 +197,23 @@ tolerations: []
 affinity: {}
 # memory-engine-ts storage (its own PVC, separate from the legacy ones).
 # DATA_DIR=<mountPath>/spaces, MATRIX_STORE_PATH=<mountPath>/matrix-store.
+#
+# Sizing: size >= spaces x p50 space size x 1.5 + 2 x largest space x 1.5 + 20 %
+# (the middle term is the headroom for two concurrent owner-copy flushes of the
+# largest space: a snapshot copy plus its gzip each; quarantined copies live on
+# the same volume too). Measured on devnet: 111 spaces, typical 3-40 MB, the
+# largest 4.3 GB before compaction.
+# At 40Gi the byte ceiling is roughly 1,500-2,000 median spaces.
+#
+# DECISION (flagged, not made here): storage class and size per environment.
+# vultr-block-storage-hdd is HDD-class; cold opens (36 s for the largest space),
+# kuzu WAL, LanceDB fragments and snapshot copies are all disk-bound on it. The
+# review recommends the SSD/NVMe class. The exact Vultr class name is UNVERIFIED
+# here: check `kubectl get storageclass` before putting a name in.
+# storageClassName is immutable on an existing PVC, so changing it needs a new
+# volume plus a data copy, not a values edit.
+# Growing `size` in place only works if the storage class has
+# allowVolumeExpansion: true (verify with `kubectl get sc <class> -o yaml`).
 persistentVolume:
   mountPath: /data
   size: 40Gi
