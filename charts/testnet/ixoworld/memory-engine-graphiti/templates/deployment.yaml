@@ -110,12 +110,25 @@ spec:
             # readOnlyRootFilesystem: Node and tar/gzip need a writable /tmp.
             - name: tmp
               mountPath: /tmp
+            # The Matrix client's logger (@ixo/logger via @ixo/matrix) opens
+            # logs/error.log and logs/combined.log relative to the working
+            # directory, /app. On a read-only root filesystem that mkdir fails
+            # and the Matrix client never initialises: memory events are then
+            # not logged to rooms. The files duplicate stdout; they are
+            # ephemeral on purpose.
+            - name: app-logs
+              mountPath: /app/logs
       volumes:
         - name: storage
           persistentVolumeClaim:
             claimName: {{ include "memory-engine-graphiti.memoryEngineFullname" . }}-storage
         - name: tmp
           emptyDir: {}
+        - name: app-logs
+          emptyDir:
+            # winston writes without rotation; the cap protects the node's
+            # ephemeral storage (the pod is evicted and restarted at the cap).
+            sizeLimit: 1Gi
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
