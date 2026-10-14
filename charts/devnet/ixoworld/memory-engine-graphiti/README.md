@@ -94,9 +94,13 @@ already right). On a large volume that first start spends time recursing before 
 container begins; the startup probe's 300 s starts counting only when the container
 runs.
 
-**The app writes only under `/data` (the PVC) and `/tmp`.** `/tmp` is an `emptyDir`
-(Node and tar/gzip need it); it is not size-limited, so it counts against the node's
-ephemeral storage. The legacy Deployments keep the shared top-level
+**The app writes only under `/data` (the PVC), `/tmp` and `/app/logs`.** `/tmp` is an
+`emptyDir` (Node and tar/gzip need it); it is not size-limited, so it counts against
+the node's ephemeral storage. `/app/logs` is an `emptyDir` capped at 1Gi for the
+Matrix client's logger, which opens `logs/*.log` relative to the working directory
+and otherwise fails to initialise on the read-only root filesystem (seen on devnet
+Oct 14 2026: "Matrix initialization failed — event logging disabled"). Those files
+duplicate stdout and are lost with the pod on purpose. The legacy Deployments keep the shared top-level
 `podSecurityContext`/`securityContext` (empty), so the rollback path still runs as
 root.
 
@@ -163,7 +167,7 @@ a PDB with `maxUnavailable: 1` would be added with it.
 | containers.memoryEngine.resources.requests.memory | string | `"3Gi"` |  |
 | containers.memoryEngine.securityContext.allowPrivilegeEscalation | bool | `false` |  |
 | containers.memoryEngine.securityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| containers.memoryEngine.securityContext.readOnlyRootFilesystem | bool | `true` | The app writes only under `/data` and `/tmp`. |
+| containers.memoryEngine.securityContext.readOnlyRootFilesystem | bool | `true` | The app writes only under `/data`, `/tmp` and `/app/logs`. |
 | containers.worker.image | string | `"ghcr.io/ixoworld/memory-engine-graphiti-community-worker"` |  |
 | containers.worker.resources | object | `{}` |  |
 | env | list | `[]` |  |
