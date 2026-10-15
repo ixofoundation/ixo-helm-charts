@@ -186,3 +186,4 @@ data:
     mintingWorker:
       url: 'https://testnet.supa.minting.worker.emerging.eco'
       voucherApiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_MINTING_WORKER_VOUCHER_API_KEY>'
+      apiKey: '<path:ixo_core/data/matrix#MATRIX_SUPAMOTO_ONBOARDING_SERVER_MINTING_WORKER_API_KEY1>'
