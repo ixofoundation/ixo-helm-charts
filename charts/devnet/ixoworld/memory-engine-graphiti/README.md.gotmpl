@@ -43,10 +43,41 @@ cognify post-processing and search ranking. Do not add one without measuring.
     MAX_OPEN_SPACES <= (limit_MiB - 700) / 150
 
 (about 700 MB baseline, 100-150 MB per open space). At 3Gi the ceiling is 15; the
-chart sets 12, the value live on devnet, which leaves room for cold-open overshoot
-(the engine currently opens a space before it evicts) and for the largest space,
-which alone sits about 1.1 GB above baseline. Change the limit and `MAX_OPEN_SPACES`
-together. The engine default is 64, which is about 10 GB and larger than the limit.
+chart sets 12, the value live on devnet, which leaves room for the largest space,
+which alone sits about 1.1 GB above baseline, and for memory Node and LanceDB do not
+hand back promptly. The pool itself does not overshoot: a cold open evicts an idle
+space before it opens one, and when every pooled space is busy it waits
+`OPEN_WAIT_MS` (5 s) and then answers 503 `ENGINE_BUSY`. Change the limit and
+`MAX_OPEN_SPACES` together. The engine default is 64, which is about 10 GB and larger
+than the limit; the engine caps a configured value that does not fit the formula
+and logs the cap at error.
+
+### Memory watermark and alerts
+
+Since memory-engine-ts 2.1.1 (devnet `1.0.0-develop.15`) memory never refuses,
+holds back or un-readies anything. When RSS crosses `MEMORY_HIGH_WATER_PCT` of the
+limit (engine default 75; this chart does not set it) the engine closes every idle
+space once and logs one warning; the next crossing is armed only after RSS has
+fallen 5 points below the mark. `MEMORY_LOW_WATER_PCT` is ignored (one info line at
+startup when it is set): remove it wherever it is still set (Vault). A working set
+that really exceeds the limit is left to the cgroup OOM kill; the pod restarts and
+journaled writes replay. The engine's own gauges `memory_limit_bytes` and
+`memory_over_watermark` (1 while RSS is over the mark) are on `/metrics`.
+
+What tells devops to raise `containers.memoryEngine.resources.limits.memory` is the
+chart's `PrometheusRule` (`templates/prometheusrule.yaml`, rendered while
+`alerts.enabled`):
+
+| Alert | Fires when | Severity |
+|---|---|---|
+| `MemoryEngineNearMemoryLimit` | the `memory-engine` container's `container_memory_working_set_bytes` / `kube_pod_container_resource_limits{resource="memory"}` stays above `alerts.nearLimitRatio` (0.85) for `alerts.nearLimitFor` (10m) | warning |
+| `MemoryEngineOOMKilled` | the container restarted in the last 15 min and its last termination reason is `OOMKilled` | critical |
+
+Both read cAdvisor and kube-state-metrics series only, not the engine's `/metrics`.
+The rule carries the label `release: <alerts.prometheusRelease>`
+(`kube-prometheus-stack`), which the cluster's kube-prometheus-stack `ruleSelector`
+matches; a cluster without the `PrometheusRule` CRD needs `alerts.enabled: false`.
+Raise the limit and `MAX_OPEN_SPACES` together (above).
 
 ### Environment variables
 
@@ -81,7 +112,7 @@ entry wins.
 | Probe | Path | Period | Timeout | Failure threshold | Effect |
 |---|---|---|---|---|---|
 | startup | `/healthcheck` | 10 s | default | 30 (300 s) | Boot guard; unchanged. |
-| readiness | `/healthcheck/ready` | 10 s | 5 s | 3 | Engine-defined readiness (intended: 503 while shutting down or while the post-listen startup scan is unfinished); removes the pod from the Service, never restarts it. |
+| readiness | `/healthcheck/ready` | 10 s | 5 s | 3 | Engine-defined readiness: 503 while the post-listen startup work is unfinished, once shutdown has begun, when event-loop lag exceeds 5 s, or when the data volume cannot be measured; never because of memory. Removes the pod from the Service, never restarts it. |
 | liveness | `/healthcheck` | 30 s | 10 s | 6 | Restarts only after about 3 minutes of a stuck event loop. |
 
 A restart is a SIGKILL risk for the kuzu WAL, which is why liveness stays trivial and
@@ -118,8 +149,8 @@ root.
 The engine serves Prometheus metrics on `metrics.port` (9464, container port named
 `metrics`). The pod carries `prometheus.io/scrape: "true"` and
 `prometheus.io/port: "9464"`. There is no Service port and no ingress for it, so it is
-reachable inside the cluster only. Until the engine release that serves `/metrics`,
-a scraper sees a closed port.
+reachable inside the cluster only (`METRICS_PORT=0` would turn it off). The memory
+alerts above do not depend on it.
 
 ### Storage
 
