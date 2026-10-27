@@ -1,0 +1,46 @@
+{{- if .Values.alerts.enabled }}
+# Alerts for the memory-engine container, picked up by the cluster's
+# kube-prometheus-stack through its ruleSelector (label `release`). The
+# engine no longer pauses admission when RSS is high (it evicts idle spaces
+# and otherwise lets the cgroup OOM-kill the pod if a working set really
+# exceeds the limit), so these two alerts are what tells devops to raise
+# `containers.memoryEngine.resources.limits.memory`:
+#  - near the limit: the working set has stayed above `alerts.nearLimitRatio`
+#    of the limit for `alerts.nearLimitFor` (early warning, warning severity);
+#  - OOM-killed: the container restarted with reason OOMKilled (the event,
+#    critical). Both use kube-state-metrics and cAdvisor series only.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "memory-engine-graphiti.memoryEngineFullname" . }}-alerts
+  labels:
+    {{- include "memory-engine-graphiti.labels" . | nindent 4 }}
+    release: {{ .Values.alerts.prometheusRelease }}
+spec:
+  groups:
+    - name: memory-engine.memory
+      rules:
+        - alert: MemoryEngineNearMemoryLimit
+          expr: |
+            container_memory_working_set_bytes{namespace="{{ .Release.Namespace }}", container="memory-engine"}
+              / on (namespace, pod, container)
+            kube_pod_container_resource_limits{namespace="{{ .Release.Namespace }}", container="memory-engine", resource="memory"}
+              > {{ .Values.alerts.nearLimitRatio }}
+          for: {{ .Values.alerts.nearLimitFor }}
+          labels:
+            severity: warning
+            name: MemoryEngineNearMemoryLimit
+          annotations:
+            summary: "{{ "{{ $labels.namespace }}" }}/{{ "{{ $labels.pod }}" }} memory engine working set is {{ "{{ $value | humanizePercentage }}" }} of its memory limit — raise containers.memoryEngine.resources.limits.memory"
+        - alert: MemoryEngineOOMKilled
+          expr: |
+            increase(kube_pod_container_status_restarts_total{namespace="{{ .Release.Namespace }}", container="memory-engine"}[15m]) > 0
+              and on (namespace, pod, container)
+            kube_pod_container_status_last_terminated_reason{namespace="{{ .Release.Namespace }}", container="memory-engine", reason="OOMKilled"} == 1
+          for: 0m
+          labels:
+            severity: critical
+            name: MemoryEngineOOMKilled
+          annotations:
+            summary: "{{ "{{ $labels.namespace }}" }}/{{ "{{ $labels.pod }}" }} memory engine was OOM-killed ({{ "{{ $value }}" }} restart(s) in 15m) — raise containers.memoryEngine.resources.limits.memory; in-flight writes replay from the pending journal"
+{{- end }}

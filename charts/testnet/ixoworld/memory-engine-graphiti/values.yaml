@@ -135,6 +135,16 @@ securityContext: {}
 # The same value is passed to the engine as METRICS_PORT.
 metrics:
   port: 9464
+# Prometheus alerts for the memory-engine container (templates/prometheusrule.yaml):
+# working set near the memory limit (warning) and OOMKilled restarts (critical).
+# The rule carries the `release` label the cluster's kube-prometheus-stack
+# ruleSelector matches.
+alerts:
+  enabled: true
+  prometheusRelease: kube-prometheus-stack
+  # Working set / limit above which the warning fires, after `nearLimitFor`.
+  nearLimitRatio: 0.85
+  nearLimitFor: 10m
 
 # Graceful shutdown: stop new ingest batches, close the listener (10s), let the
 # in-flight cognify finish (up to 120s — a 25-message batch measured 77s),
