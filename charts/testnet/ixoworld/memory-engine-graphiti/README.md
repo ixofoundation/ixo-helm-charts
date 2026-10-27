@@ -1,6 +1,6 @@
 # memory-engine-graphiti
 
-![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.1.2](https://img.shields.io/badge/AppVersion-2.1.2-informational?style=flat-square)
+![Version: 0.1.12](https://img.shields.io/badge/Version-0.1.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 2.2.0](https://img.shields.io/badge/AppVersion-2.2.0-informational?style=flat-square)
 
 Memory engine (memory-engine-ts) — single service serving REST + MCP on one port
 
@@ -229,7 +229,7 @@ a PDB with `maxUnavailable: 1` would be added with it.
 | externalSecret.vaultPath | string | `""` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts"` |  |
+| image.repository | string | `"ghcr.io/ixoworld/memory-engine"` |  |
 | image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
