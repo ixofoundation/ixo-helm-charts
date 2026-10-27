@@ -8,7 +8,10 @@ replicaCount: 1
 strategy:
   type: Recreate
 image:
-  repository: ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts
+  # ghcr.io/ixoworld/memory-engine since 1.0.0-develop.17 (the release workflow
+  # publishes a fixed name; older builds are in
+  # ghcr.io/ixoworld/memory-engine-graphiti-memory-engine-ts)
+  repository: ghcr.io/ixoworld/memory-engine
   pullPolicy: IfNotPresent
   # tag defaults to Chart.AppVersion (bumped by the memory-engine-ts CI on develop).
   tag: ""
