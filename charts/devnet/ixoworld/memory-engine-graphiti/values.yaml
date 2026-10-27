@@ -28,8 +28,9 @@ containers:
     #   MAX_OPEN_SPACES <= (limit_MiB - 700) / 150
     # ~700 MB baseline + ~150 MB per open space (README "Running it": 100-150 MB).
     # At 3Gi: (3072 - 700) / 150 = 15.8, so the ceiling is 15; 12 is the live
-    # devnet value, which leaves room for cold-open overshoot (the engine evicts
-    # after opening) and for the biggest space (~1.1 GB above baseline).
+    # devnet value, which leaves room for a space that grows while open and for the
+    # biggest space (~1.1 GB above baseline); a full pool evicts an idle space
+    # before opening another.
     # Change the limit and MAX_OPEN_SPACES together, never one alone.
     resources:
       requests:
