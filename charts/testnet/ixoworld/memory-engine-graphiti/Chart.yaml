@@ -2,9 +2,9 @@ apiVersion: v2
 name: memory-engine-graphiti
 description: Memory engine (memory-engine-ts) — single service serving REST + MCP on one port
 type: application
-version: 0.1.7
-appVersion: "2.0.0"
+version: 0.1.8
+appVersion: "2.1.0"
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update memory-engine-graphiti app version from 1.5.0 to 2.0.0
+      description: Update memory-engine-graphiti app version from 2.0.0 to 2.1.0
