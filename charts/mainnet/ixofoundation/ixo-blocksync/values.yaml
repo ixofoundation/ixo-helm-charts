@@ -3,6 +3,11 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+# The indexer is a single writer: stop the old pod before the new one starts,
+# so two versions never write blocks at the same time (duplicate-key restarts)
+# and startup migrations run with no other writer on the database.
+strategy:
+  type: Recreate
 
 image:
   repository: ghcr.io/ixofoundation/ixo-blocksync
