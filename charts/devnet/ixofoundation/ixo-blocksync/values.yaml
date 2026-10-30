@@ -11,7 +11,7 @@ strategy:
 image:
   repository: ghcr.io/ixofoundation/ixo-blocksync
   pullPolicy: IfNotPresent
-  tag: v2.5.0-develop.31
+  tag: v2.5.0-develop.32
 cosmos:
   exporter:
     enabled: false
