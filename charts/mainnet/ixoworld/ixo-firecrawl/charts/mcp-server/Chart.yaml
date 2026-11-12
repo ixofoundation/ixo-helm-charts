@@ -3,5 +3,5 @@ name: mcp-server
 description: Firecrawler MCP Server component
 type: application
 version: 0.0.1
-appVersion: latest
-
+# ghcr.io/firecrawl/firecrawl-mcp-server v3.40.0, pinned by digest (linux/amd64 only).
+appVersion: "v3.40.0@sha256:7d570ac3f5e61405be9173ef49e2a1586dc1e7f5c952f1344178464cf5a35550"

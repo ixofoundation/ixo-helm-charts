@@ -3,8 +3,10 @@ name: api-server
 description: Firecrawler API Server component
 type: application
 version: 0.0.4
-appVersion: main-58595ea
+# Stock upstream Firecrawl (ghcr.io/firecrawl/firecrawl), tag@digest. Documentation only while
+# api-server.imageOverride.tag is set in ../../values.yaml (that is the pin that is deployed).
+appVersion: "2.11.728@sha256:d4fab5486d9b1a1a14f9b6aa88a5311e45fd28962c60e0c74143e4402ef5c59a"
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: Update api-server app version from main-70d62d8 to main-58595ea
+      description: Move from the fork ghcr.io/ixoworld/firecrawel:main-58595ea to stock ghcr.io/firecrawl/firecrawl:2.11.728

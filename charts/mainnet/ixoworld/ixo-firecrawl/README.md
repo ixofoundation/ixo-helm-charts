@@ -1,6 +1,6 @@
 # ixo-firecrawler
 
-![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart for Firecrawler with API, MCP Server, and Playwright Service
 
@@ -11,6 +11,31 @@ This Helm chart deploys Firecrawler with three containers in a single pod:
 - **API Server** (`api` container) - Main API service for Firecrawler (port 3002)
 - **MCP Server** (`mcp-server` container) - Model Context Protocol server (port 3000)
 - **Playwright Service** (`playwright-service` container) - Browser automation service (port 3000)
+
+## Mainnet: stock upstream Firecrawl (since chart 0.1.0)
+
+Mainnet runs stock upstream images, all pinned by tag and digest, plus a RabbitMQ broker:
+
+| Component | Where the pin lives |
+|---|---|
+| API (`ghcr.io/firecrawl/firecrawl`) | `values.yaml` `api-server.imageOverride` (repository, tag, pullPolicy) |
+| MCP server | `charts/mcp-server/Chart.yaml` `appVersion` (`vX.Y.Z@sha256:...`) |
+| Playwright service | `charts/playwright-service/Chart.yaml` `appVersion` (`sha-...@sha256:...`) |
+| RabbitMQ | `values.yaml` `rabbitmq.image` |
+
+- The Argo CD values for this app come from Terraform (`ixo-terra-infra`) and still set
+  `api-server.image.repository` to the old fork and replace the whole `api-server.env` list.
+  That is why the chart uses its own keys: `api-server.imageOverride` wins over
+  `api-server.image`, and `api-server.extraEnv` is appended to `api-server.env`. An env name
+  set twice fails the render; change a Terraform/Vault-owned value at its source instead.
+- The fork's CI (`ixoworld/firecrawel`) rewrites `charts/api-server/Chart.yaml` `appVersion`
+  on push. With `imageOverride.tag` set, that has no effect.
+- RabbitMQ: stock Firecrawl's harness needs `NUQ_RABBITMQ_URL`. The chart sets it (and
+  `RABBITMQ_PASSWORD`, from a Secret whose value is the Vault placeholder
+  `ixo_core/data/ixo-firecrawl#RABBITMQ_PASSWORD`). Single replica, no persistence: the jobs
+  live in Postgres (`nuq` schema, pg_cron lock reaper).
+- Stock never creates the `nuq` schema. Never run upstream `apps/nuq-postgres/nuq.sql` as is on
+  a shared Postgres: it runs `ALTER SYSTEM`.
 
 ## Architecture: Sub-Charts for Independent CI/CD
 

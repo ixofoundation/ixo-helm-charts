@@ -77,3 +77,34 @@ In-cluster URL for the Firecrawl API (used by Playwright service and MCP server)
 http://{{ include "ixo-firecrawler.fullname" . }}-api:{{ .Values.service.apiPort }}
 {{- end }}
 
+{{/*
+API image. The Argo/Terraform values override pins api-server.image.repository
+(and pullPolicy), which the chart cannot change, so a chart-owned
+api-server.imageOverride wins over api-server.image when set.
+Tag order: imageOverride.tag, then image.tag, then the api-server appVersion.
+*/}}
+{{- define "ixo-firecrawler.apiImage" -}}
+{{- $api := index .Values "api-server" -}}
+{{- $o := $api.imageOverride | default dict -}}
+{{- $repo := $o.repository | default $api.image.repository -}}
+{{- $tag := $o.tag | default $api.image.tag | default (index .Subcharts "api-server").Chart.AppVersion -}}
+{{- printf "%s:%s" $repo $tag -}}
+{{- end }}
+
+{{- define "ixo-firecrawler.apiImagePullPolicy" -}}
+{{- $api := index .Values "api-server" -}}
+{{- $o := $api.imageOverride | default dict -}}
+{{- $o.pullPolicy | default $api.image.pullPolicy -}}
+{{- end }}
+
+{{/*
+RabbitMQ (NuQ broker). Stock Firecrawl needs NUQ_RABBITMQ_URL in Kubernetes.
+*/}}
+{{- define "ixo-firecrawler.rabbitmqHost" -}}
+{{ include "ixo-firecrawler.fullname" . }}-rabbitmq
+{{- end }}
+
+{{- define "ixo-firecrawler.rabbitmqSecretName" -}}
+{{ include "ixo-firecrawler.fullname" . }}-rabbitmq
+{{- end }}
+

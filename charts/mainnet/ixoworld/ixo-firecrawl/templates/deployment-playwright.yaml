@@ -48,6 +48,14 @@ spec:
             - name: playwright
               containerPort: {{ .Values.service.playwrightPort }}
               protocol: TCP
+          {{- with (index .Values "playwright-service" "readinessProbe") }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with (index .Values "playwright-service" "livenessProbe") }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml (index .Values "playwright-service" "resources") | nindent 12 }}
       {{- with .Values.nodeSelector }}

@@ -17,6 +17,35 @@ api-server:
     repository: ghcr.io/firecrawl/firecrawl
     pullPolicy: IfNotPresent
     # tag defaults to api-server Chart.AppVersion
+  # Stock upstream Firecrawl, pinned by tag AND digest (2.11.728 = upstream commit 404a5796).
+  # Wins over api-server.image: the mainnet Argo values (Terraform) still pin
+  # image.repository to the old fork ghcr.io/ixoworld/firecrawel and pullPolicy Always.
+  # The tag lives here, not in charts/api-server/Chart.yaml, because the fork's CI
+  # rewrites that appVersion on every push. Bump by hand after testing; never "latest".
+  imageOverride:
+    repository: ghcr.io/firecrawl/firecrawl
+    tag: "2.11.728@sha256:d4fab5486d9b1a1a14f9b6aa88a5311e45fd28962c60e0c74143e4402ef5c59a"
+    pullPolicy: IfNotPresent
+  # Appended after api-server.env (which the Argo values override replaces wholesale).
+  # A name must not appear in both: the render fails on a duplicate. To change a value
+  # that api-server.env already sets (e.g. SEARXNG_ENGINES), change it at its source (Vault).
+  extraEnv: []
+  # Stock routes (apps/api/src/controllers/health.ts); they answer once the API process listens.
+  readinessProbe:
+    httpGet:
+      path: /health/readiness
+      port: api
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: /health/liveness
+      port: api
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 5
   resources: {}
     # limits:
     #   cpu: 1000m
@@ -43,9 +72,8 @@ api-server:
     #   value: "redis://redis:6379"
     # - name: REDIS_RATE_LIMIT_URL
     #   value: "redis://redis:6379"
-    # PLAYWRIGHT_MICROSERVICE_URL is set automatically to the in-cluster playwright service URL; override here if needed
-    # - name: PLAYWRIGHT_MICROSERVICE_URL
-    #   value: "http://localhost:3000/scrape"
+    # PLAYWRIGHT_MICROSERVICE_URL, and with rabbitmq.enabled NUQ_RABBITMQ_URL + RABBITMQ_PASSWORD,
+    # are set by the chart; do not repeat them here (the render fails on a duplicate name).
     # - name: NUQ_DATABASE_URL
     #   value: "postgres://postgres:postgres@nuq-postgres:5432/postgres"
     # - name: USE_DB_AUTHENTICATION
@@ -75,7 +103,22 @@ mcp-server:
   image:
     repository: ghcr.io/firecrawl/firecrawl-mcp-server
     pullPolicy: IfNotPresent
-    # tag defaults to mcp-server Chart.AppVersion
+    # tag defaults to mcp-server Chart.AppVersion (pinned tag@digest there)
+  # /health is exempt from the MCP host allowlist (answers 200 to the kubelet's pod-IP Host).
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: mcp
+    periodSeconds: 10
+    timeoutSeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: mcp
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 5
   resources: {}
     # limits:
     #   cpu: 500m
@@ -102,7 +145,21 @@ playwright-service:
   image:
     repository: ghcr.io/firecrawl/playwright-service
     pullPolicy: IfNotPresent
-    # tag defaults to playwright-service Chart.AppVersion
+    # tag defaults to playwright-service Chart.AppVersion (pinned tag@digest there)
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: playwright
+    periodSeconds: 10
+    timeoutSeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: playwright
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 5
   resources: {}
     # limits:
     #   cpu: 1000m
@@ -122,6 +179,26 @@ playwright-service:
     #   value: ""
     # - name: BLOCK_MEDIA
     #   value: ""
+
+# RabbitMQ for NuQ (stock Firecrawl's harness requires NUQ_RABBITMQ_URL in Kubernetes).
+# Same version as upstream's compose/Helm example (rabbitmq:3-management = 3.13.7);
+# the non-management variant: the management UI/HTTP API is not used.
+rabbitmq:
+  enabled: true
+  image: "docker.io/library/rabbitmq:3.13.7@sha256:87178a0ee3e2f52980ba356d38646ed1056705ff2d5ff281f8965456eaa0c1e3"
+  pullPolicy: IfNotPresent
+  port: 5672
+  username: firecrawl
+  # Resolved by argocd-vault-plugin at render time; the key must exist in Vault before
+  # this chart syncs, or the render fails and Argo leaves the running pods untouched.
+  # Use a URL-safe value (e.g. openssl rand -hex 24): it is embedded in NUQ_RABBITMQ_URL.
+  password: "<path:ixo_core/data/ixo-firecrawl#RABBITMQ_PASSWORD>"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 192Mi
+    limits:
+      memory: 512Mi
 
 imagePullSecrets: []
 nameOverride: ""

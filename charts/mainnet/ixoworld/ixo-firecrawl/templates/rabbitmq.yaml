@@ -1,0 +1,106 @@
+{{- if .Values.rabbitmq.enabled }}
+{{- if not .Values.rabbitmq.password }}
+{{- fail "rabbitmq.password must be set (mainnet: an AVP <path:...> placeholder, never a literal in git)" }}
+{{- end }}
+# NuQ broker for stock Firecrawl. Single replica, no persistence: Postgres holds
+# the jobs; RabbitMQ only carries prefetch hand-offs (50 s TTL) and job-done
+# notifications, and the pg_cron lock reaper re-queues anything lost on restart.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "ixo-firecrawler.rabbitmqSecretName" . }}
+  labels:
+    {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+type: Opaque
+stringData:
+  password: {{ .Values.rabbitmq.password | quote }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ixo-firecrawler.fullname" . }}-rabbitmq
+  labels:
+    {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "ixo-firecrawler.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: rabbitmq
+  template:
+    metadata:
+      labels:
+        {{- include "ixo-firecrawler.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: rabbitmq
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "ixo-firecrawler.serviceAccountName" . }}
+      containers:
+        - name: rabbitmq
+          image: {{ .Values.rabbitmq.image | quote }}
+          imagePullPolicy: {{ .Values.rabbitmq.pullPolicy }}
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{ .Values.rabbitmq.username | quote }}
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ixo-firecrawler.rabbitmqSecretName" . }}
+                  key: password
+          ports:
+            - name: amqp
+              containerPort: 5672
+              protocol: TCP
+          # TCP probes: the AMQP port opens only after the broker has booted, and they
+          # avoid starting the Erlang CLI (rabbitmq-diagnostics) inside the memory limit.
+          readinessProbe:
+            tcpSocket:
+              port: amqp
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: amqp
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 4
+          resources:
+            {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ixo-firecrawler.rabbitmqHost" . }}
+  labels:
+    {{- include "ixo-firecrawler.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  type: ClusterIP
+  ports:
+    - name: amqp
+      port: {{ .Values.rabbitmq.port }}
+      targetPort: amqp
+      protocol: TCP
+  selector:
+    {{- include "ixo-firecrawler.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+{{- end }}

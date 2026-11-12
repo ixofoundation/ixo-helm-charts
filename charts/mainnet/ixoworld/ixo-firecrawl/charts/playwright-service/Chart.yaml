@@ -3,5 +3,5 @@ name: playwright-service
 description: Firecrawler Playwright Service component
 type: application
 version: 0.0.1
-appVersion: latest
-
+# ghcr.io/firecrawl/playwright-service publishes only sha-* tags and latest; pinned by digest.
+appVersion: "sha-8b950c45c8ca@sha256:227ce3d8059173925a5a0697c63a1e947662cca934a609151651f578774edd5d"

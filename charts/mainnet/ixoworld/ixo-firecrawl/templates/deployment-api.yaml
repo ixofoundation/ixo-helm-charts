@@ -32,22 +32,64 @@ spec:
       serviceAccountName: {{ include "ixo-firecrawler.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.rabbitmq.enabled }}
+      initContainers:
+        # The extract worker connects to RabbitMQ once at start and the harness
+        # exits if it fails, so wait for the broker instead of crash-looping.
+        - name: wait-for-rabbitmq
+          image: {{ include "ixo-firecrawler.apiImage" . | quote }}
+          imagePullPolicy: {{ include "ixo-firecrawler.apiImagePullPolicy" . }}
+          command:
+            - node
+            - -e
+            - |
+              const net = require("net");
+              const [host, port] = [process.env.RABBITMQ_HOST, Number(process.env.RABBITMQ_PORT)];
+              (function attempt() {
+                const s = net.connect(port, host, () => { console.log(`rabbitmq ${host}:${port} reachable`); s.end(); process.exit(0); });
+                s.on("error", () => { console.log(`waiting for rabbitmq ${host}:${port}`); setTimeout(attempt, 2000); });
+              })();
+          env:
+            - name: RABBITMQ_HOST
+              value: {{ include "ixo-firecrawler.rabbitmqHost" . | quote }}
+            - name: RABBITMQ_PORT
+              value: {{ .Values.rabbitmq.port | quote }}
+      {{- end }}
       containers:
         - name: api
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ index .Values "api-server" "image" "repository" }}:{{ index .Values "api-server" "image" "tag" | default (index .Subcharts "api-server").Chart.AppVersion }}"
-          imagePullPolicy: {{ index .Values "api-server" "image" "pullPolicy" }}
+          image: {{ include "ixo-firecrawler.apiImage" . | quote }}
+          imagePullPolicy: {{ include "ixo-firecrawler.apiImagePullPolicy" . }}
+          {{- /* Chart-managed env first, then the values-override env (owned by Terraform), then
+                 chart-owned extraEnv. Names must be unique: fail the render on a duplicate. */}}
+          {{- $env := list (dict "name" "PLAYWRIGHT_MICROSERVICE_URL" "value" (include "ixo-firecrawler.playwrightMicroserviceURL" .)) }}
+          {{- if .Values.rabbitmq.enabled }}
+          {{- $env = append $env (dict "name" "RABBITMQ_PASSWORD" "valueFrom" (dict "secretKeyRef" (dict "name" (include "ixo-firecrawler.rabbitmqSecretName" .) "key" "password"))) }}
+          {{- $env = append $env (dict "name" "NUQ_RABBITMQ_URL" "value" (printf "amqp://%s:$(RABBITMQ_PASSWORD)@%s:%v" .Values.rabbitmq.username (include "ixo-firecrawler.rabbitmqHost" .) .Values.rabbitmq.port)) }}
+          {{- end }}
+          {{- $env = concat $env ((index .Values "api-server" "env") | default list) ((index .Values "api-server" "extraEnv") | default list) }}
+          {{- $seen := dict }}
+          {{- range $env }}
+          {{- if hasKey $seen .name }}
+          {{- fail (printf "api env %s is set twice (chart-managed, api-server.env or api-server.extraEnv); remove one" .name) }}
+          {{- end }}
+          {{- $_ := set $seen .name true }}
+          {{- end }}
           env:
-            - name: PLAYWRIGHT_MICROSERVICE_URL
-              value: {{ include "ixo-firecrawler.playwrightMicroserviceURL" . | quote }}
-            {{- with (index .Values "api-server" "env") }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
+            {{- toYaml $env | nindent 12 }}
           ports:
             - name: api
               containerPort: {{ .Values.service.apiPort }}
               protocol: TCP
+          {{- with (index .Values "api-server" "readinessProbe") }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with (index .Values "api-server" "livenessProbe") }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml (index .Values "api-server" "resources") | nindent 12 }}
       {{- with .Values.nodeSelector }}
