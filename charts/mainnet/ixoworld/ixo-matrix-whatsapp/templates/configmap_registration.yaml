@@ -19,4 +19,6 @@ data:
       rooms: []
     rate_limited: false
     de.sorunome.msc2409.push_ephemeral: true
+    # Stable name of the same flag (MSC2409); Synapse 1.140 ignores it, newer Synapse and mautrix-go read both.
+    receive_ephemeral: true
     org.matrix.msc3202: true

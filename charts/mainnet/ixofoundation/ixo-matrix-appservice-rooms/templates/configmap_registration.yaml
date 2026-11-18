@@ -53,6 +53,9 @@ data:
     # If you need ephemeral events (for crypto or other reasons), set this to true. Defaults to false to avoid flooding
     # the appservice wtih traffic.
     de.sorunome.msc2409.push_ephemeral: {{ if (hasKey $reg "de.sorunome.msc2409.push_ephemeral") }}{{ index $reg "de.sorunome.msc2409.push_ephemeral" }}{{ else }}true{{ end }}
+    # Stable name of the same flag (MSC2409). Synapse 1.140 ignores it; newer Synapse reads both.
+    # Keep the legacy flag above: matrix-bot-sdk only reads the legacy transaction keys.
+    receive_ephemeral: {{ if (hasKey $reg "receive_ephemeral") }}{{ index $reg "receive_ephemeral" }}{{ else }}true{{ end }}
 
     # Check synapse code for this option
     # Opt-in flag for the MSC3202-specific transactional behaviour.
